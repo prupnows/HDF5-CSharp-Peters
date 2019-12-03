@@ -97,9 +97,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hdf5DotnetTools.Standard\Hdf5DotnetTools.Standard.csproj">
-      <Project>{94487A20-C97B-43E4-ABD1-4A4BC3C38361}</Project>
-      <Name>Hdf5DotnetTools.Standard</Name>
+    <ProjectReference Include="..\Hdf5DotNetTools\Hdf5DotNetTools.csproj">
+      <Project>{adcc9ad9-ee46-4237-9220-95eaea143d17}</Project>
+      <Name>Hdf5DotNetTools</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
