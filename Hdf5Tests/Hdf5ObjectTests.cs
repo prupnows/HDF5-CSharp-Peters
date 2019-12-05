@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Hdf5DotNetTools;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using HDF.PInvoke;
+using Hdf5DotnetWrapper;
 
 namespace Hdf5UnitTests
 {
@@ -21,7 +21,7 @@ namespace Hdf5UnitTests
                 testClass.TestBoolean = true;
                 testClass.TestString = "test string";
                 // 31-Oct-2003, 18:00 is  731885.75 in matlab
-                testClass.TestTime = new DateTime(2003, 10, 31, 18, 0, 0); 
+                testClass.TestTime = new DateTime(2003, 10, 31, 18, 0, 0);
 
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
@@ -59,14 +59,15 @@ namespace Hdf5UnitTests
         {
             try
             {
-                var testClass = new TestClassWithArray() {
+                var testClass = new TestClassWithArray()
+                {
                     TestInteger = 2,
                     TestDouble = 1.1,
                     TestBoolean = true,
                     TestString = "test string",
                     TestDoubles = new double[] { 1.1, 1.2, -1.1, -1.2 },
                     TestStrings = new string[] { "one", "two", "three", "four" }
-            };
+                };
                 testClassWithArrays.TestInteger = 2;
                 testClassWithArrays.TestDouble = 1.1;
                 testClassWithArrays.TestBoolean = true;

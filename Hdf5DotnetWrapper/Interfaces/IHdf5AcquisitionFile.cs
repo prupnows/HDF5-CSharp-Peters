@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Hdf5DotnetTools.DataTypes;
+﻿using System.Collections.Generic;
+using Hdf5DotnetWrapper.DataTypes;
 
-namespace Hdf5DotnetTools.Interfaces
+namespace Hdf5DotnetWrapper.Interfaces
 {
     public interface IHdf5AcquisitionFile
     {

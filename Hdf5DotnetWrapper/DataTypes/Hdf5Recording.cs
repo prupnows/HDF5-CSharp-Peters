@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using Hdf5DotNetTools;
 
-namespace Hdf5DotnetTools.DataTypes
+namespace Hdf5DotnetWrapper.DataTypes
 {
     [Hdf5GroupName("Recording")]
     public class Hdf5Recording

@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using Hdf5DotnetTools.DataTypes;
-using Hdf5DotnetTools.Interfaces;
+﻿using System.Collections.Generic;
+using Hdf5DotnetWrapper.DataTypes;
+using Hdf5DotnetWrapper.Interfaces;
 
-namespace Hdf5DotNetTools
+namespace Hdf5DotnetWrapper
 {
 
-    [Hdf5SaveAttribute(Hdf5Save.Save)]
+    [Hdf5Save(Hdf5Save.Save)]
     public class Hdf5AcquisitionFile : IHdf5AcquisitionFile
     {
         public Hdf5Patient Patient { get; set; }
@@ -39,7 +33,7 @@ namespace Hdf5DotNetTools
 
         }
 
-   
+
         public void EventListToEvents()
         {
             Events = new Hdf5Events(EventList.Count);

@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Hdf5DotNetTools;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using HDF.PInvoke;
+using Hdf5DotnetWrapper;
 
 namespace Hdf5UnitTests
 {

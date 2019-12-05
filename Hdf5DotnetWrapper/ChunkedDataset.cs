@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HDF.PInvoke;
 using System.Runtime.InteropServices;
-using System.IO;
-using static HDF.PInvoke.H5T;
+using HDF.PInvoke;
 
-namespace Hdf5DotNetTools
+namespace Hdf5DotnetWrapper
 {
-#if HDF5_VER1_10
     using hid_t = System.Int64;
-#else
-    using hid_t = System.Int32;
-#endif
     public class ChunkedDataset<T> : IDisposable where T : struct
     {
         ulong[] currentDims, oldDims;

@@ -1,20 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Hdf5DotNetTools
+namespace Hdf5DotnetWrapper
 {
 
-    /*struct ReadInfo {
-        public ReadInfo()
-        {
-
-        }
-    }*/
 
     public class Hdf5AcquisitionFileReader : IDisposable
     {

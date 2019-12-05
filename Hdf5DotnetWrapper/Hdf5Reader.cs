@@ -1,17 +1,15 @@
 ﻿using System;
+using System.Collections;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using HDF.PInvoke;
 
-namespace Hdf5DotNetTools
+namespace Hdf5DotnetWrapper
 {
-    using System.Collections;
-    using System.Diagnostics;
-#if HDF5_VER1_10
+
     using hid_t = System.Int64;
-#else
-    using hid_t = System.Int32;
-#endif
+
     public partial class Hdf5
     {
 

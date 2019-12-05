@@ -1,20 +1,10 @@
-﻿using HDF.PInvoke;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Hdf5DotNetTools
+namespace Hdf5DotnetWrapper
 {
-#if HDF5_VER1_10
     using hid_t = System.Int64;
-#else
-    using hid_t = System.Int32;
-#endif
     public class Hdf5Dataset : IHdf5ReaderWriter
     {
         public Array ReadToArray<T>(hid_t groupId, string name)

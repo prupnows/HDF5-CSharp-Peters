@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HDF.PInvoke;
-using System.Runtime.InteropServices;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using HDF.PInvoke;
 
-namespace Hdf5DotNetTools
+namespace Hdf5DotnetWrapper
 {
-#if HDF5_VER1_10
     using hid_t = System.Int64;
-#else
-    using hid_t = System.Int32;
-#endif
     public static partial class Hdf5
     {
         // information: https://www.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/C/H5T/h5ex_t_cmpd.c

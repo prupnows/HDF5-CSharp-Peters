@@ -3,8 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Hdf5DotNetTools;
 using System.IO;
+using Hdf5DotnetWrapper;
 
 namespace Hdf5UnitTests
 {

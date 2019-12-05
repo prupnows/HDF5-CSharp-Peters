@@ -118,9 +118,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hdf5DotnetTools\Hdf5DotnetTools.csproj">
+    <ProjectReference Include="..\Hdf5DotnetWrapper\Hdf5DotnetWrapper.csproj">
       <Project>{7e7b1235-2d9c-4696-9ffb-cf7e14c7202a}</Project>
-      <Name>Hdf5DotnetTools</Name>
+      <Name>Hdf5DotnetWrapper</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Hdf5DotnetTools.DataTypes
+namespace Hdf5DotnetWrapper.DataTypes
 {
     public class FileClosedArgs : EventArgs
     {

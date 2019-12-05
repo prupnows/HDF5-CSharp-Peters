@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hdf5UnitTests", "Hdf5Tests\Hdf5UnitTests.csproj", "{8F907AB2-9A4F-4B79-A60C-35E3367C1CA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hdf5DotnetTools", "Hdf5DotnetTools\Hdf5DotnetTools.csproj", "{7E7B1235-2D9C-4696-9FFB-CF7E14C7202A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hdf5DotnetWrapper", "Hdf5DotnetWrapper\Hdf5DotnetWrapper.csproj", "{7E7B1235-2D9C-4696-9FFB-CF7E14C7202A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

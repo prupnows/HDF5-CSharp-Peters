@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
-using Hdf5DotNetTools;
+﻿using System.Runtime.InteropServices;
 
-namespace Hdf5DotnetTools.DataTypes
+namespace Hdf5DotnetWrapper.DataTypes
 {
     [Hdf5GroupName("Channel")]
     [StructLayout(LayoutKind.Sequential)]
