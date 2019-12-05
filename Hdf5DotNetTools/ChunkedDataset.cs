@@ -19,10 +19,24 @@ namespace Hdf5DotNetTools
     {
         ulong[] currentDims, oldDims;
         readonly ulong[] maxDims = new ulong[] { H5S.UNLIMITED, H5S.UNLIMITED };
-        readonly ulong[] chunkDims;
+        private ulong[] chunkDims;
         hid_t status, spaceId, datasetId, propId;
         readonly hid_t typeId, datatype;
 
+
+        /// <summary>
+        /// Constructor to create a chuncked dataset object
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="groupId"></param>
+        public ChunkedDataset(string name, hid_t groupId)
+        {
+            Datasetname = name;
+            GroupId = groupId;
+            datatype = Hdf5.GetDatatype(typeof(T));
+            typeId = H5T.copy(datatype);
+            chunkDims = null;
+        }
         /// <summary>
         /// Constructor to create a chuncked dataset object
         /// </summary>
@@ -31,7 +45,6 @@ namespace Hdf5DotNetTools
         /// <param name="chunckSize"></param>
         public ChunkedDataset(string name, hid_t groupId, ulong[] chunckSize)
         {
-            //Datasetname = Hdf5.ToHdf5Name(name);
             Datasetname = name;
             GroupId = groupId;
             datatype = Hdf5.GetDatatype(typeof(T));
@@ -76,6 +89,38 @@ namespace Hdf5DotNetTools
             H5S.close(spaceId);
         }
 
+        public void AppendOrCreateDataset(Array dataset)
+        {
+            if (chunkDims == null)
+            {
+                chunkDims = new ulong[]
+                    {Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1))};
+
+                Rank = dataset.Rank;
+                currentDims = GetDims(dataset);
+
+                /* Create the data space with unlimited dimensions. */
+                spaceId = H5S.create_simple(Rank, currentDims, maxDims);
+
+                /* Modify dataset creation properties, i.e. enable chunking  */
+                propId = H5P.create(H5P.DATASET_CREATE);
+                status = H5P.set_chunk(propId, Rank, chunkDims);
+
+                /* Create a new dataset within the file using chunk creation properties.  */
+                datasetId = H5D.create(GroupId, Datasetname, datatype, spaceId, H5P.DEFAULT, propId, H5P.DEFAULT);
+
+                /* Write data to dataset */
+                GCHandle hnd = GCHandle.Alloc(dataset, GCHandleType.Pinned);
+                status = H5D.write(datasetId, datatype, H5S.ALL, H5S.ALL, H5P.DEFAULT,
+                    hnd.AddrOfPinnedObject());
+                hnd.Free();
+                H5S.close(spaceId);
+            }
+            else
+            {
+                AppendDataset(dataset);
+            }
+        }
         public void AppendDataset(Array dataset)
         {
             if (!DatasetExists) throw new Exception("call constructor or FirstDataset first before appending.");
