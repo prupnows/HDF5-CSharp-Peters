@@ -19,12 +19,17 @@ namespace Hdf5DotNetTools
             {
                 throw new ArgumentNullException(nameof(writeValue));
             }
-
+            Type tyObject = writeValue.GetType();
+            Attribute attribute = Attribute.GetCustomAttributes(tyObject).SingleOrDefault(a => a is Hdf5GroupName);
+            if (string.IsNullOrEmpty(groupName) && attribute != null)
+            {
+                groupName = ((Hdf5GroupName)attribute).Name;
+            }
             bool createGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (createGroupName)
                 groupId = Hdf5.CreateGroup(groupId, groupName);
 
-            Type tyObject = writeValue.GetType();
+
             foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
             {
                 if (attr is Hdf5SaveAttribute legAt)
