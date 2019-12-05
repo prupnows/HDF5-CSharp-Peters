@@ -102,6 +102,39 @@ namespace Hdf5UnitTests
                 CreateExceptionAssert(ex);
             }
         }
+        [TestMethod]
+        public void WriteAndReadComplexDataset()
+        {
+            string filename = Path.Combine(folder, "testDatasetComplex.H5");
+            var dset = dsetsComplex.First();
+
+            try
+            {
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                Hdf5.WriteDataset(fileId, "/test", dset);
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+            try
+            {
+                //var fileId = Hdf5.OpenFile(filename);
+                //Assert.IsTrue(fileId > 0);
+                //double[,] dset2 = (double[,])Hdf5.ReadDataset<double>(fileId, "/test");
+                //CompareDatasets(dset, dset2);
+                //bool same = dset == dset2;
+
+                //Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+        }
 
         [TestMethod]
         public void WriteAndReadPrimitives()
@@ -210,7 +243,7 @@ namespace Hdf5UnitTests
                 var fileId = Hdf5.OpenFile(filename);
                 //var groupId = H5G.open(fileId, groupName);
                 //var dset = Hdf5.ReadDatasetToArray<double>(groupId, datasetName);
-                var dset = Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName,"/",datasetName));
+                var dset = Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName, "/", datasetName));
 
                 Assert.IsTrue(dset.Rank == dsets.First().Rank);
                 var xSum = dsets.Select(d => d.GetLength(0)).Sum();

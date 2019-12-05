@@ -121,6 +121,19 @@ namespace Hdf5UnitTests
             }
         }
 
+        class ComplexNumber
+        {
+            public double[,] Value { get; set; }
+            // public double Real { get; set; }
+            // public double Im { get; set; }
+
+            public ComplexNumber(double real, double im)
+            {
+                // // Real = real;
+                //  Im = im;
+                Value = new double[,] { { real, im } };
+            }
+        }
         class TestClassWithStructs
         {
             public TestClassWithStructs()
@@ -132,6 +145,7 @@ namespace Hdf5UnitTests
         static private TestClass testClass;
         static private TestClassWithArray testClassWithArrays;
         static private List<double[,]> dsets;
+        static private List<ComplexNumber[]> dsetsComplex;
         static private WData[] wDataList;
         static private WData2[] wData2List;
         static private Responses[] responseList;
@@ -143,6 +157,8 @@ namespace Hdf5UnitTests
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
+            dsetsComplex = new List<ComplexNumber[]> { new[] { new ComplexNumber(1, 2), new ComplexNumber(2, 7) } };
+
             //folder = System.IO.Path.GetTempPath();
             folder = AppDomain.CurrentDomain.BaseDirectory;
             dsets = new List<double[,]> {
