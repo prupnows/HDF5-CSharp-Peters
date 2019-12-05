@@ -101,7 +101,10 @@ namespace Hdf5DotNetTools
         {
             return H5F.close(fileId);
         }
-
+        public static hid_t Flush(long objectId, H5F.scope_t scope)
+        {
+            return H5F.flush(objectId, scope);
+        }
         //internal static string ToHdf5Name(string name)
         //{
         //    return string.Concat(@"/", name);
