@@ -1,4 +1,4 @@
-# Hdf5DotnetTools
+# Hdf5DotnetWrapper   <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px">
 Set of tools that help in reading and writing hdf5 files for .net environments
 
 ## Introduction
