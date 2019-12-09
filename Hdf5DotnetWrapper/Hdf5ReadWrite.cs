@@ -73,13 +73,6 @@ namespace Hdf5DotnetWrapper
 
     }
 
-    /* public interface IHdf5ReaderWriter:IHdf5AttributeReaderWriter
-     {
-         void WriteStucts<T>(hid_t groupId, string name, IEnumerable<T> dset, string datasetName = null);
-         Array ReadStucts<T>(hid_t groupId, string name) where T : struct;
-
-     }*/
-
     public class Hdf5ReaderWriter
     {
         IHdf5ReaderWriter rw;
@@ -99,7 +92,7 @@ namespace Hdf5DotnetWrapper
             switch (typeCode)
             {
                 case TypeCode.Boolean:
-                    var bls = collection.ConvertArray<Boolean, UInt16>(bl => Convert.ToUInt16(bl));
+                    var bls = collection.ConvertArray<Boolean, UInt16>(Convert.ToUInt16);
                     result = rw.WriteFromArray<UInt16>(groupId, name, bls, datasetName);
                     Hdf5.WriteStringAttribute(groupId, name, "Boolean", name);
                     break;
@@ -108,19 +101,18 @@ namespace Hdf5DotnetWrapper
                     Hdf5.WriteStringAttribute(groupId, name, "Byte", name);
                     break;
                 case TypeCode.Char:
-                    var chrs = collection.ConvertArray<Char, UInt16>(c => Convert.ToUInt16(c));
+                    var chrs = collection.ConvertArray<Char, UInt16>(Convert.ToUInt16);
                     result = rw.WriteFromArray<UInt16>(groupId, name, chrs, datasetName);
                     Hdf5.WriteStringAttribute(groupId, name, "Char", name);
                     break;
 
                 case TypeCode.DateTime:
-                    var dts = collection.ConvertArray<DateTime, long>(dt => dt.Ticks);
+                    var dts = collection.ConvertArray<DateTime, long>(dt => Hdf5Conversions.FromDatetime(dt, Hdf5.Hdf5Settings.DateTimeType));
                     result = rw.WriteFromArray<long>(groupId, name, dts, datasetName);
                     Hdf5.WriteStringAttribute(groupId, name, "DateTime", name);
                     break;
-
                 case TypeCode.Decimal:
-                    var decs = collection.ConvertArray<decimal, double>(dc => Convert.ToDouble(dc));
+                    var decs = collection.ConvertArray<decimal, double>(Convert.ToDouble);
                     result = rw.WriteFromArray<double>(groupId, name, decs, datasetName);
                     Hdf5.WriteStringAttribute(groupId, name, "Decimal", name);
                     break;

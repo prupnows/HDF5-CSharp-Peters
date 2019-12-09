@@ -133,8 +133,7 @@ namespace Hdf5UnitTests
 
             var OpenFileId = Hdf5.OpenFile(filename);
             var data = Hdf5.ReadObject<AttributeClass>(OpenFileId, groupName);
-            var att = Hdf5.ReadAttributes<AttributeClass>(OpenFileId, groupName);
-
+            Assert.IsTrue(Math.Abs(data.noAttribute - 10.0f) < 0.001);
         }
     }
 }

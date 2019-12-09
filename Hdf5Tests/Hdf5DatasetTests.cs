@@ -102,39 +102,6 @@ namespace Hdf5UnitTests
                 CreateExceptionAssert(ex);
             }
         }
-        [TestMethod]
-        public void WriteAndReadComplexDataset()
-        {
-            string filename = Path.Combine(folder, "testDatasetComplex.H5");
-            var dset = dsetsComplex.First();
-
-            try
-            {
-                var fileId = Hdf5.CreateFile(filename);
-                Assert.IsTrue(fileId > 0);
-                Hdf5.WriteDataset(fileId, "/test", dset);
-                Hdf5.CloseFile(fileId);
-            }
-            catch (Exception ex)
-            {
-                CreateExceptionAssert(ex);
-            }
-
-            try
-            {
-                //var fileId = Hdf5.OpenFile(filename);
-                //Assert.IsTrue(fileId > 0);
-                //double[,] dset2 = (double[,])Hdf5.ReadDataset<double>(fileId, "/test");
-                //CompareDatasets(dset, dset2);
-                //bool same = dset == dset2;
-
-                //Hdf5.CloseFile(fileId);
-            }
-            catch (Exception ex)
-            {
-                CreateExceptionAssert(ex);
-            }
-        }
 
         [TestMethod]
         public void WriteAndReadPrimitives()
