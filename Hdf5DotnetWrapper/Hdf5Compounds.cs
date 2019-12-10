@@ -8,7 +8,7 @@ using HDF.PInvoke;
 
 namespace Hdf5DotnetWrapper
 {
-    using hid_t = System.Int64;
+    using hid_t = Int64;
     public static partial class Hdf5
     {
         // information: https://www.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/C/H5T/h5ex_t_cmpd.c
@@ -25,9 +25,9 @@ namespace Hdf5DotnetWrapper
             var log10 = (int)Math.Log10(cnt);
             ulong pow = (ulong)Math.Pow(10, log10);
             ulong c_s = Math.Min(1000, pow);
-            ulong[] chunk_size = new ulong[] { c_s };
+            ulong[] chunk_size = { c_s };
 
-            ulong[] dims = new ulong[] { (ulong)cnt };
+            ulong[] dims = { (ulong)cnt };
 
             long dcpl = 0;
             if (!list.Any() || log10 == 0) { }
@@ -41,7 +41,8 @@ namespace Hdf5DotnetWrapper
             var spaceId = H5S.create_simple(dims.Length, dims, null);
 
             // Create the dataset and write the compound data to it.
-            var datasetId = H5D.create(groupId, name, typeId, spaceId, H5P.DEFAULT, dcpl);
+
+            var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT, dcpl);
 
             IntPtr p = Marshal.AllocHGlobal(size * (int)dims[0]);
 
@@ -83,7 +84,7 @@ namespace Hdf5DotnetWrapper
             var int_size = Marshal.SizeOf(typeof(int));
             var typeId = H5T.create(H5T.class_t.COMPOUND, new IntPtr(size));
 
-            var compoundInfo = Hdf5.GetCompoundInfo(t);
+            var compoundInfo = GetCompoundInfo(t);
             foreach (var cmp in compoundInfo)
             {
                 //Console.WriteLine(string.Format("{0}  {1}", cmp.name, cmp.datatype));
@@ -113,7 +114,7 @@ namespace Hdf5DotnetWrapper
             // Create the compound datatype for the file.  Because the standard
             // types we are using for the file may have different sizes than
             // the corresponding native types
-            var compoundInfo = Hdf5.GetCompoundInfo(type, useIEEE);
+            var compoundInfo = GetCompoundInfo(type, useIEEE);
             var curCompound = compoundInfo.Last();
             var compoundSize = curCompound.offset + curCompound.size;
             //Create the compound datatype for memory.
@@ -144,7 +145,7 @@ namespace Hdf5DotnetWrapper
                 var fldType = x.FieldType;
                 var marshallAsAttribute = type.GetMember(x.Name).Select(m => m.GetCustomAttribute<MarshalAsAttribute>()).FirstOrDefault();
 
-                OffsetInfo oi = new OffsetInfo()
+                OffsetInfo oi = new OffsetInfo
                 {
                     name = x.Name,
                     type = fldType,

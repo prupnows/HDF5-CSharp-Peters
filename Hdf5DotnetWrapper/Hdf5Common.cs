@@ -21,8 +21,7 @@ namespace Hdf5DotnetWrapper
 
     public static partial class Hdf5
     {
-        private static readonly IEnumerable<TypeCode> primitiveTypes = Enumerable.Except(Enum.GetValues(typeof(TypeCode)).Cast<TypeCode>(),
-                new TypeCode[] { TypeCode.Empty, TypeCode.DBNull, TypeCode.Object });
+        private static readonly IEnumerable<TypeCode> primitiveTypes = Enum.GetValues(typeof(TypeCode)).Cast<TypeCode>().Except(new[] { TypeCode.Empty, TypeCode.DBNull, TypeCode.Object });
 
         public static int sizeofType<T>(T obj, FieldInfo info)
         {
@@ -103,7 +102,7 @@ namespace Hdf5DotnetWrapper
         //}
 
 
-        internal static hid_t GetDatatype(System.Type type)
+        internal static hid_t GetDatatype(Type type)
         {
             //var typeName = type.Name;
             hid_t dataType;
@@ -158,7 +157,7 @@ namespace Hdf5DotnetWrapper
             return dataType;
         }
 
-        internal static hid_t GetDatatypeIEEE(System.Type type)
+        internal static hid_t GetDatatypeIEEE(Type type)
         {
             var typeCode = Type.GetTypeCode(type);
             hid_t dataType;

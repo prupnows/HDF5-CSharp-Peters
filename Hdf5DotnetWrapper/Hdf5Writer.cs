@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Hdf5DotnetWrapper
 {
-    using hid_t = System.Int64;
+    using hid_t = Int64;
     public partial class Hdf5
     {
 
@@ -23,7 +23,7 @@ namespace Hdf5DotnetWrapper
             }
             bool createGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (createGroupName)
-                groupId = Hdf5.CreateGroup(groupId, groupName);
+                groupId = CreateGroup(groupId, groupName);
 
 
             foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
@@ -40,7 +40,7 @@ namespace Hdf5DotnetWrapper
             WriteFields(tyObject, writeValue, groupId);
             WriteHdf5Attributes(tyObject, groupId, groupName);
             if (createGroupName)
-                Hdf5.CloseGroup(groupId);
+                CloseGroup(groupId);
             return (writeValue);
         }
 
@@ -80,8 +80,7 @@ namespace Hdf5DotnetWrapper
 
         private static void WriteProperties(Type tyObject, object writeValue, hid_t groupId)
         {
-            PropertyInfo[] miMembers = tyObject.GetProperties(
-                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+            PropertyInfo[] miMembers = tyObject.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 
             foreach (PropertyInfo info in miMembers)
             {
@@ -125,13 +124,13 @@ namespace Hdf5DotnetWrapper
                     dsetRW.WriteArray(groupId, name, (Array)infoVal);
                 else
                 {
-                    CallByReflection<(int, hid_t)>(nameof(WriteCompounds), elType, new object[] { groupId, name, infoVal });
+                    CallByReflection<(int, hid_t)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal });
                 }
             }
             else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
             //WriteOneValue(groupId, name, infoVal);
             {
-                (int success, hid_t CreatedgroupId) = CallByReflection<(int, hid_t)>(nameof(WriteOneValue), ty, new object[] { groupId, name, infoVal });
+                (int success, hid_t CreatedgroupId) = CallByReflection<(int, hid_t)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal });
                 //todo: fix it
                 //add its attributes if there are: 
                 //foreach (Attribute attr in Attribute.GetCustomAttributes(filedInfo))
@@ -166,15 +165,13 @@ namespace Hdf5DotnetWrapper
                 else
                 {
                     {
-                        CallByReflection<int>(nameof(WriteCompounds), elType, new object[] { groupId, name, infoVal });
+                        CallByReflection<int>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal });
                         //add its attributes
-
                     }
                 }
             }
             else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
-                //WriteOneValue(groupId, name, infoVal);
-                CallByReflection<(int success, hid_t CreatedgroupId)>(nameof(WriteOneValue), ty, new object[] { groupId, name, infoVal });
+                CallByReflection<(int success, hid_t CreatedgroupId)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal });
             else
                 WriteObject(groupId, infoVal, name);
         }

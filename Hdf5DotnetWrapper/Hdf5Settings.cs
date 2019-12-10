@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Hdf5DotnetWrapper
+﻿namespace Hdf5DotnetWrapper
 {
     public static partial class Hdf5
     {
@@ -19,12 +15,13 @@ namespace Hdf5DotnetWrapper
     public class Settings
     {
         public DateTimeType DateTimeType { get; set; }
+        public bool LowerCaseNaming { get; set; }
     }
 
     public enum DateTimeType
     {
         Ticks,
         UnixTimeSeconds,
-        UnixTimeMilliseconds,
+        UnixTimeMilliseconds
     }
 }

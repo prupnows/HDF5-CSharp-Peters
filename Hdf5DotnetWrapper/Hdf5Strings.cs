@@ -5,9 +5,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using HDF.PInvoke;
+
 namespace Hdf5DotnetWrapper
 {
-    using hid_t = System.Int64;
+    using hid_t = Int64;
     public static partial class Hdf5
     {
 
@@ -65,10 +66,9 @@ namespace Hdf5DotnetWrapper
             H5T.set_strpad(datatype, H5T.str_t.SPACEPAD);
 
             int strSz = strs.Count();
-            hid_t spaceId = H5S.create_simple(1,
-                new ulong[] { (ulong)strSz }, null);
+            hid_t spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
 
-            var datasetId = H5D.create(groupId, name, datatype, spaceId);
+            var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
 
             GCHandle[] hnds = new GCHandle[strSz];
             IntPtr[] wdata = new IntPtr[strSz];
@@ -115,8 +115,7 @@ namespace Hdf5DotnetWrapper
             //name = ToHdf5Name(name);
 
             var spaceId = H5S.create_simple(1, dims, null);
-            var datasetId = H5D.create(groupId, name,
-                    H5T.FORTRAN_S1, spaceId);
+            var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), H5T.FORTRAN_S1, spaceId);
             H5S.close(spaceId);
 
             // we write from C and must provide null-terminated strings
@@ -187,7 +186,7 @@ namespace Hdf5DotnetWrapper
             H5T.set_cset(dtype, H5T.cset_t.UTF8);
             H5T.set_strpad(dtype, strPad);
 
-            hid_t datasetId = H5D.create(groupId, name, dtype, spaceId);
+            hid_t datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), dtype, spaceId);
 
             GCHandle hnd = GCHandle.Alloc(wdata, GCHandleType.Pinned);
             int result = H5D.write(datasetId, dtype, H5S.ALL,

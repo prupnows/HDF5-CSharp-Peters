@@ -14,7 +14,7 @@ namespace Hdf5DotnetWrapper
     {
         long fileId;
         readonly string _groupName, _filename;
-        ChunkedDataset<short> dset = null;
+        ChunkedDataset<short> dset;
         ulong _nrOfRecords, _sampleCount;
         long _groupId;
 
@@ -27,7 +27,7 @@ namespace Hdf5DotnetWrapper
             _filename = filename;
             fileId = Hdf5.CreateFile(filename);
             _groupName = groupName;
-            _groupId = Hdf5.CreateGroup(fileId, _groupName);
+            _groupId = Hdf5.CreateGroup(fileId, Hdf5Utils.NormalizedName(_groupName));
 
             Header = new Hdf5AcquisitionFile();
             _nrOfRecords = 0;

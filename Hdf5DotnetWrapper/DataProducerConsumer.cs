@@ -65,7 +65,7 @@ namespace Hdf5DotnetWrapper
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Debug.WriteLine(string.Format("Work queue on thread {0} has been closed.", Thread.CurrentThread.ManagedThreadId));
+                    Debug.WriteLine("Work queue on thread {0} has been closed.", Thread.CurrentThread.ManagedThreadId);
                 }
             }
             IsDone?.Invoke(this, new EventArgs());

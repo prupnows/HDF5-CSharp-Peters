@@ -5,7 +5,7 @@ using HDF.PInvoke;
 
 namespace Hdf5DotnetWrapper
 {
-    using hid_t = System.Int64;
+    using hid_t = Int64;
     public static partial class Hdf5
     {
         static Hdf5ReaderWriter dsetRW = new Hdf5ReaderWriter(new Hdf5Dataset());
@@ -73,7 +73,7 @@ namespace Hdf5DotnetWrapper
         public static T[,] ReadDataset<T>(hid_t groupId, string name, ulong beginIndex, ulong endIndex) //where T : struct
         {
             ulong[] start = { 0, 0 }, stride = null, count = { 0, 0 },
-                block = null, offsetOut = new ulong[] { 0, 0 };
+                block = null, offsetOut = { 0, 0 };
             var datatype = GetDatatype(typeof(T));
 
             var datasetId = H5D.open(groupId, name);
@@ -145,11 +145,8 @@ namespace Hdf5DotnetWrapper
             if (typeof(T) == typeof(string))
                 //WriteStrings(groupId, name, new string[] { dset.ToString() });
                 return dsetRW.WriteArray(groupId, name, new T[1] { dset });
-            else
-            {
-                Array oneVal = new T[1, 1] { { dset } };
-                return dsetRW.WriteArray(groupId, name, oneVal);
-            }
+            Array oneVal = new T[1, 1] { { dset } };
+            return dsetRW.WriteArray(groupId, name, oneVal);
         }
 
         public static void WriteDataset(hid_t groupId, string name, Array collection)
@@ -171,7 +168,7 @@ namespace Hdf5DotnetWrapper
             {
                 H5T.set_size(datatype, new IntPtr(2));
             }
-            var datasetId = H5D.create(groupId, name, datatype, spaceId);
+            var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
             GCHandle hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
             var result = H5D.write(datasetId, datatype, H5S.ALL, H5S.ALL, H5P.DEFAULT,
                 hnd.AddrOfPinnedObject());
@@ -196,7 +193,7 @@ namespace Hdf5DotnetWrapper
             ulong[] dimsExtend = Enumerable.Range(0, rank).Select(i =>
             { return (ulong)dset.GetLength(i); }).ToArray();
             ulong[] maxDimsExtend = null;
-            ulong[] dimsChunk = new ulong[] { chunkX }.Concat(dimsExtend.Skip(1)).ToArray();
+            ulong[] dimsChunk = new[] { chunkX }.Concat(dimsExtend.Skip(1)).ToArray();
             ulong[] zeros = Enumerable.Range(0, rank).Select(z => (ulong)0).ToArray();
             hid_t status, spaceId, datasetId;
 
@@ -215,8 +212,8 @@ namespace Hdf5DotnetWrapper
 
                 var propId = H5P.create(H5P.DATASET_CREATE);
                 status = H5P.set_chunk(propId, rank, dimsChunk);
-                datasetId = H5D.create(groupId, name, datatype, spaceId,
-                                     H5P.DEFAULT, propId, H5P.DEFAULT);
+                datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId,
+                                     H5P.DEFAULT, propId);
                 /* Write data to dataset */
                 GCHandle hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
                 status = H5D.write(datasetId, datatype, H5S.ALL, H5S.ALL, H5P.DEFAULT,
@@ -239,12 +236,12 @@ namespace Hdf5DotnetWrapper
                 status = H5P.get_chunk(propId, chunkDims, oldChunk);
 
                 /* Extend the dataset. */
-                var size = new ulong[] { dims[0] + dimsExtend[0] }.Concat(dims.Skip(1)).ToArray();
+                var size = new[] { dims[0] + dimsExtend[0] }.Concat(dims.Skip(1)).ToArray();
                 status = H5D.set_extent(datasetId, size);
 
                 /* Select a hyperslab in extended portion of dataset  */
                 var filespaceId = H5D.get_space(datasetId);
-                var offset = new ulong[] { dims[0] }.Concat(zeros.Skip(1)).ToArray();
+                var offset = new[] { dims[0] }.Concat(zeros.Skip(1)).ToArray();
                 status = H5S.select_hyperslab(filespaceId, H5S.seloper_t.SET, offset, null,
                                               dimsExtend, null);
 

@@ -8,7 +8,7 @@ using HDF.PInvoke;
 namespace Hdf5DotnetWrapper
 {
 
-    using hid_t = System.Int64;
+    using hid_t = Int64;
 
     public partial class Hdf5
     {
@@ -41,14 +41,14 @@ namespace Hdf5DotnetWrapper
             ReadProperties(tyObject, readValue, groupId);
 
             if (isGroupName)
-                Hdf5.CloseGroup(groupId);
+                CloseGroup(groupId);
             return readValue;
         }
 
         public static T ReadObject<T>(hid_t groupId, string groupName) where T : new()
         {
             T readValue = new T();
-            return ReadObject<T>(groupId, readValue, groupName);
+            return ReadObject(groupId, readValue, groupName);
         }
 
         private static void ReadFields(Type tyObject, object readValue, hid_t groupId)

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Hdf5DotnetWrapper
 {
-    using hid_t = System.Int64;
+    using hid_t = Int64;
     public class Hdf5Dataset : IHdf5ReaderWriter
     {
         public Array ReadToArray<T>(hid_t groupId, string name)
@@ -22,7 +22,7 @@ namespace Hdf5DotnetWrapper
         }
         public void WriteStucts<T>(hid_t groupId, string name, IEnumerable<T> dset, string datasetName = null)
         {
-            Hdf5.WriteCompounds<T>(groupId, name, dset);
+            Hdf5.WriteCompounds(groupId, name, dset);
         }
 
         public Array ReadStucts<T>(hid_t groupId, string name) where T : struct

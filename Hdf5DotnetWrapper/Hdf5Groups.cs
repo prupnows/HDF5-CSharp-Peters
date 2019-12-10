@@ -4,7 +4,7 @@ using HDF.PInvoke;
 
 namespace Hdf5DotnetWrapper
 {
-    using hid_t = System.Int64;
+    using hid_t = Int64;
 
     public static partial class Hdf5
     {
@@ -20,7 +20,9 @@ namespace Hdf5DotnetWrapper
             if (GroupExists(groupId, groupName))
                 gid = H5G.open(groupId, groupName);
             else
-                gid = H5G.create(groupId, groupName);
+            {
+                gid = H5G.create(groupId, Hdf5Utils.NormalizedName(groupName));
+            }
             return gid;
         }
 
@@ -49,7 +51,7 @@ namespace Hdf5DotnetWrapper
             try
             {
                 H5G.info_t info = new H5G.info_t();
-                var gid = H5G.get_info_by_name(groupId, groupName, ref info);
+                var gid = H5G.get_info_by_name(groupId, Hdf5Utils.NormalizedName(groupName), ref info);
                 exists = gid == 0;
             }
             catch (Exception)

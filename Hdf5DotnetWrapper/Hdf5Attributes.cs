@@ -7,7 +7,7 @@ using HDF.PInvoke;
 
 namespace Hdf5DotnetWrapper
 {
-    [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public sealed class Hdf5GroupName : Attribute
     {
 
@@ -71,7 +71,7 @@ namespace Hdf5DotnetWrapper
 
             //name = ToHdf5Name(name);
 
-            var datasetId = H5A.open(groupId, name);
+            var datasetId = H5A.open(groupId, Hdf5Utils.NormalizedName(name));
             Int64 spaceId = H5A.get_space(datasetId);
 
             long count = H5S.get_simple_extent_npoints(spaceId);
@@ -134,7 +134,7 @@ namespace Hdf5DotnetWrapper
 
         public static (int success, Int64 attributeId) WriteStringAttribute(Int64 groupId, string name, string str, string datasetName = null)
         {
-            return WriteStringAttributes(groupId, name, new string[] { str }, datasetName);
+            return WriteStringAttributes(groupId, name, new[] { str }, datasetName);
         }
 
         public static (int success, Int64 CreatedgroupId) WriteStringAttributes(Int64 groupId, string name, IEnumerable<string> strs, string datasetName = null)
@@ -153,10 +153,9 @@ namespace Hdf5DotnetWrapper
             H5T.set_strpad(datatype, H5T.str_t.SPACEPAD);
 
             int strSz = strs.Count();
-            Int64 spaceId = H5S.create_simple(1,
-                new ulong[] { (ulong)strSz }, null);
+            Int64 spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
 
-            var attributeId = H5A.create(groupId, name, datatype, spaceId);
+            var attributeId = H5A.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
 
             GCHandle[] hnds = new GCHandle[strSz];
             IntPtr[] wdata = new IntPtr[strSz];
@@ -228,7 +227,7 @@ namespace Hdf5DotnetWrapper
             var spaceId = H5S.create_simple(rank, dims, maxDims);
             var datatype = GetDatatype(typeof(T));
             var typeId = H5T.copy(datatype);
-            var attributeId = H5A.create(groupId, name, datatype, spaceId);
+            var attributeId = H5A.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
             GCHandle hnd = GCHandle.Alloc(attributes, GCHandleType.Pinned);
             var result = H5A.write(attributeId, datatype, hnd.AddrOfPinnedObject());
             hnd.Free();
@@ -247,11 +246,11 @@ namespace Hdf5DotnetWrapper
     public enum Hdf5Save
     {
         Save,
-        DoNotSave,
+        DoNotSave
     }
 
-    [AttributeUsage(AttributeTargets.All, Inherited = true, AllowMultiple = true)]
-    public sealed class Hdf5SaveAttribute : System.Attribute
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    public sealed class Hdf5SaveAttribute : Attribute
     {
         private readonly Hdf5Save saveKind;
 

@@ -5,16 +5,20 @@ using HDF.PInvoke;
 
 namespace Hdf5DotnetWrapper
 {
-    using hid_t = System.Int64;
+    using hid_t = Int64;
     public class ChunkedDataset<T> : IDisposable where T : struct
     {
         ulong[] currentDims, oldDims;
-        readonly ulong[] maxDims = new ulong[] { H5S.UNLIMITED, H5S.UNLIMITED };
+        readonly ulong[] maxDims = { H5S.UNLIMITED, H5S.UNLIMITED };
         private ulong[] chunkDims;
         hid_t status, spaceId, datasetId, propId;
         readonly hid_t typeId, datatype;
 
-
+        public string Datasetname { get; private set; }
+        public int Rank { get; private set; }
+        public hid_t GroupId { get; private set; }
+        protected bool DatasetExists => H5L.exists(GroupId, Datasetname) > 0;
+        protected bool FalseGroupId => GroupId <= 0;
         /// <summary>
         /// Constructor to create a chuncked dataset object
         /// </summary>
@@ -49,7 +53,7 @@ namespace Hdf5DotnetWrapper
         /// <param name="name"></param>
         /// <param name="groupId"></param>
         /// <param name="dataset"></param>
-        public ChunkedDataset(string name, hid_t groupId, T[,] dataset) : this(name, groupId, new ulong[] { Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1)) })
+        public ChunkedDataset(string name, hid_t groupId, T[,] dataset) : this(name, groupId, new[] { Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1)) })
         {
             FirstDataset(dataset);
         }
@@ -70,7 +74,7 @@ namespace Hdf5DotnetWrapper
             status = H5P.set_chunk(propId, Rank, chunkDims);
 
             /* Create a new dataset within the file using chunk creation properties.  */
-            datasetId = H5D.create(GroupId, Datasetname, datatype, spaceId, H5P.DEFAULT, propId, H5P.DEFAULT);
+            datasetId = H5D.create(GroupId, Hdf5Utils.NormalizedName(Datasetname), datatype, spaceId, H5P.DEFAULT, propId);
 
             /* Write data to dataset */
             GCHandle hnd = GCHandle.Alloc(dataset, GCHandleType.Pinned);
@@ -84,7 +88,7 @@ namespace Hdf5DotnetWrapper
         {
             if (chunkDims == null)
             {
-                chunkDims = new ulong[]
+                chunkDims = new[]
                     {Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1))};
 
                 Rank = dataset.Rank;
@@ -98,7 +102,7 @@ namespace Hdf5DotnetWrapper
                 status = H5P.set_chunk(propId, Rank, chunkDims);
 
                 /* Create a new dataset within the file using chunk creation properties.  */
-                datasetId = H5D.create(GroupId, Datasetname, datatype, spaceId, H5P.DEFAULT, propId, H5P.DEFAULT);
+                datasetId = H5D.create(GroupId, Hdf5Utils.NormalizedName(Datasetname), datatype, spaceId, H5P.DEFAULT, propId);
 
                 /* Write data to dataset */
                 GCHandle hnd = GCHandle.Alloc(dataset, GCHandleType.Pinned);
@@ -121,10 +125,10 @@ namespace Hdf5DotnetWrapper
             ulong[] zeros = Enumerable.Range(0, rank).Select(z => (ulong)0).ToArray();
 
             /* Extend the dataset. Dataset becomes 10 x 3  */
-            var size = new ulong[] { oldDims[0] + currentDims[0] }.Concat(oldDims.Skip(1)).ToArray();
+            var size = new[] { oldDims[0] + currentDims[0] }.Concat(oldDims.Skip(1)).ToArray();
 
             status = H5D.set_extent(datasetId, size);
-            ulong[] offset = new ulong[] { oldDims[0] }.Concat(zeros.Skip(1)).ToArray();
+            ulong[] offset = new[] { oldDims[0] }.Concat(zeros.Skip(1)).ToArray();
 
             /* Select a hyperslab in extended portion of dataset  */
             var filespaceId = H5D.get_space(datasetId);
@@ -185,11 +189,5 @@ namespace Hdf5DotnetWrapper
             Dispose(true); //I am calling you from Dispose, it's safe
             GC.SuppressFinalize(this); //Hey, GC: don't bother calling finalize later
         }
-
-        public string Datasetname { get; private set; }
-        public int Rank { get; private set; }
-        public hid_t GroupId { get; private set; }
-        protected bool DatasetExists => H5L.exists(GroupId, Datasetname) > 0;
-        protected bool FalseGroupId => GroupId <= 0;
     }
 }
