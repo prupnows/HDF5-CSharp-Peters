@@ -9,7 +9,7 @@
     <Authors>reyntjesr,LiorBanai</Authors>
     <Company />
     <Product>Hdf5DotnetWrapper</Product>
-    <Description>C# Wrappper for HDF.PInvoke Library</Description>
+    <Description>C# Wrapper for HDF.PInvoke Library</Description>
     <Copyright>Copyright 2019 Lior Banai</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LiorBanai/Hdf5DotnetWrapper</PackageProjectUrl>
@@ -17,9 +17,9 @@
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/LiorBanai/Hdf5DotnetWrapper</RepositoryUrl>
     <RepositoryType />
-    <PackageReleaseNotes>Preliminary version</PackageReleaseNotes>
+    <PackageReleaseNotes>Add Hdf5EntryName Attribute to override name of properties/fields in the hdf5 file</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

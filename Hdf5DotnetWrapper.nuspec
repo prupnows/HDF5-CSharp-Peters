@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Hdf5DotnetWrapper</id>
-    <version>1.0.1.0</version>
+    <version>1.0.2.0</version>
     <title>Hdf5DotnetWrapper</title>
     <authors>reyntjesr,LiorBanai</authors>
     <owners>reyntjesr,LiorBanai</owners>
@@ -11,8 +11,8 @@
 	<repository type="git" url="https://github.com/LiorBanai/Hdf5DotnetWrapper"/> 
     <icon>hdf5Wrapper.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>C# Wrappper for HDF.PInvoke Library</description>
-    <releaseNotes>Add unix time options and lower case naming</releaseNotes>
+    <description>C# Wrapper for HDF.PInvoke Library</description>
+    <releaseNotes>Add Hdf5EntryName Attribute to override name of properties/fields in the hdf5 file</releaseNotes>
     <copyright>Copyright 2019 Lior Banai</copyright>
     <tags></tags>
     <dependencies>
