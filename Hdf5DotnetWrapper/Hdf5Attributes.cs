@@ -47,7 +47,7 @@ namespace Hdf5DotnetWrapper
 
         public static Array ReadAttributes<T>(Int64 groupId, string name)
         {
-            return attrRW.ReadArray<T>(groupId, name);
+            return attrRW.ReadArray<T>(groupId, name, string.Empty);
             /*if (typeof(T) == typeof(string))
                 return ReadStringAttributes(groupId, name).Cast<T>().ToArray();
             else
@@ -56,7 +56,7 @@ namespace Hdf5DotnetWrapper
 
         public static T ReadAttribute<T>(Int64 groupId, string name)
         {
-            var attrs = attrRW.ReadArray<T>(groupId, name);
+            var attrs = attrRW.ReadArray<T>(groupId, name, string.Empty);
             int[] first = new int[attrs.Rank].Select(f => 0).ToArray();
             T result = (T)attrs.GetValue(first);
             return result;
@@ -101,7 +101,7 @@ namespace Hdf5DotnetWrapper
             return strs;
         }
 
-        public static Array ReadPrimitiveAttributes<T>(Int64 groupId, string name) //where T : struct
+        public static Array ReadPrimitiveAttributes<T>(Int64 groupId, string name, string alternativeName) //where T : struct
         {
             Type type = typeof(T);
             var datatype = GetDatatype(type);
@@ -260,6 +260,19 @@ namespace Hdf5DotnetWrapper
         public Hdf5SaveAttribute(Hdf5Save saveKind)  // url is a positional parameter
         {
             this.saveKind = saveKind;
+        }
+
+    }
+
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    public sealed class Hdf5EntryNameAttribute : Attribute
+    {
+        public string Name { get; }
+
+
+        public Hdf5EntryNameAttribute(string name)
+        {
+            Name = name;
         }
 
     }

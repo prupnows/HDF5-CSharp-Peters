@@ -95,7 +95,7 @@ namespace Hdf5UnitTests
             public double TestDouble { get; set; }
             public bool TestBoolean { get; set; }
             public string TestString { get; set; }
-
+            [Hdf5EntryNameAttribute("Test_time")]
             public DateTime TestTime { get; set; }
 
             public bool Equals(TestClass other)

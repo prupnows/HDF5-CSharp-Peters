@@ -22,7 +22,6 @@ namespace Hdf5DotnetWrapper
             bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (isGroupName)
                 groupId = H5G.open(groupId, groupName);
-
             Type tyObject = readValue.GetType();
             foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
             {
@@ -35,7 +34,6 @@ namespace Hdf5DotnetWrapper
                         return readValue;
                 }
             }
-
 
             ReadFields(tyObject, readValue, groupId);
             ReadProperties(tyObject, readValue, groupId);
@@ -59,8 +57,14 @@ namespace Hdf5DotnetWrapper
             foreach (FieldInfo info in miMembers)
             {
                 bool nextInfo = false;
+                string alternativeName = string.Empty;
                 foreach (Attribute attr in Attribute.GetCustomAttributes(info))
                 {
+                    if (attr is Hdf5EntryNameAttribute nameAttribute)
+                    {
+                        alternativeName = nameAttribute.Name;
+                    }
+
                     if (attr is Hdf5SaveAttribute attribute)
                     {
                         Hdf5Save kind = attribute.SaveKind;
@@ -85,7 +89,7 @@ namespace Hdf5DotnetWrapper
                     Array values;
                     if (elCode != TypeCode.Object)
                     {
-                        values = dsetRW.ReadArray(ty, groupId, name);
+                        values = dsetRW.ReadArray(ty, groupId, name, alternativeName);
                     }
                     else
                     {
@@ -95,7 +99,7 @@ namespace Hdf5DotnetWrapper
                 }
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
-                    Array values = dsetRW.ReadArray(ty, groupId, name);
+                    Array values = dsetRW.ReadArray(ty, groupId, name, alternativeName);
                     // get first value depending on rank of the matrix
                     int[] first = new int[values.Rank].Select(f => 0).ToArray();
                     info.SetValue(readValue, values.GetValue(first));
@@ -117,10 +121,18 @@ namespace Hdf5DotnetWrapper
             foreach (PropertyInfo info in miMembers)
             {
                 bool nextInfo = false;
+                string alternativeName = string.Empty;
                 foreach (Attribute attr in Attribute.GetCustomAttributes(info))
                 {
-                    Hdf5Save kind = ((Hdf5SaveAttribute)attr).SaveKind;
-                    nextInfo = (kind == Hdf5Save.DoNotSave);
+                    if (attr is Hdf5SaveAttribute hdf5SaveAttribute)
+                    {
+                        Hdf5Save kind = hdf5SaveAttribute.SaveKind;
+                        nextInfo = (kind == Hdf5Save.DoNotSave);
+                    }
+                    if (attr is Hdf5EntryNameAttribute hdf5EntryNameAttribute)
+                    {
+                        alternativeName = hdf5EntryNameAttribute.Name;
+                    }
                 }
                 if (nextInfo) continue;
                 Type ty = info.PropertyType;
@@ -137,7 +149,7 @@ namespace Hdf5DotnetWrapper
                     Array values;
                     if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
                     {
-                        values = dsetRW.ReadArray(elType, groupId, name);
+                        values = dsetRW.ReadArray(elType, groupId, name, alternativeName);
                     }
                     else
                     {
@@ -150,7 +162,7 @@ namespace Hdf5DotnetWrapper
                 }
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
-                    Array values = dsetRW.ReadArray(ty, groupId, name);
+                    Array values = dsetRW.ReadArray(ty, groupId, name, alternativeName);
                     int[] first = new int[values.Rank].Select(f => 0).ToArray();
                     info.SetValue(readValue, values.GetValue(first));
                 }

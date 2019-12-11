@@ -16,13 +16,15 @@ namespace Hdf5DotnetWrapper
         /// <typeparam name="T">Generic parameter strings or primitive type</typeparam>
         /// <param name="groupId">id of the group. Can also be a file Id</param>
         /// <param name="name">name of the dataset</param>
+        /// <param name="alternativeName">Alternative name</param>
         /// <returns>The n-dimensional dataset</returns>
-        public static Array ReadDatasetToArray<T>(hid_t groupId, string name) //where T : struct
+        public static Array ReadDatasetToArray<T>(hid_t groupId, string name, string alternativeName = "") //where T : struct
         {
             var datatype = GetDatatype(typeof(T));
 
-
             var datasetId = H5D.open(groupId, name);
+            if (datasetId < 0) //does not exis?
+                datasetId = H5D.open(groupId, alternativeName);
             var spaceId = H5D.get_space(datasetId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             long count = H5S.get_simple_extent_npoints(spaceId);
@@ -118,18 +120,19 @@ namespace Hdf5DotnetWrapper
         /// <typeparam name="T">Generic parameter strings or primitive type</typeparam>
         /// <param name="groupId">id of the group. Can also be a file Id</param>
         /// <param name="name">name of the dataset</param>
+        /// <param name="alternativeName"></param>
         /// <returns>One value or string</returns>
-        public static T ReadOneValue<T>(hid_t groupId, string name) //where T : struct
+        public static T ReadOneValue<T>(hid_t groupId, string name, string alternativeName = "") //where T : struct
         {
-            var dset = dsetRW.ReadArray<T>(groupId, name);
+            var dset = dsetRW.ReadArray<T>(groupId, name, alternativeName);
             int[] first = new int[dset.Rank].Select(f => 0).ToArray();
             T result = (T)dset.GetValue(first);
             return result;
         }
 
-        public static Array ReadDataset<T>(hid_t groupId, string name)
+        public static Array ReadDataset<T>(hid_t groupId, string name, string alternativeName = "")
         {
-            return dsetRW.ReadArray<T>(groupId, name);
+            return dsetRW.ReadArray<T>(groupId, name, alternativeName);
         }
 
         /// <summary>

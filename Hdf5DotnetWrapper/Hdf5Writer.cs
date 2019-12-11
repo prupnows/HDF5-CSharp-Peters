@@ -63,8 +63,7 @@ namespace Hdf5DotnetWrapper
 
         private static void WriteFields(Type tyObject, object writeValue, hid_t groupId)
         {
-            FieldInfo[] miMembers = tyObject.GetFields(BindingFlags.DeclaredOnly |
-       /*BindingFlags.NonPublic |*/ BindingFlags.Instance | BindingFlags.Public);
+            FieldInfo[] miMembers = tyObject.GetFields(BindingFlags.DeclaredOnly | /*BindingFlags.NonPublic |*/ BindingFlags.Instance | BindingFlags.Public);
 
             foreach (FieldInfo info in miMembers)
             {
@@ -72,8 +71,15 @@ namespace Hdf5DotnetWrapper
                 object infoVal = info.GetValue(writeValue);
                 if (infoVal == null)
                     continue;
+
                 string name = info.Name;
-                //bool isEnumerable = info.FieldType.GetInterface(typeof(IEnumerable<>).FullName) != null;
+                foreach (Attribute attr in Attribute.GetCustomAttributes(info))
+                {
+                    if (attr is Hdf5EntryNameAttribute hdf5EntryNameAttribute)
+                    {
+                        name = hdf5EntryNameAttribute.Name;
+                    }
+                }
                 WriteField(infoVal, info, groupId, name);
             }
         }
@@ -89,7 +95,13 @@ namespace Hdf5DotnetWrapper
                 if (infoVal == null)
                     continue;
                 string name = info.Name;
-
+                foreach (Attribute attr in Attribute.GetCustomAttributes(info))
+                {
+                    if (attr is Hdf5EntryNameAttribute hdf5EntryNameAttribute)
+                    {
+                        name = hdf5EntryNameAttribute.Name;
+                    }
+                }
                 WriteField(infoVal, info, groupId, name);
             }
         }
