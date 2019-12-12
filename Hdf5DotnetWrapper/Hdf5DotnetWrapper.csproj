@@ -4,6 +4,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Hdf5DotnetWrapper</AssemblyName>
     <RootNamespace>Hdf5DotnetWrapper</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <AssemblyOriginatorKeyFile>Hdf5DotNetTools.snk</AssemblyOriginatorKeyFile>
     <Platforms>AnyCPU;x86</Platforms>
     <PackageId>Hdf5DotnetWrapper</PackageId>
     <Authors>reyntjesr,LiorBanai</Authors>
