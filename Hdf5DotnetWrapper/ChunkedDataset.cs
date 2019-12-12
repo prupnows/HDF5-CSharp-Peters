@@ -17,7 +17,7 @@ namespace Hdf5DotnetWrapper
         public string Datasetname { get; private set; }
         public int Rank { get; private set; }
         public hid_t GroupId { get; private set; }
-        protected bool DatasetExists => H5L.exists(GroupId, Datasetname) > 0;
+        protected bool DatasetExists => H5L.exists(GroupId, Hdf5Utils.NormalizedName(Datasetname)) > 0;
         protected bool FalseGroupId => GroupId <= 0;
         /// <summary>
         /// Constructor to create a chuncked dataset object

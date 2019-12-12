@@ -204,7 +204,7 @@ namespace Hdf5DotnetWrapper
             // name = ToHdf5Name(name);
             var datatype = GetDatatype(typeof(T));
             var typeId = H5T.copy(datatype);
-            var datasetExists = H5L.exists(groupId, name) > 0;
+            var datasetExists = H5L.exists(groupId, Hdf5Utils.NormalizedName(name)) > 0;
 
             /* Create a new dataset within the file using chunk 
                creation properties.  */
