@@ -142,6 +142,7 @@ namespace Hdf5UnitTests
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
+            Hdf5.Hdf5Settings.LowerCaseNaming = true;
             //folder = System.IO.Path.GetTempPath();
             folder = AppDomain.CurrentDomain.BaseDirectory;
             dsets = new List<double[,]> {

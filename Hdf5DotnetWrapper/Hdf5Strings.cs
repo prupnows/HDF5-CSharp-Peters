@@ -22,7 +22,7 @@ namespace Hdf5DotnetWrapper
 
             //name = ToHdf5Name(name);
 
-            var datasetId = H5D.open(groupId, name);
+            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             hid_t spaceId = H5D.get_space(datasetId);
 
             long count = H5S.get_simple_extent_npoints(spaceId);
@@ -148,7 +148,7 @@ namespace Hdf5DotnetWrapper
 
             //name = ToHdf5Name(name);
 
-            var datasetId = H5D.open(groupId, name);
+            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             var spaceId = H5D.get_space(datasetId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             ulong[] maxDims = new ulong[rank];
@@ -201,7 +201,7 @@ namespace Hdf5DotnetWrapper
 
         public static string ReadUnicodeString(hid_t groupId, string name)
         {
-            var datasetId = H5D.open(groupId, name);
+            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             var typeId = H5D.get_type(datasetId);
 
             if (H5T.is_variable_str(typeId) > 0)

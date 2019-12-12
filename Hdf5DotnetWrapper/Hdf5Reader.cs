@@ -19,9 +19,7 @@ namespace Hdf5DotnetWrapper
             {
                 throw new ArgumentNullException(nameof(readValue));
             }
-            bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
-            if (isGroupName)
-                groupId = H5G.open(groupId, groupName);
+
             Type tyObject = readValue.GetType();
             foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
             {
@@ -34,6 +32,9 @@ namespace Hdf5DotnetWrapper
                         return readValue;
                 }
             }
+            bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
+            if (isGroupName)
+                groupId = H5G.open(groupId, Hdf5Utils.NormalizedName(groupName));
 
             ReadFields(tyObject, readValue, groupId);
             ReadProperties(tyObject, readValue, groupId);
@@ -138,8 +139,7 @@ namespace Hdf5DotnetWrapper
                 Type ty = info.PropertyType;
                 TypeCode code = Type.GetTypeCode(ty);
                 string name = info.Name;
-
-                Trace.WriteLine($"groupname: {tyObject.Name}; property name: {name}");
+                
 
                 if (ty.IsArray)
                 {

@@ -16,15 +16,14 @@ namespace Hdf5DotnetWrapper
 
         public static hid_t CreateGroup(hid_t groupId, string groupName)
         {
-            hid_t gid;
-            if (GroupExists(groupId, groupName))
-                gid = H5G.open(groupId, groupName);
-            else
-            {
-                gid = H5G.create(groupId, Hdf5Utils.NormalizedName(groupName));
-            }
-            return gid;
+
+            return (GroupExists(groupId, groupName))
+                ? H5G.open(groupId, Hdf5Utils.NormalizedName(groupName))
+                : H5G.create(groupId, Hdf5Utils.NormalizedName(groupName));
         }
+
+
+
 
         /// <summary>
         /// creates a structure of groups at once

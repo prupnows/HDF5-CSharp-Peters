@@ -280,5 +280,57 @@ namespace Hdf5UnitTests
 
         }
 
+        [TestMethod]
+        public void WriteAndReadChunckedDataset2()
+        {
+            string filename = Path.Combine(folder, "testChunks.H5");
+            string groupName = "/test";
+            string datasetName = "Data";
+
+            try
+            {
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var groupId = Hdf5.CreateGroup(fileId, groupName);
+                Assert.IsTrue(groupId >= 0);
+                //var chunkSize = new ulong[] { 5, 5 };
+                using (var chunkedDset = new ChunkedDataset<double>(datasetName, groupId))
+                {
+                    foreach (var ds in dsets)
+                    {
+                        chunkedDset.AppendOrCreateDataset(ds);
+                    };
+
+                }
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+            try
+            {
+                var fileId = Hdf5.OpenFile(filename);
+                //var groupId = H5G.open(fileId, groupName);
+                //var dset = Hdf5.ReadDatasetToArray<double>(groupId, datasetName);
+                var dset = Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName, "/", datasetName));
+
+                Assert.IsTrue(dset.Rank == dsets.First().Rank);
+                var xSum = dsets.Select(d => d.GetLength(0)).Sum();
+                Assert.IsTrue(xSum == dset.GetLength(0));
+                var testRange = Enumerable.Range(0, 30).Select(t => (double)t);
+
+                // get every 5th element in the matrix
+                var x0Range = dset.Cast<double>().Where((d, i) => i % 5 == 0);
+                Assert.IsTrue(testRange.SequenceEqual(x0Range));
+
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+        }
     }
 }

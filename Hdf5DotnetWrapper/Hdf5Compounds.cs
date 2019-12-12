@@ -225,7 +225,7 @@ namespace Hdf5DotnetWrapper
             Type type = typeof(T);
             hid_t typeId = 0;
             // open dataset
-            var datasetId = H5D.open(groupId, name);
+            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
 
             typeId = CreateType(type);
             var compoundSize = Marshal.SizeOf(type);

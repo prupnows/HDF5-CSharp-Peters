@@ -21,40 +21,40 @@ namespace Hdf5UnitTests
                 Assert.IsTrue(fileId > 0);
                 var dset = dsets.First();
 
-                var groupId = H5G.create(fileId, "/A"); ///B/C/D/E/F/G/H
-                Hdf5.WriteDataset(groupId, "test", dset);
-                var subGroupId = Hdf5.CreateGroup(groupId, "C");
-                var subGroupId2 = Hdf5.CreateGroup(groupId, "/D"); // will be saved at the root location 
+                var groupId = H5G.create(fileId, Hdf5Utils.NormalizedName("/A")); ///B/C/D/E/F/G/H
+                Hdf5.WriteDataset(groupId, Hdf5Utils.NormalizedName("test"), dset);
+                var subGroupId = Hdf5.CreateGroup(groupId, Hdf5Utils.NormalizedName("C"));
+                var subGroupId2 = Hdf5.CreateGroup(groupId, Hdf5Utils.NormalizedName("/D")); // will be saved at the root location 
                 dset = dsets.Skip(1).First();
-                Hdf5.WriteDataset(subGroupId, "test2", dset);
+                Hdf5.WriteDataset(subGroupId, Hdf5Utils.NormalizedName("test2"), dset);
                 Hdf5.CloseGroup(subGroupId);
                 Hdf5.CloseGroup(subGroupId2);
                 Hdf5.CloseGroup(groupId);
-                groupId = H5G.create(fileId, "/A/B"); ///B/C/D/E/F/G/H
+                groupId = H5G.create(fileId, Hdf5Utils.NormalizedName("/A/B")); ///B/C/D/E/F/G/H
                 dset = dsets.Skip(1).First();
-                Hdf5.WriteDataset(groupId, "test", dset);
+                Hdf5.WriteDataset(groupId, Hdf5Utils.NormalizedName("test"), dset);
                 Hdf5.CloseGroup(groupId);
 
-                groupId = Hdf5.CreateGroupRecursively(fileId, "A/B/C/D/E/F/I");
+                groupId = Hdf5.CreateGroupRecursively(fileId, Hdf5Utils.NormalizedName("A/B/C/D/E/F/I"));
                 Hdf5.CloseGroup(groupId);
                 Hdf5.CloseFile(fileId);
 
 
                 fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                groupId = H5G.open(fileId, "/A/B");
-                double[,] dset2 = (double[,])Hdf5.ReadDataset<double>(groupId, "test");
+                groupId = H5G.open(fileId, Hdf5Utils.NormalizedName("/A/B"));
+                double[,] dset2 = (double[,])Hdf5.ReadDataset<double>(groupId, Hdf5Utils.NormalizedName( "test"));
                 CompareDatasets(dset, dset2);
                 Assert.IsTrue(Hdf5.CloseGroup(groupId) >= 0);
-                groupId = H5G.open(fileId, "/A/C");
-                dset2 = (double[,])Hdf5.ReadDataset<double>(groupId, "test2");
+                groupId = H5G.open(fileId, Hdf5Utils.NormalizedName("/A/C"));
+                dset2 = (double[,])Hdf5.ReadDataset<double>(groupId, Hdf5Utils.NormalizedName("test2"));
                 CompareDatasets(dset, dset2);
                 Assert.IsTrue(Hdf5.CloseGroup(groupId) >= 0);
                 bool same = dset == dset2;
                 dset = dsets.First();
-                dset2 = (double[,])Hdf5.ReadDataset<double>(fileId, "/A/test");
+                dset2 = (double[,])Hdf5.ReadDataset<double>(fileId, Hdf5Utils.NormalizedName("/A/test"));
                 CompareDatasets(dset, dset2);
-                Assert.IsTrue(Hdf5.GroupExists(fileId, "A/B/C/D/E/F/I"));
+                Assert.IsTrue(Hdf5.GroupExists(fileId, Hdf5Utils.NormalizedName( "A/B/C/D/E/F/I")));
 
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
 

@@ -22,9 +22,9 @@ namespace Hdf5DotnetWrapper
         {
             var datatype = GetDatatype(typeof(T));
 
-            var datasetId = H5D.open(groupId, name);
+            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             if (datasetId < 0) //does not exis?
-                datasetId = H5D.open(groupId, alternativeName);
+                datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
             var spaceId = H5D.get_space(datasetId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             long count = H5S.get_simple_extent_npoints(spaceId);
@@ -78,7 +78,7 @@ namespace Hdf5DotnetWrapper
                 block = null, offsetOut = { 0, 0 };
             var datatype = GetDatatype(typeof(T));
 
-            var datasetId = H5D.open(groupId, name);
+            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             var spaceId = H5D.get_space(datasetId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             ulong[] maxDims = new ulong[rank];
@@ -226,7 +226,7 @@ namespace Hdf5DotnetWrapper
             }
             else
             {
-                datasetId = H5D.open(groupId, name);
+                datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
                 spaceId = H5D.get_space(datasetId);
                 var rank_old = H5S.get_simple_extent_ndims(spaceId);
                 ulong[] maxDims = new ulong[rank_old];

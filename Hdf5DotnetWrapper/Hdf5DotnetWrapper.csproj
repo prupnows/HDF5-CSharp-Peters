@@ -20,9 +20,9 @@
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/LiorBanai/Hdf5DotnetWrapper</RepositoryUrl>
     <RepositoryType />
-    <PackageReleaseNotes>Add Hdf5EntryName Attribute to override name of properties/fields in the hdf5 file</PackageReleaseNotes>
+    <PackageReleaseNotes>fix for defect #10: not all code paths use the low case naming settings</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

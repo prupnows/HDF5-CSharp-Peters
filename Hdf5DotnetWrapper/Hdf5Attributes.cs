@@ -48,10 +48,6 @@ namespace Hdf5DotnetWrapper
         public static Array ReadAttributes<T>(Int64 groupId, string name)
         {
             return attrRW.ReadArray<T>(groupId, name, string.Empty);
-            /*if (typeof(T) == typeof(string))
-                return ReadStringAttributes(groupId, name).Cast<T>().ToArray();
-            else
-                return ReadPrimitiveAttributes<T>(groupId, name);*/
         }
 
         public static T ReadAttribute<T>(Int64 groupId, string name)
@@ -106,7 +102,9 @@ namespace Hdf5DotnetWrapper
             Type type = typeof(T);
             var datatype = GetDatatype(type);
 
-            var attributeId = H5A.open(groupId, name);
+            var attributeId = H5A.open(groupId, Hdf5Utils.NormalizedName(name));
+            if (attributeId <= 0)
+                attributeId = H5A.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
             var spaceId = H5A.get_space(attributeId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             ulong[] maxDims = new ulong[rank];
@@ -142,7 +140,7 @@ namespace Hdf5DotnetWrapper
             Int64 tmpId = groupId;
             if (!string.IsNullOrWhiteSpace(datasetName))
             {
-                Int64 datasetId = H5D.open(groupId, datasetName);
+                Int64 datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(datasetName));
                 if (datasetId > 0)
                     groupId = datasetId;
             }
