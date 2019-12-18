@@ -72,6 +72,7 @@ namespace Hdf5UnitTests
         {
             string filename = Path.Combine(folder, "testCompounds.H5");
             List<SystemEvent> se = new List<SystemEvent>();
+            List<(int index, string value)> attributes=new List<(int index, string value)>();
             try
             {
 
@@ -80,7 +81,7 @@ namespace Hdf5UnitTests
 
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var status = Hdf5.WriteCompounds(fileId, "/test", se);
+                var status = Hdf5.WriteCompounds(fileId,  "/test", se,attributes);
                 Hdf5.CloseFile(fileId);
             }
             catch (Exception ex)
@@ -108,13 +109,13 @@ namespace Hdf5UnitTests
         public void WriteAndReadStructs()
         {
             string filename = Path.Combine(folder, "testCompounds.H5");
-
+            List<(int index, string value)> attributes = new List<(int index, string value)>();
             try
             {
 
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var status = Hdf5.WriteCompounds(fileId, "/test", wData2List);
+                var status = Hdf5.WriteCompounds(fileId, "/test", wData2List, attributes);
                 Hdf5.CloseFile(fileId);
             }
             catch (Exception ex)
@@ -142,13 +143,13 @@ namespace Hdf5UnitTests
         public void WriteAndReadStructsWithDatetime()
         {
             string filename = Path.Combine(folder, "testCompounds.H5");
-
+            List<(int index, string value)> attributes = new List<(int index, string value)>();
             try
             {
 
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var status = Hdf5.WriteCompounds(fileId, "/test", wDataList);
+                var status = Hdf5.WriteCompounds(fileId, "/test", wDataList, attributes);
                 Hdf5.CloseFile(fileId);
             }
             catch (Exception ex)
@@ -176,13 +177,13 @@ namespace Hdf5UnitTests
         public void WriteAndReadStructsWithArray()
         {
             string filename = Path.Combine(folder, "testArrayCompounds.H5");
-
+            List<(int index, string value)> attributes = new List<(int index, string value)>();
             try
             {
 
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var status = Hdf5.WriteCompounds(fileId, "/test", responseList);
+                var status = Hdf5.WriteCompounds(fileId, "/test", responseList, attributes);
                 Hdf5.CloseFile(fileId);
             }
             catch (Exception ex)

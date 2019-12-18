@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -38,25 +39,23 @@ namespace Hdf5DotnetWrapper
 
             WriteProperties(tyObject, writeValue, groupId);
             WriteFields(tyObject, writeValue, groupId);
-            WriteHdf5Attributes(tyObject, groupId, groupName);
+            WriteHdf5Attributes(tyObject, groupId, groupName,string.Empty);
             if (createGroupName)
                 CloseGroup(groupId);
             return (writeValue);
         }
 
-        private static void WriteHdf5Attributes(Type type, hid_t groupId, string name, string datasetName = null)
+        private static void WriteHdf5Attributes(Type type, hid_t groupId, string name, string datasetName)
         {
             foreach (Attribute attr in Attribute.GetCustomAttributes(type))
             {
-                if (attr is Hdf5Attribute)
+                if (attr is Hdf5Attribute h5At)
                 {
-                    var h5at = attr as Hdf5Attribute;
-                    WriteAttribute(groupId, name, h5at.Name, datasetName);
+                    WriteAttribute(groupId, name, h5At.Name, datasetName);
                 }
-                if (attr is Hdf5Attributes)
+                if (attr is Hdf5Attributes h5Ats)
                 {
-                    var h5ats = attr as Hdf5Attributes;
-                    WriteAttributes<string>(groupId, name, h5ats.Names, datasetName);
+                    WriteAttributes<string>(groupId, name, h5Ats.Names, datasetName);
                 }
             }
         }
@@ -71,25 +70,41 @@ namespace Hdf5DotnetWrapper
                 object infoVal = info.GetValue(writeValue);
                 if (infoVal == null)
                     continue;
-
+                List<(int index, string ValueTuple)> attributes = new List<(int index, string ValueTuple)>();
                 string name = info.Name;
+                int attributeNum = 0;
                 foreach (Attribute attr in Attribute.GetCustomAttributes(info))
                 {
                     if (attr is Hdf5EntryNameAttribute hdf5EntryNameAttribute)
                     {
                         name = hdf5EntryNameAttribute.Name;
                     }
+
+                    if (attr is Hdf5Attributes hdf5Attributes)
+                    {
+                        foreach (var attValue in hdf5Attributes.Names)
+                        {
+                            attributes.Add((attributeNum++, attValue));
+                        }
+                    }
+                    if (attr is Hdf5Attribute hdf5Attribute)
+                    {
+                        attributes.Add((attributeNum++, hdf5Attribute.Name));
+
+                    }
                 }
-                WriteField(infoVal, info, groupId, name);
+                WriteField(infoVal, attributes, groupId, name);
             }
         }
 
         private static void WriteProperties(Type tyObject, object writeValue, hid_t groupId)
         {
             PropertyInfo[] miMembers = tyObject.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-
+      
             foreach (PropertyInfo info in miMembers)
             {
+                List<(int index, string ValueTuple)> attributes = new List<(int index, string ValueTuple)>();
+                int attributeNum = 0;
                 if (NoSavePresent(Attribute.GetCustomAttributes(info))) continue;
                 object infoVal = info.GetValue(writeValue, null);
                 if (infoVal == null)
@@ -101,8 +116,20 @@ namespace Hdf5DotnetWrapper
                     {
                         name = hdf5EntryNameAttribute.Name;
                     }
+                    if (attr is Hdf5Attributes hdf5Attributes)
+                    {
+                        foreach (var attValue in hdf5Attributes.Names)
+                        {
+                            attributes.Add((attributeNum++, attValue));
+                        }
+                    }
+                    if (attr is Hdf5Attribute hdf5Attribute)
+                    {
+                        attributes.Add((attributeNum++, hdf5Attribute.Name));
+
+                    }
                 }
-                WriteField(infoVal, info, groupId, name);
+                WriteField(infoVal,attributes,  groupId, name);
             }
         }
 
@@ -123,7 +150,7 @@ namespace Hdf5DotnetWrapper
             return noSaveAttr;
         }
 
-        private static void WriteField(object infoVal, FieldInfo filedInfo, hid_t groupId, string name)
+        private static void WriteField(object infoVal, List<(int index, string ValueTuple)> attributes, hid_t groupId, string name)
         {
             Type ty = infoVal.GetType();
             TypeCode code = Type.GetTypeCode(ty);
@@ -133,16 +160,18 @@ namespace Hdf5DotnetWrapper
                 var elType = ty.GetElementType();
                 TypeCode elCode = Type.GetTypeCode(elType);
                 if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
-                    dsetRW.WriteArray(groupId, name, (Array)infoVal);
+                    dsetRW.WriteArray(groupId, name, (Array)infoVal,string.Empty,attributes);
                 else
                 {
-                    CallByReflection<(int, hid_t)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal });
+                    //Hdf5.WriteCompounds(groupId,name,)
+                    CallByReflection<(int, hid_t)>(nameof(WriteCompounds), elType, new[] { groupId,  name, infoVal , attributes });
                 }
             }
             else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
-            //WriteOneValue(groupId, name, infoVal);
             {
-                (int success, hid_t CreatedgroupId) = CallByReflection<(int, hid_t)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal });
+                (int success, hid_t CreatedgroupId) = //WriteOneValue(groupId, name, infoVal);
+
+                    CallByReflection<(int, hid_t)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal, attributes });
                 //todo: fix it
                 //add its attributes if there are: 
                 //foreach (Attribute attr in Attribute.GetCustomAttributes(filedInfo))
@@ -163,30 +192,7 @@ namespace Hdf5DotnetWrapper
             else
                 WriteObject(groupId, infoVal, name);
         }
-        private static void WriteField(object infoVal, PropertyInfo propertyInfo, hid_t groupId, string name)
-        {
-            Type ty = infoVal.GetType();
-            TypeCode code = Type.GetTypeCode(ty);
-
-            if (ty.IsArray)
-            {
-                var elType = ty.GetElementType();
-                TypeCode elCode = Type.GetTypeCode(elType);
-                if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
-                    dsetRW.WriteArray(groupId, name, (Array)infoVal);
-                else
-                {
-                    {
-                        CallByReflection<int>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal });
-                        //add its attributes
-                    }
-                }
-            }
-            else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
-                CallByReflection<(int success, hid_t CreatedgroupId)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal });
-            else
-                WriteObject(groupId, infoVal, name);
-        }
+      
         static T CallByReflection<T>(string name, Type typeArg, object[] values)
         {
             // Just for simplicity, assume it's public etc

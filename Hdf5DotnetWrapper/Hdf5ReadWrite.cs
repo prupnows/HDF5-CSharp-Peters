@@ -20,10 +20,10 @@ namespace Hdf5DotnetWrapper
         {
             return Hdf5.WriteStrings(groupId, name, (string[])collection, datasetName);
         }
-        public void WriteStucts<T>(long groupId, string name, IEnumerable<T> dset, string datasetName = null)
-        {
-            Hdf5.WriteCompounds(groupId, name, dset);
-        }
+        //public void WriteStucts<T>(long groupId, string name, IEnumerable<T> dset, string datasetName = null)
+        //{
+        //    Hdf5.WriteCompounds(groupId, name, dset);
+        //}
 
         public Array ReadStucts<T>(long groupId, string name) where T : struct
         {
@@ -44,7 +44,7 @@ namespace Hdf5DotnetWrapper
             return Hdf5.ReadPrimitiveAttributes<T>(groupId, name, alternativeName);
         }
 
-        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset, string datasetName = null)
+        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset, string datasetName)
         {
             return Hdf5.WritePrimitiveAttribute<T>(groupId, name, dset, datasetName);
         }
@@ -81,7 +81,7 @@ namespace Hdf5DotnetWrapper
             rw = _rw;
         }
 
-        public (int success, long CreatedgroupId) WriteArray(long groupId, string name, Array collection, string datasetName = null)
+        public (int success, long CreatedgroupId) WriteArray(long groupId, string name, Array collection, string datasetName, List<(int index, string value)> attributes)
         {
 
             Type type = collection.GetType();
@@ -94,6 +94,7 @@ namespace Hdf5DotnetWrapper
                 case TypeCode.Boolean:
                     var bls = collection.ConvertArray<bool, ushort>(Convert.ToUInt16);
                     result = rw.WriteFromArray<ushort>(groupId, name, bls, datasetName);
+                    
                     Hdf5.WriteStringAttribute(groupId, name, "Boolean", name);
                     break;
                 case TypeCode.Byte:

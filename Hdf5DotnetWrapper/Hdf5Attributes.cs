@@ -200,16 +200,16 @@ namespace Hdf5DotnetWrapper
             }*/
         }
 
-        public static void WriteAttributes<T>(Int64 groupId, string name, Array attributes, string datasetName = null) //
+        public static void WriteAttributes<T>(Int64 groupId, string name, Array attributes, string datasetName) //
         {
-            attrRW.WriteArray(groupId, name, attributes, datasetName);
+            attrRW.WriteArray(groupId, name, attributes, datasetName,new List<(int index, string value)>());
             /* if (attributes.GetType().GetElementType() == typeof(string))
                  return WriteStringAttributes(groupId, name, attributes.Cast<string>(), datasetName);
              else
                  return WritePrimitiveAttribute<T>(groupId, name, attributes, datasetName);*/
         }
 
-        public static (int success, Int64 CreatedgroupId) WritePrimitiveAttribute<T>(Int64 groupId, string name, Array attributes, string datasetName = null) //where T : struct
+        public static (int success, Int64 CreatedgroupId) WritePrimitiveAttribute<T>(Int64 groupId, string name, Array attributes, string datasetName) //where T : struct
         {
             var tmpId = groupId;
             if (!string.IsNullOrWhiteSpace(datasetName))
@@ -219,8 +219,7 @@ namespace Hdf5DotnetWrapper
                     groupId = datasetId;
             }
             int rank = attributes.Rank;
-            ulong[] dims = Enumerable.Range(0, rank).Select(i =>
-                { return (ulong)attributes.GetLength(i); }).ToArray();
+            ulong[] dims = Enumerable.Range(0, rank).Select(i => (ulong)attributes.GetLength(i)).ToArray();
             ulong[] maxDims = null;
             var spaceId = H5S.create_simple(rank, dims, maxDims);
             var datatype = GetDatatype(typeof(T));
