@@ -50,6 +50,60 @@ namespace Hdf5UnitTests
 
 
 
+
+        public struct SystemEvent
+        {
+            [Hdf5EntryName("timestamp")] public long timestamp;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)] [Hdf5EntryName("type")] public string type;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 200)] [Hdf5EntryName("data")] public string data;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 200)] [Hdf5EntryName("description")] public string description;
+
+
+            public SystemEvent(long timestamp, string type, string description, string data)
+            {
+                this.timestamp = timestamp;
+                this.type = type;
+                this.description = description;
+                this.data = data;
+            }
+        }
+        [TestMethod]
+        public void WriteAndReadSystemEvent()
+        {
+            string filename = Path.Combine(folder, "testCompounds.H5");
+            List<SystemEvent> se = new List<SystemEvent>();
+            try
+            {
+
+                se.Add(new SystemEvent(5, "55", "3300000000000000000000000", "555555555555555555555555555555555"));
+                se.Add(new SystemEvent(1, "255", "3d3000000000007777773", "ggggggggggggdf"));
+
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var status = Hdf5.WriteCompounds(fileId, "/test", se);
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+            try
+            {
+                var fileId = Hdf5.OpenFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var cmpList = Hdf5.ReadCompounds<SystemEvent>(fileId, "/test").ToArray();
+                Hdf5.CloseFile(fileId);
+                CollectionAssert.AreEqual(se, cmpList);
+
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+        }
+
         [TestMethod]
         public void WriteAndReadStructs()
         {
