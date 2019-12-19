@@ -147,7 +147,6 @@ namespace Hdf5DotnetWrapper
                     dsetRW.WriteArray(groupId, name, (Array)infoVal, string.Empty, attributes);
                 else
                 {
-                    //Hdf5.WriteCompounds(groupId,name,)
                     CallByReflection<(int, hid_t)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal, attributes });
                 }
             }
