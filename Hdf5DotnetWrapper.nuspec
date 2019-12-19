@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Hdf5DotnetWrapper</id>
-    <version>1.0.3.0</version>
+    <version>1.0.4</version>
     <title>Hdf5DotnetWrapper</title>
     <authors>Robert Reijntjes, Lior Banai</authors>
     <owners>Robert Reijntjes, Lior Banai</owners>
@@ -12,7 +12,7 @@
     <icon>hdf5Wrapper.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>C# Wrapper for HDF.PInvoke Library</description>
-    <releaseNotes>fix for defect #10: not all code paths use the low case naming settings</releaseNotes>
+    <releaseNotes>Add new attributes types (Hdf5KeyValuesAttributes) for extra attributes information</releaseNotes>
     <copyright>Copyright 2019 Lior Banai</copyright>
     <tags></tags>
     <dependencies>

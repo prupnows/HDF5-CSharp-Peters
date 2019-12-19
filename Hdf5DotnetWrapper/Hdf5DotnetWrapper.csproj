@@ -22,7 +22,7 @@
     <RepositoryType />
     <PackageReleaseNotes>fix for defect #10: not all code paths use the low case naming settings</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
