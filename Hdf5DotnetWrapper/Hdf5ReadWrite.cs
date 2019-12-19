@@ -81,7 +81,7 @@ namespace Hdf5DotnetWrapper
             rw = _rw;
         }
 
-        public (int success, long CreatedgroupId) WriteArray(long groupId, string name, Array collection, string datasetName, List<(int index, string value)> attributes)
+        public (int success, long CreatedgroupId) WriteArray(long groupId, string name, Array collection, string datasetName, Dictionary<string, List<string>> attributes)
         {
 
             Type type = collection.GetType();
@@ -94,7 +94,6 @@ namespace Hdf5DotnetWrapper
                 case TypeCode.Boolean:
                     var bls = collection.ConvertArray<bool, ushort>(Convert.ToUInt16);
                     result = rw.WriteFromArray<ushort>(groupId, name, bls, datasetName);
-                    
                     Hdf5.WriteStringAttribute(groupId, name, "Boolean", name);
                     break;
                 case TypeCode.Byte:
@@ -179,6 +178,12 @@ namespace Hdf5DotnetWrapper
                     }
                     break;
             }
+            //append attributes
+            foreach (KeyValuePair<string, List<string>> entry in attributes)
+            {
+                Hdf5.WriteStringAttribute(groupId, entry.Key, string.Join("',", entry.Value), name);
+            }
+
             return result;
         }
 

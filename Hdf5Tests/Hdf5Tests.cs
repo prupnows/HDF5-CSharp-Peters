@@ -14,6 +14,7 @@ namespace Hdf5UnitTests
         [Hdf5Attributes(new string[] { "some info", "more info" })]
         class AttributeClass
         {
+            [Hdf5KeyValuesAttributes("Key", new[] { "NestedInfo some info", "NestedInfo more info" })]
             public class NestedInfo
             {
                 public int noAttribute = 10;

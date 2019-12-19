@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using HDF.PInvoke;
@@ -19,6 +20,17 @@ namespace Hdf5DotnetWrapper
         public string Name { get; private set; }
     }
 
+    public sealed class Hdf5KeyValuesAttributes : Attribute
+    {
+        public string Key { get; set; }
+        public string[] Values { get; private set; }
+        public Hdf5KeyValuesAttributes(string key, string[] values)
+        {
+            Values = values;
+            Key = key;
+        }
+
+    }
     public sealed class Hdf5Attributes : Attribute
     {
 
@@ -43,6 +55,80 @@ namespace Hdf5DotnetWrapper
 
     public static partial class Hdf5
     {
+        public static Dictionary<string, List<string>> Attributes(Type type)
+        {
+            Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
+
+            int attributeNum = 0;
+            foreach (Attribute attr in Attribute.GetCustomAttributes(type))
+            {
+                switch (attr)
+                {
+                    case Hdf5EntryNameAttribute hdf5EntryNameAttribute:
+                        attributes.Add($"attribute {attributeNum++}: {hdf5EntryNameAttribute.Name}", new List<string>() { hdf5EntryNameAttribute.Name });
+                        break;
+                    case Hdf5Attributes hdf5Attributes:
+                        attributes.Add($"attribute {attributeNum++}", hdf5Attributes.Names.ToList());
+                        break;
+                    case Hdf5Attribute hdf5Attribute:
+                        attributes.Add($"attribute {attributeNum++}", new List<string>() { hdf5Attribute.Name });
+                        break;
+                    case Hdf5KeyValuesAttributes hdf5KeyValuesAttribute:
+                        attributes.Add(hdf5KeyValuesAttribute.Key, hdf5KeyValuesAttribute.Values.ToList());
+                        break;
+                }
+            }
+            return attributes;
+        }
+        public static Dictionary<string, List<string>> Attributes(PropertyInfo propertyInfo)
+        {
+            Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
+            int attributeNum = 0;
+            foreach (Attribute attr in Attribute.GetCustomAttributes(propertyInfo))
+            {
+                switch (attr)
+                {
+                    case Hdf5EntryNameAttribute hdf5EntryNameAttribute:
+                        attributes.Add($"attribute {attributeNum++}: {hdf5EntryNameAttribute.Name}", new List<string>() { hdf5EntryNameAttribute.Name });
+                        break;
+                    case Hdf5Attributes hdf5Attributes:
+                        attributes.Add($"attribute {attributeNum++}", hdf5Attributes.Names.ToList());
+                        break;
+                    case Hdf5Attribute hdf5Attribute:
+                        attributes.Add($"attribute {attributeNum++}", new List<string>() { hdf5Attribute.Name });
+                        break;
+                    case Hdf5KeyValuesAttributes hdf5KeyValuesAttribute:
+                        attributes.Add(hdf5KeyValuesAttribute.Key, hdf5KeyValuesAttribute.Values.ToList());
+                        break;
+                }
+            }
+            return attributes;
+        }
+
+        public static Dictionary<string, List<string>> Attributes(FieldInfo fieldInfo)
+        {
+            Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
+            int attributeNum = 0;
+            foreach (Attribute attr in Attribute.GetCustomAttributes(fieldInfo))
+            {
+                switch (attr)
+                {
+                    case Hdf5EntryNameAttribute hdf5EntryNameAttribute:
+                        attributes.Add($"attribute {attributeNum++}: {hdf5EntryNameAttribute.Name}", new List<string>() { hdf5EntryNameAttribute.Name });
+                        break;
+                    case Hdf5Attributes hdf5Attributes:
+                        attributes.Add($"attribute {attributeNum++}", hdf5Attributes.Names.ToList());
+                        break;
+                    case Hdf5Attribute hdf5Attribute:
+                        attributes.Add($"attribute {attributeNum++}", new List<string>() { hdf5Attribute.Name });
+                        break;
+                    case Hdf5KeyValuesAttributes hdf5KeyValuesAttribute:
+                        attributes.Add(hdf5KeyValuesAttribute.Key, hdf5KeyValuesAttribute.Values.ToList());
+                        break;
+                }
+            }
+            return attributes;
+        }
         private static Hdf5ReaderWriter attrRW = new Hdf5ReaderWriter(new Hdf5AttributeRW());
 
         public static Array ReadAttributes<T>(Int64 groupId, string name)
@@ -130,12 +216,12 @@ namespace Hdf5DotnetWrapper
             return attributes;
         }
 
-        public static (int success, Int64 attributeId) WriteStringAttribute(Int64 groupId, string name, string str, string datasetName = null)
+        public static (int success, Int64 attributeId) WriteStringAttribute(Int64 groupId, string name, string val, string datasetName = null)
         {
-            return WriteStringAttributes(groupId, name, new[] { str }, datasetName);
+            return WriteStringAttributes(groupId, name, new[] { val }, datasetName);
         }
 
-        public static (int success, Int64 CreatedgroupId) WriteStringAttributes(Int64 groupId, string name, IEnumerable<string> strs, string datasetName = null)
+        public static (int success, Int64 CreatedgroupId) WriteStringAttributes(Int64 groupId, string name, IEnumerable<string> values, string datasetName = null)
         {
             Int64 tmpId = groupId;
             if (!string.IsNullOrWhiteSpace(datasetName))
@@ -150,7 +236,7 @@ namespace Hdf5DotnetWrapper
             H5T.set_cset(datatype, H5T.cset_t.UTF8);
             H5T.set_strpad(datatype, H5T.str_t.SPACEPAD);
 
-            int strSz = strs.Count();
+            int strSz = values.Count();
             Int64 spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
 
             var attributeId = H5A.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
@@ -159,7 +245,7 @@ namespace Hdf5DotnetWrapper
             IntPtr[] wdata = new IntPtr[strSz];
 
             int cntr = 0;
-            foreach (string str in strs)
+            foreach (string str in values)
             {
                 hnds[cntr] = GCHandle.Alloc(
                     Encoding.UTF8.GetBytes(str),
@@ -202,7 +288,7 @@ namespace Hdf5DotnetWrapper
 
         public static void WriteAttributes<T>(Int64 groupId, string name, Array attributes, string datasetName) //
         {
-            attrRW.WriteArray(groupId, name, attributes, datasetName,new List<(int index, string value)>());
+            attrRW.WriteArray(groupId, name, attributes, datasetName, new Dictionary<string, List<string>>());
             /* if (attributes.GetType().GetElementType() == typeof(string))
                  return WriteStringAttributes(groupId, name, attributes.Cast<string>(), datasetName);
              else

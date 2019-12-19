@@ -144,18 +144,18 @@ namespace Hdf5DotnetWrapper
         /// <param name="name">name of the dataset</param>
         /// <param name="dset">The dataset</param>
         /// <returns>status of the write method</returns>
-        public static (int success, hid_t CreatedgroupId) WriteOneValue<T>(hid_t groupId,  string name, T dset, List<(int index, string value)> attributes)
+        public static (int success, hid_t CreatedgroupId) WriteOneValue<T>(hid_t groupId, string name, T dset, Dictionary<string, List<string>> attributes)
         {
             if (typeof(T) == typeof(string))
                 //WriteStrings(groupId, name, new string[] { dset.ToString() });
-                return dsetRW.WriteArray(groupId, name, new T[1] { dset },string.Empty,attributes);
+                return dsetRW.WriteArray(groupId, name, new T[1] { dset }, string.Empty, attributes);
             Array oneVal = new T[1, 1] { { dset } };
-            return dsetRW.WriteArray(groupId, name, oneVal, string.Empty,attributes);
+            return dsetRW.WriteArray(groupId, name, oneVal, string.Empty, attributes);
         }
 
         public static void WriteDataset(hid_t groupId, string name, Array collection)
         {
-            dsetRW.WriteArray(groupId, name, collection, string.Empty,new List<(int index, string value)>());
+            dsetRW.WriteArray(groupId, name, collection, string.Empty, new Dictionary<string, List<string>>());
         }
 
 

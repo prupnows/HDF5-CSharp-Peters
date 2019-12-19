@@ -113,13 +113,13 @@ namespace Hdf5UnitTests
             bool boolValue = true;
             var groupStr = "/test";
             string concatFunc(string x) => string.Concat(groupStr, "/", x);
-            List<(int index, string value)> attributes = new List<(int index, string value)>();
+            Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
             try
             {
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
                 var groupId = Hdf5.CreateGroup(fileId, groupStr);
-                Hdf5.WriteOneValue(groupId, concatFunc(nameof(intValue)), intValue,attributes);
+                Hdf5.WriteOneValue(groupId, concatFunc(nameof(intValue)), intValue, attributes);
                 Hdf5.WriteOneValue(groupId, concatFunc(nameof(dblValue)), dblValue, attributes);
                 Hdf5.WriteOneValue(groupId, concatFunc(nameof(strValue)), strValue, attributes);
                 Hdf5.WriteOneValue(groupId, concatFunc(nameof(boolValue)), boolValue, attributes);
