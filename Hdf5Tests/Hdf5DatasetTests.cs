@@ -177,7 +177,7 @@ namespace Hdf5UnitTests
         }
 
         [TestMethod]
-        public void WriteAndReadChunckedDataset()
+        public void WriteAppendAndReadChunckedDataset()
         {
             string filename = Path.Combine(folder, "testChunks.H5");
             string groupName = "/test";
@@ -283,7 +283,7 @@ namespace Hdf5UnitTests
         [TestMethod]
         public void WriteAndReadChunckedDataset2()
         {
-            string filename = Path.Combine(folder, "testChunks.H5");
+            string filename = Path.Combine(folder, "testChunks2.H5");
             string groupName = "/test";
             string datasetName = "Data";
 
