@@ -300,3 +300,4 @@ Network Trash Folder
 Temporary Items
 .apdisk
 /nuget.exe
+*.nuspec
