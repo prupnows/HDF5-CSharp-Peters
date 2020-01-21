@@ -13,7 +13,7 @@
     <Company />
     <Product>Hdf5DotnetWrapper</Product>
     <Description>C# Wrapper for HDF.PInvoke Library</Description>
-    <Copyright>Copyright 2019 Lior Banai</Copyright>
+    <Copyright>Copyright 202 Lior Banai</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LiorBanai/Hdf5DotnetWrapper</PackageProjectUrl>
     <PackageIcon>hdf5Wrapper.png</PackageIcon>
