@@ -1,3 +1,5 @@
+ [![Build Status](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_apis/build/status/LiorBanai.Hdf5DotnetWrapper)](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_build?definitionId=1)
+
 # Hdf5DotnetWrapper   <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px">
 Set of tools that help in reading and writing hdf5 files for .net environments
 
