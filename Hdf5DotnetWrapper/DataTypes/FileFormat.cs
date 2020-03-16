@@ -117,6 +117,10 @@ namespace Hdf5DotnetWrapper.DataTypes
             return fid;
         }
 
+        public int getStartMembers()
+        {
+            return start_members;
+        }
         public abstract long open();
     }
 }

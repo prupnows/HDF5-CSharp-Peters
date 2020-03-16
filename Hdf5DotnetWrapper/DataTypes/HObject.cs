@@ -36,7 +36,7 @@ namespace Hdf5DotnetWrapper.DataTypes
  * HDF5 objects are uniquely identified by an object reference. i.e.
  * oid[0] = obj_id.
  */
-        protected long[] oid;
+        protected long[] oid { get; set; }
 
         /**
    * The name of the Target Object that is being linked to.
@@ -228,7 +228,43 @@ namespace Hdf5DotnetWrapper.DataTypes
         {
             return filename;
         }
+        public bool equalsOID(long[] theID)
+        {
+            if ((theID == null) || (oid == null))
+            {
+                return false;
+            }
 
+            int n1 = theID.Length;
+            int n2 = oid.Length;
+
+            if (n1 == 0 || n2 == 0)
+            {
+                return false;
+            }
+
+            int n = Math.Min(n1, n2);
+            bool isMatched = (theID[0] == oid[0]);
+
+            for (int i = 1; isMatched && (i < n); i++)
+            {
+                isMatched = (theID[i] == oid[i]);
+            }
+
+            return isMatched;
+        }
+
+        public long getFID()
+        {
+            if (fileFormat != null)
+            {
+                return fileFormat.getFID();
+            }
+            else
+            {
+                return -1;
+            }
+        }
         /**
          * Returns the name of the object. For example, "Raster Image #2".
          *

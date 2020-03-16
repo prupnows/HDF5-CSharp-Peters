@@ -1,6 +1,6 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using System;
 using System.Collections.Generic;
-using HDF.PInvoke;
 
 namespace Hdf5DotnetWrapper
 {

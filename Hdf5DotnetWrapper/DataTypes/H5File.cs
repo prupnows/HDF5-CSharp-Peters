@@ -2,6 +2,7 @@
 using Hdf5DotnetWrapper.DataTypes;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Hdf5DotnetWrapper
 {
@@ -18,12 +19,12 @@ namespace Hdf5DotnetWrapper
         /**
          * The index type. Valid values are HDF5Constants.H5_INDEX_NAME, HDF5Constants.H5_INDEX_CRT_ORDER.
          */
-        private int indexType = HDF5Constants.H5_INDEX_NAME;
+        private H5.index_t indexType = HDF5Constants.H5_INDEX_NAME;
 
         /**
          * The index order. Valid values are HDF5Constants.H5_ITER_INC, HDF5Constants.H5_ITER_DEC.
          */
-        private int indexOrder = HDF5Constants.H5_ITER_INC;
+        private H5.iter_order_t indexOrder = HDF5Constants.H5_ITER_INC;
 
         /**
          * The root object of the file hierarchy.
@@ -52,14 +53,12 @@ namespace Hdf5DotnetWrapper
         {
             return rootObject;
         }
-        public static void ReadFileStructure(string filename)
+        public void ReadFileStructure(string filename)
         {
             if (File.Exists(filename))
             {
                 var fileId = Hdf5.OpenFile(filename, readOnly: true);
                 rootObject = new H5Group(this, "/", null, null);
-                var gi = H5G.open(fileId, "/");
-
 
             }
         }
@@ -89,20 +88,21 @@ namespace Hdf5DotnetWrapper
             try
             {
                 gid = pgroup.open();
-                H5G_info_t info = H5.H5Gget_info(gid);
+                var info = new H5G.info_t();
+                H5G.get_info(gid, ref info);
                 nelems = (int)info.nlinks;
             }
-            catch (HDF5Exception ex)
+            catch (Exception ex)
             {
                 nelems = -1;
-                Hdf5Utils.LogInfo?.Invoke("depth_first({}): H5Gget_info(gid {}) failure: ", parentObject, gid, ex);
+                Hdf5Utils.LogError?.Invoke($"depth_first({parentObject}): H5Gget_info(gid {gid}) failure: {ex}");
             }
 
             if (nelems <= 0)
             {
                 pgroup.close(gid);
-                Hdf5Utils.LogInfo?.Invoke("depth_first({}): nelems <= 0", parentObject);
-                Hdf5Utils.LogInfo?.Invoke("depth_first({}): finish", parentObject);
+                Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject}): nelems <= 0");
+                Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject}): finish");
                 return nTotal;
             }
 
@@ -111,19 +111,42 @@ namespace Hdf5DotnetWrapper
             // we use only one call to get all the information, which takes about
             // two seconds
             int[] objTypes = new int[nelems];
-            long[] fNos = new long[nelems];
-            long[] objRefs = new long[nelems];
+            //long[] fNos = new long[nelems];
+            //long[] objRefs = new long[nelems];
             String[] objNames = new String[nelems];
-
+            H5L.info_t[] infos = new H5L.info_t[nelems];
             try
             {
-                H5.H5Gget_obj_info_full(fid, fullPath, objNames, objTypes, null, fNos, objRefs, indexType, indexOrder);
+                int i = 0;
+                int callback(long group, IntPtr name, ref H5L.info_t info, IntPtr op_data)
+                {
+                    string realName = Marshal.PtrToStringAuto(name);
+                    objTypes[i] = (int)info.type;
+                    objNames[i] = realName;
+                    infos[i] = info;
+                    return i++;
+                }
+
+                ulong pos = 0;
+                H5L.iterate(gid, indexType, indexOrder, ref pos, callback, IntPtr.Zero);
+
+                //for (ulong i = 0; i < (ulong)nelems; i++)
+                //{
+
+
+                //    H5G.info_t info = new H5G.info_t();
+                //    H5G.get_info_by_idx(fid, fullPath, indexType, indexOrder, i, ref info);
+                //    infos[i] = info;
+
+
+                //}
+
+                // H5.H5Gget_obj_info_full(fid, fullPath, objNames, objTypes, null, fNos, objRefs, indexType, indexOrder);
             }
-            catch (HDF5Exception ex)
+            catch (Exception ex)
             {
-                Hdf5Utils.LogInfo?.Invoke("depth_first({}): failure: ", parentObject, ex);
-                Hdf5Utils.LogInfo?.Invoke("depth_first({}): finish", parentObject);
-                ex.printStackTrace();
+                Hdf5Utils.LogError?.Invoke($"depth_first({parentObject}): failure: {ex}");
+                Hdf5Utils.LogError?.Invoke($"depth_first({parentObject}): finish");
                 return nTotal;
             }
 
@@ -138,12 +161,13 @@ namespace Hdf5DotnetWrapper
             {
                 obj_name = objNames[i];
                 obj_type = objTypes[i];
-                Hdf5Utils.LogInfo?.Invoke("depth_first({}): obj_name={}, obj_type={}", parentObject, obj_name, obj_type);
-                long oid[] = { objRefs[i], fNos[i] };
+                obj
+                Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject}): obj_name={obj_name}, obj_type={obj_type}");
+                long[] oid = { objRefs[i], fNos[i] };
 
                 if (obj_name == null)
                 {
-                    Hdf5Utils.LogInfo?.Invoke("depth_first({}): continue after null obj_name", parentObject);
+                    Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject}): continue after null obj_name");
                     continue;
                 }
 
@@ -155,9 +179,7 @@ namespace Hdf5DotnetWrapper
                         break; // loaded enough objects
                 }
 
-                boolean skipLoad = false;
-                if ((nTotal > 0) && (nTotal < nStart))
-                    skipLoad = true;
+                bool skipLoad = (nTotal > 0) && (nTotal < nStart);
 
                 // create a new group
                 if (obj_type == HDF5Constants.H5O_TYPE_GROUP)
@@ -169,7 +191,7 @@ namespace Hdf5DotnetWrapper
                     // detect and stop loops
                     // a loop is detected if there exists object with the same
                     // object ID by tracing path back up to the root.
-                    boolean hasLoop = false;
+                    bool hasLoop = false;
                     H5Group tmpObj = (H5Group)parentObject;
 
                     while (tmpObj != null)
@@ -200,58 +222,58 @@ namespace Hdf5DotnetWrapper
                 {
                     long did = -1;
                     long tid = -1;
-                    int tclass = -1;
+                    H5T.class_t tclass = H5T.class_t.NO_CLASS;
                     try
                     {
-                        did = H5.H5Dopen(fid, fullPath + obj_name, HDF5Constants.H5P_DEFAULT);
+                        did = H5D.open(fid, fullPath + obj_name, HDF5Constants.H5P_DEFAULT);
                         if (did >= 0)
                         {
-                            tid = H5.H5Dget_type(did);
+                            tid = H5D.get_type(did);
 
-                            tclass = H5.H5Tget_class(tid);
+                            tclass = H5T.get_class(tid);
                             if ((tclass == HDF5Constants.H5T_ARRAY) || (tclass == HDF5Constants.H5T_VLEN))
                             {
                                 // for ARRAY, the type is determined by the base type
-                                long btid = H5.H5Tget_super(tid);
+                                long btid = H5T.get_super(tid);
 
-                                tclass = H5.H5Tget_class(btid);
+                                tclass = H5T.get_class(btid);
 
                                 try
                                 {
-                                    H5.H5Tclose(btid);
+                                    H5T.close(btid);
                                 }
                                 catch (Exception ex)
                                 {
-                                    Hdf5Utils.LogInfo?.Invoke("depth_first({})[{}] dataset {} H5Tclose(btid {}) failure: ", parentObject, i, obj_name, btid, ex);
+                                    Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject})[{i}] dataset {obj_name} H5Tclose(btid {btid}) failure: {ex}");
                                 }
                             }
                         }
                         else
                         {
-                            Hdf5Utils.LogInfo?.Invoke("depth_first({})[{}] {} dataset open failure", parentObject, i, obj_name);
+                            Hdf5Utils.LogError?.Invoke($"depth_first({parentObject})[{i}] {obj_name} dataset open failure");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Hdf5Utils.LogInfo?.Invoke("depth_first({})[{}] {} dataset access failure: ", parentObject, i, obj_name, ex);
+                        Hdf5Utils.LogError?.Invoke($"depth_first({parentObject})[{i}] {obj_name} dataset access failure: {ex}");
                     }
                     finally
                     {
                         try
                         {
-                            H5.H5Tclose(tid);
+                            H5T.close(tid);
                         }
                         catch (Exception ex)
                         {
-                            Hdf5Utils.LogInfo?.Invoke("depth_first({})[{}] daatset {} H5Tclose(tid {}) failure: ", parentObject, i, obj_name, tid, ex);
+                            Hdf5Utils.LogError?.Invoke($"depth_first({parentObject})[{i}] dataset {obj_name} H5Tclose(tid {tid}) failure: {ex}");
                         }
                         try
                         {
-                            H5.H5Dclose(did);
+                            H5D.close(did);
                         }
                         catch (Exception ex)
                         {
-                            Hdf5Utils.LogInfo?.Invoke("depth_first({})[{}] dataset {} H5Dclose(did {}) failure: ", parentObject, i, obj_name, did, ex);
+                            Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject})[{i}] dataset {obj_name} H5Dclose(did {did}) failure: {ex}");
                         }
                     }
                     Dataset d = null;
@@ -285,7 +307,7 @@ namespace Hdf5DotnetWrapper
 
             pgroup.close(gid);
 
-            Hdf5Utils.LogInfo?.Invoke("depth_first({}): finish", parentObject);
+            Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject}): finish");
             return nTotal;
         }
 
@@ -339,9 +361,20 @@ namespace Hdf5DotnetWrapper
             // to make it work for external datasets. We need to set it back
             // before the file is closed/opened.
             string rootPath = Environment.CurrentDirectory;
-
+            if (!File.Exists(fullFileName))
+            {
+                Hdf5Utils.LogInfo?.Invoke($"open(): File {fullFileName} does not exist");
+                Hdf5Utils.LogInfo?.Invoke("open(): finish");
+                throw new Exception("File does not exist -- " + fullFileName);
+            }
+            else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && !new FileInfo(fullFileName).IsReadOnly)
+            {
+                Hdf5Utils.LogInfo?.Invoke($"open(): Cannot read file {fullFileName}");
+                Hdf5Utils.LogInfo?.Invoke("open(): finish");
+                throw new Exception("Cannot read file -- " + fullFileName);
+            }
             // check for valid file access permission
-            if (flag < 0)
+            else if (flag < 0)
             {
                 Hdf5Utils.LogInfo?.Invoke("open(): Invalid access identifier -- " + flag);
                 Hdf5Utils.LogInfo?.Invoke("open(): finish");
@@ -357,24 +390,14 @@ namespace Hdf5DotnetWrapper
                 H5F.close(fid);
                 flag = HDF5Constants.H5F_ACC_RDWR;
             }
-            else if (!exists())
-            {
-                Hdf5Utils.LogInfo?.Invoke($"open(): File {fullFileName} does not exist");
-                Hdf5Utils.LogInfo?.Invoke("open(): finish");
-                throw new Exception("File does not exist -- " + fullFileName);
-            }
-            else if (((flag == HDF5Constants.H5F_ACC_RDWR) || (flag == HDF5Constants.H5F_ACC_CREAT)) && !canWrite())
+
+            else if (((flag == HDF5Constants.H5F_ACC_RDWR) || (flag == HDF5Constants.H5F_ACC_CREAT)) && new FileInfo(fullFileName).IsReadOnly)
             {
                 Hdf5Utils.LogInfo?.Invoke($"open(): Cannot write file {fullFileName}");
                 Hdf5Utils.LogInfo?.Invoke("open(): finish");
                 throw new Exception("Cannot write file, try opening as read-only -- " + fullFileName);
             }
-            else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && !canRead())
-            {
-                Hdf5Utils.LogInfo?.Invoke($"open(): Cannot read file {fullFileName}");
-                Hdf5Utils.LogInfo?.Invoke("open(): finish");
-                throw new Exception("Cannot read file -- " + fullFileName);
-            }
+
 
             try
             {

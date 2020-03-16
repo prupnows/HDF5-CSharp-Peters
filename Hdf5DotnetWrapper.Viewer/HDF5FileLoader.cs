@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 
 namespace Hdf5DotnetWrapper.Viewer
 {
@@ -26,7 +25,8 @@ namespace Hdf5DotnetWrapper.Viewer
 
         private void btnHDF5ReadFile_Click(object sender, EventArgs e)
         {
-           Hdf5File.ReadFileStructure(txtbHDF5.Text);
+            H5File Hdf5File = new H5File();
+            Hdf5File.ReadFileStructure(txtbHDF5.Text);
 
         }
     }
