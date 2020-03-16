@@ -36,7 +36,8 @@ namespace Hdf5DotnetWrapper.DataTypes
  * HDF5 objects are uniquely identified by an object reference. i.e.
  * oid[0] = obj_id.
  */
-        protected long[] oid { get; set; }
+        //protected long[] oid { get; set; }
+        protected IntPtr address;
 
         /**
    * The name of the Target Object that is being linked to.
@@ -46,7 +47,7 @@ namespace Hdf5DotnetWrapper.DataTypes
         /**
  * Constructs an instance of a data object without name and path.
  */
-        public HObject() : this(null, null, null, null)
+        public HObject() : this(null, null, null, IntPtr.Zero)
         {
 
         }
@@ -64,15 +65,15 @@ namespace Hdf5DotnetWrapper.DataTypes
          * @param thePath
          *            the group path of the data object, e.g. "/arrays".
          */
-        public HObject(FileFormat theFile, string theName, string thePath) : this(theFile, theName, thePath, null)
+        public HObject(FileFormat theFile, string theName, string thePath) : this(theFile, theName, thePath, IntPtr.Zero)
         {
 
         }
 
-        public HObject(FileFormat theFile, string theName, string thePath, long[] oid)
+        public HObject(FileFormat theFile, string theName, string thePath, IntPtr oid)
         {
             fileFormat = theFile;
-            this.oid = oid;
+            this.address = oid;
 
             if (fileFormat != null)
             {
@@ -228,30 +229,31 @@ namespace Hdf5DotnetWrapper.DataTypes
         {
             return filename;
         }
-        public bool equalsOID(long[] theID)
+        public bool equalsOID(IntPtr theID)
         {
-            if ((theID == null) || (oid == null))
-            {
-                return false;
-            }
+            return theID.Equals(address);
+            //if ((oid == null))
+            //{
+            //    return false;
+            //}
 
-            int n1 = theID.Length;
-            int n2 = oid.Length;
+            //int n1 = theID.Length;
+            //int n2 = oid.Length;
 
-            if (n1 == 0 || n2 == 0)
-            {
-                return false;
-            }
+            //if (n1 == 0 || n2 == 0)
+            //{
+            //    return false;
+            //}
 
-            int n = Math.Min(n1, n2);
-            bool isMatched = (theID[0] == oid[0]);
+            //int n = Math.Min(n1, n2);
+            //bool isMatched = (theID[0] == oid[0]);
 
-            for (int i = 1; isMatched && (i < n); i++)
-            {
-                isMatched = (theID[i] == oid[i]);
-            }
+            //for (int i = 1; isMatched && (i < n); i++)
+            //{
+            //    isMatched = (theID[i] == oid[i]);
+            //}
 
-            return isMatched;
+            //return isMatched;
         }
 
         public long getFID()

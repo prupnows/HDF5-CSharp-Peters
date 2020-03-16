@@ -54,8 +54,7 @@ namespace Hdf5DotnetWrapper.DataTypes
          * @param grpParent
          *            the parent of this group.
          */
-        public Group(FileFormat theFile, String grpName, String grpPath, Group grpParent) : this(theFile, grpName,
-            grpPath, grpParent, null)
+        public Group(FileFormat theFile, String grpName, String grpPath, Group grpParent) : this(theFile, grpName, grpPath, grpParent, IntPtr.Zero)
         {
 
         }
@@ -76,7 +75,7 @@ namespace Hdf5DotnetWrapper.DataTypes
          *            the oid of this group.
          */
         [Obsolete]
-        public Group(FileFormat theFile, String grpName, String grpPath, Group grpParent, long[] oid) : base(theFile,
+        public Group(FileFormat theFile, String grpName, String grpPath, Group grpParent, IntPtr oid) : base(theFile,
             grpName, grpPath, oid)
         {
             this.parent = grpParent;

@@ -16,7 +16,6 @@ namespace Hdf5DotnetWrapper.DataTypes
         public static H5F.scope_t H5F_SCOPE_LOCAL = H5F.scope_t.LOCAL;
         public static uint H5F_ACC_RDWR = H5F.ACC_RDWR;
         public static uint H5F_ACC_RDONLY = H5F.ACC_RDONLY;
-        public static byte[] H5R_OBJECT = new byte[H5R.OBJ_REF_BUF_SIZE];
         public static int H5O_TYPE_GROUP = (int)H5O.type_t.GROUP;
         public static int H5O_TYPE_DATASET = (int)H5O.type_t.DATASET;
         public static H5T.class_t H5T_ARRAY = H5T.class_t.ARRAY;

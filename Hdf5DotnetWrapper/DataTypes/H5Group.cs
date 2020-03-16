@@ -24,7 +24,7 @@ namespace Hdf5DotnetWrapper.DataTypes
  * @param parent
  *            the parent of this group.
  */
-        public H5Group(FileFormat theFile, string name, string path, Group parent) : this(theFile, name, path, parent, null)
+        public H5Group(FileFormat theFile, string name, string path, Group parent) : this(theFile, name, path, parent, IntPtr.Zero)
         {
 
         }
@@ -45,7 +45,7 @@ namespace Hdf5DotnetWrapper.DataTypes
          *            the oid of this group.
          */
         [Obsolete]
-        public H5Group(FileFormat theFile, String name, String path, Group parent, long[] oid) : base(theFile, name, path, parent, oid)
+        public H5Group(FileFormat theFile, String name, String path, Group parent, IntPtr oid) : base(theFile, name, path, parent, oid)
         {
             nMembersInFile = -1;
             obj_info = new H5O.info_t();
@@ -56,14 +56,16 @@ namespace Hdf5DotnetWrapper.DataTypes
                 // retrieve the object ID
                 try
                 {
-                    var ref = H5R.create(new IntPtr(theFile.getFID()), this.getFullName(), HDF5Constants.H5R_OBJECT, -1, -1);
-                    this.oid = new long[1];
-                    this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
+                    IntPtr ptr = new IntPtr();
+                    var reference = H5R.create(ptr, theFile.getFID(), this.getFullName(), H5R.type_t.OBJECT, -1);
+                    //todo:
+                    address = ptr;
+                    //this.oid = new long[1];
+                    //this.oid[0] = HDFNativeData.byteToLong(ref_buf, 0);
                 }
                 catch (Exception ex)
                 {
-                    this.oid = new long[1];
-                    this.oid[0] = 0;
+                    Hdf5Utils.LogError?.Invoke("ERROR: " + ex);
                 }
             }
         }

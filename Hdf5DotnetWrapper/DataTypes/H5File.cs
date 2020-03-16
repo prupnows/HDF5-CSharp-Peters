@@ -57,9 +57,11 @@ namespace Hdf5DotnetWrapper
         {
             if (File.Exists(filename))
             {
-                var fileId = Hdf5.OpenFile(filename, readOnly: true);
+                fullFileName = filename;
+                // var fileId = Hdf5.OpenFile(filename, readOnly: true);
+                open(true);
                 rootObject = new H5Group(this, "/", null, null);
-
+                depth_first(rootObject, 0);
             }
         }
         private int depth_first(HObject parentObject, int nTotal)
@@ -124,6 +126,7 @@ namespace Hdf5DotnetWrapper
                     objTypes[i] = (int)info.type;
                     objNames[i] = realName;
                     infos[i] = info;
+
                     return i++;
                 }
 
@@ -161,9 +164,7 @@ namespace Hdf5DotnetWrapper
             {
                 obj_name = objNames[i];
                 obj_type = objTypes[i];
-                obj
                 Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject}): obj_name={obj_name}, obj_type={obj_type}");
-                long[] oid = { objRefs[i], fNos[i] };
 
                 if (obj_name == null)
                 {
@@ -196,7 +197,7 @@ namespace Hdf5DotnetWrapper
 
                     while (tmpObj != null)
                     {
-                        if (tmpObj.equalsOID(oid) && (tmpObj.getPath() != null))
+                        if (tmpObj.equalsOID(new IntPtr((int)infos[i].u.address)) && (tmpObj.getPath() != null))
                         {
                             hasLoop = true;
                             break;
@@ -276,31 +277,32 @@ namespace Hdf5DotnetWrapper
                             Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject})[{i}] dataset {obj_name} H5Dclose(did {did}) failure: {ex}");
                         }
                     }
-                    Dataset d = null;
-                    if (tclass == HDF5Constants.H5T_COMPOUND)
-                    {
-                        // create a new compound dataset
-                        d = new H5CompoundDS(this, obj_name, fullPath, oid); // deprecated!
-                    }
-                    else
-                    {
-                        // create a new scalar dataset
-                        d = new H5ScalarDS(this, obj_name, fullPath, oid); // deprecated!
-                    }
+                    //todo:
+                    //Dataset d = null;
+                    //if (tclass == HDF5Constants.H5T_COMPOUND)
+                    //{
+                    //    // create a new compound dataset
+                    //    d = new H5CompoundDS(this, obj_name, fullPath, oid); // deprecated!
+                    //}
+                    //else
+                    //{
+                    //    // create a new scalar dataset
+                    //    d = new H5ScalarDS(this, obj_name, fullPath, oid); // deprecated!
+                    //}
 
-                    pgroup.addToMemberList(d);
+                    // pgroup.addToMemberList(d);
                 }
                 else if (obj_type == HDF5Constants.H5O_TYPE_NAMED_DATATYPE)
                 {
-                    Datatype t = new H5Datatype(this, obj_name, fullPath, oid); // deprecated!
+                    //Datatype t = new H5Datatype(this, obj_name, fullPath, oid); // deprecated!
 
-                    pgroup.addToMemberList(t);
+                    //pgroup.addToMemberList(t);
                 }
                 else if (obj_type == HDF5Constants.H5O_TYPE_UNKNOWN)
                 {
-                    H5Link link = new H5Link(this, obj_name, fullPath, oid);
+                    //H5Link link = new H5Link(this, obj_name, fullPath, oid);
 
-                    pgroup.addToMemberList(link);
+                    // pgroup.addToMemberList(link);
                     continue; // do the next one, if the object is not identified.
                 }
             } // ( i = 0; i < nelems; i++)
@@ -367,7 +369,7 @@ namespace Hdf5DotnetWrapper
                 Hdf5Utils.LogInfo?.Invoke("open(): finish");
                 throw new Exception("File does not exist -- " + fullFileName);
             }
-            else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && !new FileInfo(fullFileName).IsReadOnly)
+            else if ((flag == HDF5Constants.H5F_ACC_RDONLY) && new FileInfo(fullFileName).IsReadOnly)
             {
                 Hdf5Utils.LogInfo?.Invoke($"open(): Cannot read file {fullFileName}");
                 Hdf5Utils.LogInfo?.Invoke("open(): finish");

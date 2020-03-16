@@ -49,12 +49,12 @@ namespace Hdf5DotnetWrapper.DataTypes
         /**
          * File identifier. -1 indicates the file is not open.
          */
-        protected long fid = -1;
+        protected long fid { get; set; } = -1;
 
         /**
          * The absolute pathname (path+name) of the file.
          */
-        protected string fullFileName = null;
+        protected string fullFileName { get; set; }= null;
 
         /**
          * Flag indicating if the file access is read-only.
