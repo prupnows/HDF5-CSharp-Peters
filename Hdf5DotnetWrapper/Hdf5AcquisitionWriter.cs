@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using Hdf5DotnetWrapper.DataTypes;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using HDF.PInvoke;
-using Hdf5DotnetWrapper.DataTypes;
 
 namespace Hdf5DotnetWrapper
 {
@@ -49,7 +49,6 @@ namespace Hdf5DotnetWrapper
             {
                 SaveHeader();
                 dset?.Dispose();
-                var info = Hdf5.GroupInfo(_groupId);
                 _groupId = Hdf5.CloseGroup(_groupId);
                 fileId = Hdf5.CloseFile(fileId);
             }

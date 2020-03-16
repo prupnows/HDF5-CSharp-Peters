@@ -66,10 +66,10 @@ namespace Hdf5DotnetWrapper
             return info.num_attrs;
         }
 
-        public static H5O.info_t GroupInfo(long groupId)
+        public static H5G.info_t GroupInfo(long groupId)
         {
-            H5O.info_t info = new H5O.info_t();
-            var gid = H5O.get_info(groupId, ref info);
+            H5G.info_t info = new H5G.info_t();
+            var gid = H5G.get_info(groupId, ref info);
             return info;
         }
     }
