@@ -1,9 +1,9 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using HDF.PInvoke;
 
 namespace Hdf5DotnetWrapper
 {
@@ -21,17 +21,17 @@ namespace Hdf5DotnetWrapper
             }
 
             Type tyObject = readValue.GetType();
-            foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
-            {
-                if (attr is Hdf5GroupName)
-                    groupName = (attr as Hdf5GroupName).Name;
-                if (attr is Hdf5SaveAttribute)
-                {
-                    Hdf5SaveAttribute atLeg = attr as Hdf5SaveAttribute;
-                    if (atLeg.SaveKind == Hdf5Save.DoNotSave)
-                        return readValue;
-                }
-            }
+            //foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
+            //{
+            //    if (attr is Hdf5GroupName)
+            //        groupName = (attr as Hdf5GroupName).Name;
+            //    if (attr is Hdf5SaveAttribute)
+            //    {
+            //        Hdf5SaveAttribute atLeg = attr as Hdf5SaveAttribute;
+            //        if (atLeg.SaveKind == Hdf5Save.DoNotSave)
+            //            return readValue;
+            //    }
+            //}
             bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (isGroupName)
                 groupId = H5G.open(groupId, Hdf5Utils.NormalizedName(groupName));
@@ -139,7 +139,7 @@ namespace Hdf5DotnetWrapper
                 Type ty = info.PropertyType;
                 TypeCode code = Type.GetTypeCode(ty);
                 string name = info.Name;
-                
+
 
                 if (ty.IsArray)
                 {
@@ -163,8 +163,11 @@ namespace Hdf5DotnetWrapper
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
                     Array values = dsetRW.ReadArray(ty, groupId, name, alternativeName);
-                    int[] first = new int[values.Rank].Select(f => 0).ToArray();
-                    info.SetValue(readValue, values.GetValue(first));
+                    if (values.Length > 0)
+                    {
+                        int[] first = new int[values.Rank].Select(f => 0).ToArray();
+                        info.SetValue(readValue, values.GetValue(first));
+                    }
                 }
                 else
                 {

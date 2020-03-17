@@ -1,10 +1,10 @@
+using HDF.PInvoke;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using HDF.PInvoke;
 
 namespace Hdf5DotnetWrapper
 {
@@ -13,7 +13,7 @@ namespace Hdf5DotnetWrapper
     {
 
 
-        public static IEnumerable<string> ReadStrings(hid_t groupId, string name)
+        public static IEnumerable<string> ReadStrings(hid_t groupId, string name, string alternativeName)
         {
 
             hid_t datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
@@ -23,6 +23,8 @@ namespace Hdf5DotnetWrapper
             //name = ToHdf5Name(name);
 
             var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
+            if (datasetId < 0) //does not exist?
+                datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
             hid_t spaceId = H5D.get_space(datasetId);
 
             long count = H5S.get_simple_extent_npoints(spaceId);

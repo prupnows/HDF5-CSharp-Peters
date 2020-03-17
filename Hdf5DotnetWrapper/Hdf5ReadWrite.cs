@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace Hdf5DotnetWrapper
 {
-    using hid_t = Int64;
     public class Hdf5Dataset : IHdf5ReaderWriter
     {
         public Array ReadToArray<T>(long groupId, string name, string alternativeName)
@@ -30,9 +29,9 @@ namespace Hdf5DotnetWrapper
             return Hdf5.ReadCompounds<T>(groupId, name).ToArray();
         }
 
-        public IEnumerable<string> ReadStrings(long groupId, string name)
+        public IEnumerable<string> ReadStrings(long groupId, string name, string alternativeName)
         {
-            return Hdf5.ReadStrings(groupId, name);
+            return Hdf5.ReadStrings(groupId, name, alternativeName);
         }
 
     }
@@ -55,9 +54,9 @@ namespace Hdf5DotnetWrapper
         }
 
 
-        public IEnumerable<string> ReadStrings(long groupId, string name)
+        public IEnumerable<string> ReadStrings(long groupId, string name, string alternativeName)
         {
-            return Hdf5.ReadStringAttributes(groupId, name);
+            return Hdf5.ReadStringAttributes(groupId, name, alternativeName);
         }
 
     }
@@ -68,7 +67,7 @@ namespace Hdf5DotnetWrapper
         Array ReadToArray<T>(long groupId, string name, string alternativeName);
 
         (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null);
-        IEnumerable<string> ReadStrings(long groupId, string name);
+        IEnumerable<string> ReadStrings(long groupId, string name, string alternativeName);
 
 
     }
@@ -212,7 +211,7 @@ namespace Hdf5DotnetWrapper
 
                 case TypeCode.DateTime:
                     var ticks = rw.ReadToArray<long>(groupId, name, alternativeName);
-                    return ticks.ConvertArray<long, DateTime>(tc => new DateTime(tc));
+                    return ticks.ConvertArray<long, DateTime>(tc => Hdf5Conversions.ToDateTime(tc, Hdf5.Hdf5Settings.DateTimeType));
 
                 case TypeCode.Decimal:
                     var decs = rw.ReadToArray<double>(groupId, name, alternativeName);
@@ -246,7 +245,7 @@ namespace Hdf5DotnetWrapper
                     return rw.ReadToArray<ulong>(groupId, name, alternativeName);
 
                 case TypeCode.String:
-                    return rw.ReadStrings(groupId, name).ToArray();
+                    return rw.ReadStrings(groupId, name, alternativeName).ToArray();
 
                 default:
                     if (elementType == typeof(TimeSpan))

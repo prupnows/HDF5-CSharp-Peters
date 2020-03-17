@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Hdf5DotnetWrapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using Hdf5DotnetWrapper;
 
 namespace Hdf5UnitTests
 {
@@ -27,7 +27,7 @@ namespace Hdf5UnitTests
 
                 // Read the strings and close file
                 Assert.IsTrue(fileId > 0);
-                IEnumerable<string> strs2 = Hdf5.ReadStrings(fileId, "/test");
+                IEnumerable<string> strs2 = Hdf5.ReadStrings(fileId, "/test", "");
                 Assert.IsTrue(strs2.Count() == 1);
                 foreach (var s in strs2)
                 {
@@ -65,7 +65,7 @@ namespace Hdf5UnitTests
 
                 // Read the strings and close file
                 Assert.IsTrue(fileId > 0);
-                IEnumerable<string> strs2 = Hdf5.ReadStrings(fileId, "/test");
+                IEnumerable<string> strs2 = Hdf5.ReadStrings(fileId, "/test", "");
                 Assert.IsTrue(strs.Count() == strs2.Count());
                 foreach (var item in strs2.Select((str, i) => new { i, str }))
                 {
