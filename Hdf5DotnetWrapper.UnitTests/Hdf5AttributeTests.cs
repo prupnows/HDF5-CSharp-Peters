@@ -1,15 +1,13 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using Hdf5DotnetWrapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using HDF.PInvoke;
-using System.Reflection;
-using Hdf5DotnetWrapper;
 
 namespace Hdf5UnitTests
 {
-    using hid_t = System.Int64;
     public partial class Hdf5UnitTests
     {
         [TestMethod]
@@ -42,6 +40,7 @@ namespace Hdf5UnitTests
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
                 var groupId = Hdf5.CreateGroup(fileId, "test");
+
                 string attrStr = "this is an attribute";
                 Hdf5.WriteAttribute(groupId, "time", attrStr);
                 string readStr = Hdf5.ReadAttribute<string>(groupId, "time");
@@ -65,7 +64,7 @@ namespace Hdf5UnitTests
             bool boolValue = true;
             DateTime dateValue = new DateTime(1969, 1, 12);
             var groupStr = "/test";
-            
+
             //string concatFunc(string x) => string.Concat(groupStr, "/", x);
             string intName = nameof(intValues);
             string dblName = nameof(dblValue);

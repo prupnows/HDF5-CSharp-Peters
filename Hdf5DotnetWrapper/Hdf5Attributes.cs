@@ -150,12 +150,17 @@ namespace Hdf5DotnetWrapper
             Int64 datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
             H5T.set_cset(datatype, H5T.cset_t.UTF8);
             H5T.set_strpad(datatype, H5T.str_t.NULLTERM);
-            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
+
+
+            var datasetId = H5A.open(groupId, Hdf5Utils.NormalizedName(name));
             if (datasetId < 0) //does not exist?
-                datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
-
+                datasetId = H5A.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
+            if (datasetId < 0)
+            {
+                Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
+                return Array.Empty<string>();
+            }
             Int64 spaceId = H5A.get_space(datasetId);
-
             long count = H5S.get_simple_extent_npoints(spaceId);
             H5S.close(spaceId);
 
