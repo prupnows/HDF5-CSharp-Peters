@@ -59,22 +59,14 @@ namespace Hdf5UnitTests
         {
             try
             {
-                var testClass = new TestClassWithArray()
-                {
-                    TestInteger = 2,
-                    TestDouble = 1.1,
-                    TestBoolean = true,
-                    TestString = "test string",
-                    TestDoubles = new double[] { 1.1, 1.2, -1.1, -1.2 },
-                    TestStrings = new string[] { "one", "two", "three", "four" }
-                };
                 testClassWithArrays.TestInteger = 2;
                 testClassWithArrays.TestDouble = 1.1;
                 testClassWithArrays.TestBoolean = true;
                 testClassWithArrays.TestString = "test string";
-                testClassWithArrays.TestDoubles = new double[] { 1.1, 1.2, -1.1, -1.2 };
-                testClassWithArrays.TestStrings = new string[] { "one", "two", "three", "four" };
-
+                testClassWithArrays.TestDoubles = new[] { 1.1, 1.2, -1.1, -1.2 };
+                testClassWithArrays.TestStrings = new[] { "one", "two", "three", "four" };
+                testClassWithArrays.testDoublesField = new[] { 1.1, 1.2, -1.1, -1.2 };
+                testClassWithArrays.testStringsField = new[] { "one", "two", "three", "four" };
                 string filename = Path.Combine(folder, "testArrayObjects.H5");
 
                 var fileId = Hdf5.CreateFile(filename);

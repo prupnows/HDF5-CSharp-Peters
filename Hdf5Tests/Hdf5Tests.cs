@@ -110,14 +110,17 @@ namespace Hdf5UnitTests
         }
         private class TestClassWithArray : TestClass
         {
+            public double[] testDoublesField;
+            public string[] testStringsField;
             public double[] TestDoubles { get; set; }
             public string[] TestStrings { get; set; }
 
             public bool Equals(TestClassWithArray other)
             {
                 return base.Equals(other) &&
-                    other.TestDoubles.SequenceEqual(TestDoubles) &&
-                    other.TestStrings.SequenceEqual(TestStrings);
+                       other.TestDoubles.SequenceEqual(TestDoubles) &&
+                       other.testDoublesField.SequenceEqual(testDoublesField) &&
+                       other.testStringsField.SequenceEqual(testStringsField);
 
             }
         }

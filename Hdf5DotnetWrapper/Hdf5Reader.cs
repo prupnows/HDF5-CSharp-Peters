@@ -90,7 +90,7 @@ namespace Hdf5DotnetWrapper
                     Array values;
                     if (elCode != TypeCode.Object)
                     {
-                        values = dsetRW.ReadArray(ty, groupId, name, alternativeName);
+                        values = dsetRW.ReadArray(elType, groupId, name, alternativeName);
                     }
                     else
                     {
