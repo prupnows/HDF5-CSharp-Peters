@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hdf5DotnetWrapper.UnitTests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hdf5DotnetWrapper.Viewer", "Hdf5DotnetWrapper.Viewer\Hdf5DotnetWrapper.Viewer.csproj", "{47201833-E346-46E1-B3F3-3B137B8BEB0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hdf5DotnetWrapper.UnitTests.Core", "Hdf5DotnetWrapper.UnitTests.Core\Hdf5DotnetWrapper.UnitTests.Core.csproj", "{6F911D21-799C-4510-BEB5-3445B9AAF3BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,18 @@ Global
 		{47201833-E346-46E1-B3F3-3B137B8BEB0D}.Release|x64.Build.0 = Release|Any CPU
 		{47201833-E346-46E1-B3F3-3B137B8BEB0D}.Release|x86.ActiveCfg = Release|Any CPU
 		{47201833-E346-46E1-B3F3-3B137B8BEB0D}.Release|x86.Build.0 = Release|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Debug|x64.Build.0 = Debug|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Debug|x86.Build.0 = Debug|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Release|x64.ActiveCfg = Release|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Release|x64.Build.0 = Release|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Release|x86.ActiveCfg = Release|Any CPU
+		{6F911D21-799C-4510-BEB5-3445B9AAF3BA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
