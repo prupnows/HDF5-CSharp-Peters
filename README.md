@@ -1,8 +1,5 @@
-# Hdf5DotnetWrapper   <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px">
+# Hdf5DotnetWrapper     [![Nuget](https://img.shields.io/nuget/v/Hdf5DotnetWrapper)](https://www.nuget.org/packages/Hdf5DotnetWrapper/) [![Build Status](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_apis/build/status/LiorBanai.Hdf5DotnetWrapper)](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_build?definitionId=1) [![Nuget](https://img.shields.io/nuget/dt/Hdf5DotnetWrapper)](https://www.nuget.org/packages/Hdf5DotnetWrapper/) <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px">
 Set of tools that help in reading and writing hdf5 files for .net environments
-
-## Introduction
-At the neurology department of the Leiden University Medical Centre in the Netherlands we need to convert large medical data files to a format that could easily be used in programs like Matlab, R and Python.
 
 ## Usage
 
@@ -77,9 +74,3 @@ The object is written to a file and than read back in a new object.
     ulong endIndex = 21;
     var dset = Hdf5.ReadDataset<double>(fileId, "/test", begIndex, endIndex);
     Hdf5.CloseFile(fileId);
-
-## ToDo
-This is still an early version of the library. If there are any problems please let me know
-
-## Other projects that use the HDF.Pinvoke library
-Another project on github that uses the [HDF.Pinvoke](https://github.com/HDFGroup/HDF.PInvoke) library to read and write HDF5 files is the [sharpHDF](https://github.com/sharpHDF/sharpHDF) project. I discovered it while I was working on my own library. It has a different approah to writing and reading hdf5 files. You have to create a Hdf5File object and fill it with groups, attributes and datasets. When you close the Hdf5File object it writes the file.

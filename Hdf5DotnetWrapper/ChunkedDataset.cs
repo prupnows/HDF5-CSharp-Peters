@@ -164,6 +164,11 @@ namespace Hdf5DotnetWrapper
         /// <param name="itIsSafeToAlsoFreeManagedObjects"></param>
         protected virtual void Dispose(bool itIsSafeToAlsoFreeManagedObjects)
         {
+            if (!DatasetExists)
+            {
+                Hdf5Utils.LogInfo?.Invoke("Data set does not exist.");
+                return;
+            }
             H5D.close(datasetId);
             H5P.close(propId);
             H5S.close(spaceId);
