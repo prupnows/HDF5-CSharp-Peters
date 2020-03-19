@@ -22,7 +22,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>Add support for reading back hdf5 files</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.5.5</Version>
+    <Version>1.0.5.6</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
