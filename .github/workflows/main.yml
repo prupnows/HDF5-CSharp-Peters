@@ -1,6 +1,0 @@
-name: 'Azure Pipelines Action' 
-description: 'Trigger a run in Azure pipelines' 
-inputs:
-  azure-devops-project-url:'https://github.com/LiorBanai/Hdf5DotnetWrapper'     
-  azure-pipeline-name:'LiorBanai.Hdf5DotnetWrapper'
-  azure-devops-token:'${{ secrets.Hdf5DotnetWrapper }}'
