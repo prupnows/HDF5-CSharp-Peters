@@ -1,5 +1,0 @@
-- uses: Azure/pipelines@v1
-  with:
-    azure-devops-project-url: 'https://github.com/LiorBanai/Hdf5DotnetWrapper'
-    azure-pipeline-name: 'LiorBanai.Hdf5DotnetWrapper' # name of the Azure pipeline to be triggered
-    azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
