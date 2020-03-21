@@ -302,3 +302,4 @@ Temporary Items
 /nuget.exe
 *.nuspec
 /Hdf5DotnetWrapper/cov-int
+/Hdf5DotnetWrapper/cov-int.zip
