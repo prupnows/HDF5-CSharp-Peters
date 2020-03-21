@@ -53,8 +53,6 @@ namespace Hdf5DotnetWrapper
             {
                 try
                 {
-                    if (_queue == null) // || _queue.Count==0
-                        return;
                     _queue.TryTake(out T data);
                     if (data != null)
                     {

@@ -301,3 +301,4 @@ Temporary Items
 .apdisk
 /nuget.exe
 *.nuspec
+/Hdf5DotnetWrapper/cov-int

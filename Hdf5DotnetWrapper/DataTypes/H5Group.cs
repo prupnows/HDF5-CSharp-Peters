@@ -45,12 +45,12 @@ namespace Hdf5DotnetWrapper.DataTypes
          *            the oid of this group.
          */
         [Obsolete]
-        public H5Group(FileFormat theFile, String name, String path, Group parent, IntPtr oid) : base(theFile, name, path, parent, oid)
+        public H5Group(FileFormat theFile, string name, string path, Group parent, IntPtr oid) : base(theFile, name, path, parent, oid)
         {
             nMembersInFile = -1;
             obj_info = new H5O.info_t();
 
-            if ((oid == null) && (theFile != null))
+            if (theFile != null)
             {
                 // throw new Exception("??");
                 // retrieve the object ID
