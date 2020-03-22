@@ -1,6 +1,11 @@
 <h1 align="center">Hdf5 Wrapper: C# wrapper for HDF5 library  <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px"></h1> 
 
-[![Nuget](https://img.shields.io/nuget/v/Hdf5DotnetWrapper)](https://www.nuget.org/packages/Hdf5DotnetWrapper/) [![Build Status](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_apis/build/status/LiorBanai.Hdf5DotnetWrapper)](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_build?definitionId=1) [![Nuget](https://img.shields.io/nuget/dt/Hdf5DotnetWrapper)](https://www.nuget.org/packages/Hdf5DotnetWrapper/)  <a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/20655/badge.svg"/></a> <a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/compare/V1.0.5.5...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/Hdf5DotnetWrapper/latest"/></a>
+[![Nuget](https://img.shields.io/nuget/v/Hdf5DotnetWrapper)](https://www.nuget.org/packages/Hdf5DotnetWrapper/) [![Build Status](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_apis/build/status/LiorBanai.Hdf5DotnetWrapper)](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_build?definitionId=1) [![Nuget](https://img.shields.io/nuget/dt/Hdf5DotnetWrapper)](https://www.nuget.org/packages/Hdf5DotnetWrapper/)  <a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/20655/badge.svg"/></a> <a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/compare/V1.0.5.5...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/Hdf5DotnetWrapper/latest"/></a><a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/issues" alt="Issues">
+    <img src="https://img.shields.io/github/issues/LiorBanai/Hdf5DotnetWrapper"/>
+</a>
+<a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/blob/master/LICENSE" alt="License">
+    <img src="https://img.shields.io/github/license/LiorBanai/Hdf5DotnetWrapper"/>
+</a>
 
 
 
