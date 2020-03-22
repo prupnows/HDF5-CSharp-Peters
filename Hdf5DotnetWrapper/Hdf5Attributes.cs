@@ -131,23 +131,23 @@ namespace Hdf5DotnetWrapper
         }
         private static Hdf5ReaderWriter attrRW = new Hdf5ReaderWriter(new Hdf5AttributeRW());
 
-        public static Array ReadAttributes<T>(Int64 groupId, string name)
+        public static (bool success, Array result) ReadAttributes<T>(long groupId, string name)
         {
             return attrRW.ReadArray<T>(groupId, name, string.Empty);
         }
 
-        public static T ReadAttribute<T>(Int64 groupId, string name)
+        public static T ReadAttribute<T>(long groupId, string name)
         {
             var attrs = attrRW.ReadArray<T>(groupId, name, string.Empty);
-            int[] first = new int[attrs.Rank].Select(f => 0).ToArray();
-            T result = (T)attrs.GetValue(first);
+            int[] first = new int[attrs.result.Rank].Select(f => 0).ToArray();
+            T result = (T)attrs.result.GetValue(first);
             return result;
         }
 
-        public static IEnumerable<string> ReadStringAttributes(Int64 groupId, string name, string alternativeName)
+        public static (bool success, IEnumerable<string>) ReadStringAttributes(long groupId, string name, string alternativeName)
         {
 
-            Int64 datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+            long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
             H5T.set_cset(datatype, H5T.cset_t.UTF8);
             H5T.set_strpad(datatype, H5T.str_t.NULLTERM);
 
@@ -158,9 +158,9 @@ namespace Hdf5DotnetWrapper
             if (datasetId < 0)
             {
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
-                return Array.Empty<string>();
+                return (false,Array.Empty<string>());
             }
-            Int64 spaceId = H5A.get_space(datasetId);
+            long spaceId = H5A.get_space(datasetId);
             long count = H5S.get_simple_extent_npoints(spaceId);
             H5S.close(spaceId);
 
@@ -185,10 +185,10 @@ namespace Hdf5DotnetWrapper
             hnd.Free();
             H5T.close(datatype);
             H5A.close(datasetId);
-            return strs;
+            return (true,strs);
         }
 
-        public static Array ReadPrimitiveAttributes<T>(Int64 groupId, string name, string alternativeName) //where T : struct
+        public static (bool success, Array result) ReadPrimitiveAttributes<T>(long groupId, string name, string alternativeName) //where T : struct
         {
             Type type = typeof(T);
             var datatype = GetDatatype(type);
@@ -196,11 +196,16 @@ namespace Hdf5DotnetWrapper
             var attributeId = H5A.open(groupId, Hdf5Utils.NormalizedName(name));
             if (attributeId <= 0)
                 attributeId = H5A.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
+            if (attributeId <= 0)
+            {
+                Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
+                return (false, Array.Empty<T>());
+            }
             var spaceId = H5A.get_space(attributeId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             ulong[] maxDims = new ulong[rank];
             ulong[] dims = new ulong[rank];
-            Int64 memId = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
+            long memId = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
             long[] lengths = dims.Select(d => Convert.ToInt64(d)).ToArray();
             Array attributes = Array.CreateInstance(type, lengths);
 
@@ -218,31 +223,31 @@ namespace Hdf5DotnetWrapper
             H5A.close(typeId);
             H5A.close(attributeId);
             H5S.close(spaceId);
-            return attributes;
+            return (true,attributes);
         }
 
-        public static (int success, Int64 attributeId) WriteStringAttribute(Int64 groupId, string name, string val, string datasetName = null)
+        public static (int success, long attributeId) WriteStringAttribute(long groupId, string name, string val, string datasetName = null)
         {
             return WriteStringAttributes(groupId, name, new[] { val }, datasetName);
         }
 
-        public static (int success, Int64 CreatedgroupId) WriteStringAttributes(Int64 groupId, string name, IEnumerable<string> values, string datasetName = null)
+        public static (int success, long CreatedgroupId) WriteStringAttributes(long groupId, string name, IEnumerable<string> values, string datasetName = null)
         {
-            Int64 tmpId = groupId;
+            long tmpId = groupId;
             if (!string.IsNullOrWhiteSpace(datasetName))
             {
-                Int64 datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(datasetName));
+                long datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(datasetName));
                 if (datasetId > 0)
                     groupId = datasetId;
             }
 
             // create UTF-8 encoded attributes
-            Int64 datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+            long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
             H5T.set_cset(datatype, H5T.cset_t.UTF8);
             H5T.set_strpad(datatype, H5T.str_t.SPACEPAD);
 
             int strSz = values.Count();
-            Int64 spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
+            long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
 
             var attributeId = H5A.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
 
@@ -279,7 +284,7 @@ namespace Hdf5DotnetWrapper
             return (result, attributeId);
         }
 
-        public static void WriteAttribute<T>(Int64 groupId, string name, T attribute, string datasetName = null) //where T : struct
+        public static void WriteAttribute<T>(long groupId, string name, T attribute, string datasetName = null) //where T : struct
         {
             WriteAttributes<T>(groupId, name, new T[1] { attribute }, datasetName);
             /*if (typeof(T) == typeof(string))
@@ -291,7 +296,7 @@ namespace Hdf5DotnetWrapper
             }*/
         }
 
-        public static void WriteAttributes<T>(Int64 groupId, string name, Array attributes, string datasetName) //
+        public static void WriteAttributes<T>(long groupId, string name, Array attributes, string datasetName) //
         {
             attrRW.WriteArray(groupId, name, attributes, datasetName, new Dictionary<string, List<string>>());
             /* if (attributes.GetType().GetElementType() == typeof(string))
@@ -300,7 +305,7 @@ namespace Hdf5DotnetWrapper
                  return WritePrimitiveAttribute<T>(groupId, name, attributes, datasetName);*/
         }
 
-        public static (int success, Int64 CreatedgroupId) WritePrimitiveAttribute<T>(Int64 groupId, string name, Array attributes, string datasetName) //where T : struct
+        public static (int success, long CreatedgroupId) WritePrimitiveAttribute<T>(long groupId, string name, Array attributes, string datasetName) //where T : struct
         {
             var tmpId = groupId;
             if (!string.IsNullOrWhiteSpace(datasetName))

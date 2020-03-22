@@ -97,13 +97,13 @@ namespace Hdf5UnitTests
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
                 var groupId = H5G.open(fileId, groupStr);
-                IEnumerable<int> readInts = (int[])Hdf5.ReadAttributes<int>(groupId, intName);
+                IEnumerable<int> readInts = (int[])Hdf5.ReadAttributes<int>(groupId, intName).result;
                 Assert.IsTrue(intValues.SequenceEqual(readInts));
                 double readDbl = Hdf5.ReadAttribute<double>(groupId, dblName);
                 Assert.IsTrue(dblValue == readDbl);
                 string readStr = Hdf5.ReadAttribute<string>(groupId, strName);
                 Assert.IsTrue(strValue == readStr);
-                IEnumerable<string> readStrs = (string[])Hdf5.ReadAttributes<string>(groupId, strNames);
+                IEnumerable<string> readStrs = (string[])Hdf5.ReadAttributes<string>(groupId, strNames).result;
                 Assert.IsTrue(strValues.SequenceEqual(readStrs));
                 bool readBool = Hdf5.ReadAttribute<bool>(groupId, boolName);
                 Assert.IsTrue(boolValue == readBool);

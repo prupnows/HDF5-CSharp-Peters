@@ -70,8 +70,8 @@ namespace Hdf5DotnetWrapper
             Hdf5Utils.LogInfo?.Invoke($"depth_first({parentObject}): start");
 
             int nelems;
-            String fullPath = null;
-            String ppath = null;
+            string fullPath = null;
+            string ppath = null;
             long gid = -1;
 
             H5Group pgroup = (H5Group)parentObject;
@@ -115,7 +115,7 @@ namespace Hdf5DotnetWrapper
             int[] objTypes = new int[nelems];
             //long[] fNos = new long[nelems];
             //long[] objRefs = new long[nelems];
-            String[] objNames = new String[nelems];
+            string[] objNames = new string[nelems];
             H5L.info_t[] infos = new H5L.info_t[nelems];
             try
             {
@@ -156,7 +156,7 @@ namespace Hdf5DotnetWrapper
             int nStart = getStartMembers();
             int nMax = getMaxMembers();
 
-            String obj_name;
+            string obj_name;
             int obj_type;
 
             // Iterate through the file to see members of the group

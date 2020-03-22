@@ -13,16 +13,16 @@
     <Company />
     <Product>Hdf5DotnetWrapper</Product>
     <Description>C# Wrapper for HDF.PInvoke Library</Description>
-    <Copyright>Copyright 2020 Lior Banai</Copyright>
+    <Copyright>Lior Banai 2020</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LiorBanai/Hdf5DotnetWrapper</PackageProjectUrl>
     <PackageIcon>hdf5Wrapper.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/LiorBanai/Hdf5DotnetWrapper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Add support for reading back hdf5 files</PackageReleaseNotes>
+    <PackageReleaseNotes>Add support for reading back hdf5 files.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.5.6</Version>
+    <Version>1.0.5.7</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

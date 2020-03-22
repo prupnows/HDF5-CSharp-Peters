@@ -3,10 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using HDF.PInvoke;
+using Hdf5DotnetWrapper.Interfaces;
 
 namespace Hdf5DotnetWrapper
 {
     using hid_t = Int64;
+    public class Hdf5Dataset : IHdf5ReaderWriter
+    {
+        public (bool success, Array result) ReadToArray<T>(long groupId, string name, string alternativeName)
+        {
+            return Hdf5.ReadDatasetToArray<T>(groupId, name, alternativeName);
+        }
+
+        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset, string datasetName = null)
+        {
+            return Hdf5.WriteDatasetFromArray<T>(groupId, name, dset, datasetName);
+        }
+        public (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null)
+        {
+            return Hdf5.WriteStrings(groupId, name, (string[])collection, datasetName);
+        }
+        //public void WriteStucts<T>(long groupId, string name, IEnumerable<T> dset, string datasetName = null)
+        //{
+        //    Hdf5.WriteCompounds(groupId, name, dset);
+        //}
+
+        public Array ReadStucts<T>(long groupId, string name) where T : struct
+        {
+            return Hdf5.ReadCompounds<T>(groupId, name).ToArray();
+        }
+
+        public (bool success, IEnumerable<string>) ReadStrings(long groupId, string name, string alternativeName)
+        {
+            return Hdf5.ReadStrings(groupId, name, alternativeName);
+        }
+
+    }
     public static partial class Hdf5
     {
         static Hdf5ReaderWriter dsetRW = new Hdf5ReaderWriter(new Hdf5Dataset());
@@ -19,13 +51,18 @@ namespace Hdf5DotnetWrapper
         /// <param name="name">name of the dataset</param>
         /// <param name="alternativeName">Alternative name</param>
         /// <returns>The n-dimensional dataset</returns>
-        public static Array ReadDatasetToArray<T>(hid_t groupId, string name, string alternativeName = "") //where T : struct
+        public static (bool success, Array result) ReadDatasetToArray<T>(long groupId, string name, string alternativeName = "") //where T : struct
         {
             var datatype = GetDatatype(typeof(T));
 
             var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             if (datasetId < 0) //does not exis?
                 datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
+            if (datasetId <= 0)
+            {
+                Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
+                return (false, Array.Empty<T>());
+            }
             var spaceId = H5D.get_space(datasetId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             long count = H5S.get_simple_extent_npoints(spaceId);
@@ -37,7 +74,7 @@ namespace Hdf5DotnetWrapper
                 ulong[] maxDims = new ulong[rank];
                 ulong[] dims = new ulong[rank];
                 ulong[] chunkDims = new ulong[rank];
-                hid_t memId = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
+                long memId = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
                 long[] lengths = dims.Select(d => Convert.ToInt64(d)).ToArray();
                 dset = Array.CreateInstance(type, lengths);
                 var typeId = H5D.get_type(datasetId);
@@ -60,7 +97,7 @@ namespace Hdf5DotnetWrapper
                 dset = Array.CreateInstance(type, new long[1] { 0 });
             H5D.close(datasetId);
             H5S.close(spaceId);
-            return dset;
+            return (true,dset);
 
         }
 
@@ -73,7 +110,7 @@ namespace Hdf5DotnetWrapper
         /// <param name="beginIndex">The index of the first row to be read</param>
         /// <param name="endIndex">The index of the last row to be read</param>
         /// <returns>The two dimensional dataset</returns>
-        public static T[,] ReadDataset<T>(hid_t groupId, string name, ulong beginIndex, ulong endIndex) //where T : struct
+        public static T[,] ReadDataset<T>(long groupId, string name, ulong beginIndex, ulong endIndex) //where T : struct
         {
             ulong[] start = { 0, 0 }, stride = null, count = { 0, 0 },
                 block = null, offsetOut = { 0, 0 };
@@ -123,15 +160,15 @@ namespace Hdf5DotnetWrapper
         /// <param name="name">name of the dataset</param>
         /// <param name="alternativeName"></param>
         /// <returns>One value or string</returns>
-        public static T ReadOneValue<T>(hid_t groupId, string name, string alternativeName = "") //where T : struct
+        public static T ReadOneValue<T>(long groupId, string name, string alternativeName = "") //where T : struct
         {
             var dset = dsetRW.ReadArray<T>(groupId, name, alternativeName);
-            int[] first = new int[dset.Rank].Select(f => 0).ToArray();
-            T result = (T)dset.GetValue(first);
+            int[] first = new int[dset.result.Rank].Select(f => 0).ToArray();
+            T result = (T)dset.result.GetValue(first);
             return result;
         }
 
-        public static Array ReadDataset<T>(hid_t groupId, string name, string alternativeName = "")
+        public static (bool success, Array result) ReadDataset<T>(long groupId, string name, string alternativeName = "")
         {
             return dsetRW.ReadArray<T>(groupId, name, alternativeName);
         }
@@ -144,7 +181,7 @@ namespace Hdf5DotnetWrapper
         /// <param name="name">name of the dataset</param>
         /// <param name="dset">The dataset</param>
         /// <returns>status of the write method</returns>
-        public static (int success, hid_t CreatedgroupId) WriteOneValue<T>(hid_t groupId, string name, T dset, Dictionary<string, List<string>> attributes)
+        public static (int success, long CreatedgroupId) WriteOneValue<T>(long groupId, string name, T dset, Dictionary<string, List<string>> attributes)
         {
             if (typeof(T) == typeof(string))
                 //WriteStrings(groupId, name, new string[] { dset.ToString() });
@@ -153,13 +190,13 @@ namespace Hdf5DotnetWrapper
             return dsetRW.WriteArray(groupId, name, oneVal, string.Empty, attributes);
         }
 
-        public static void WriteDataset(hid_t groupId, string name, Array collection)
+        public static void WriteDataset(long groupId, string name, Array collection)
         {
             dsetRW.WriteArray(groupId, name, collection, string.Empty, new Dictionary<string, List<string>>());
         }
 
 
-        public static (int success, hid_t CreatedgroupId) WriteDatasetFromArray<T>(hid_t groupId, string name, Array dset, string datasetName = null) //where T : struct
+        public static (int success, long CreatedgroupId) WriteDatasetFromArray<T>(long groupId, string name, Array dset, string datasetName = null) //where T : struct
         {
             int rank = dset.Rank;
             ulong[] dims = Enumerable.Range(0, rank).Select(i => { return (ulong)dset.GetLength(i); }).ToArray();
@@ -191,7 +228,7 @@ namespace Hdf5DotnetWrapper
         /// <param name="name">name of the dataset</param>
         /// <param name="dset">The dataset</param>
         /// <returns>status of the write method</returns>
-        public static hid_t AppendDataset<T>(hid_t groupId, string name, Array dset, ulong chunkX = 200) where T : struct
+        public static long AppendDataset<T>(long groupId, string name, Array dset, ulong chunkX = 200) where T : struct
         {
             var rank = dset.Rank;
             ulong[] dimsExtend = Enumerable.Range(0, rank).Select(i =>
@@ -199,7 +236,7 @@ namespace Hdf5DotnetWrapper
             ulong[] maxDimsExtend = null;
             ulong[] dimsChunk = new[] { chunkX }.Concat(dimsExtend.Skip(1)).ToArray();
             ulong[] zeros = Enumerable.Range(0, rank).Select(z => (ulong)0).ToArray();
-            hid_t status, spaceId, datasetId;
+            long status, spaceId, datasetId;
 
 
             // name = ToHdf5Name(name);

@@ -11,12 +11,10 @@ namespace Hdf5DotnetWrapper
     using hid_t = Int64;
     public static partial class Hdf5
     {
-
-
-        public static IEnumerable<string> ReadStrings(hid_t groupId, string name, string alternativeName)
+        public static (bool success, IEnumerable<string> result) ReadStrings(long groupId, string name, string alternativeName)
         {
 
-            hid_t datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+            long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
             H5T.set_cset(datatype, H5T.cset_t.UTF8);
             H5T.set_strpad(datatype, H5T.str_t.NULLTERM);
 
@@ -25,7 +23,12 @@ namespace Hdf5DotnetWrapper
             var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             if (datasetId < 0) //does not exist?
                 datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
-            hid_t spaceId = H5D.get_space(datasetId);
+            if (datasetId <= 0)
+            {
+                Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
+                return (false, Array.Empty<string>());
+            }
+            long spaceId = H5D.get_space(datasetId);
 
             long count = H5S.get_simple_extent_npoints(spaceId);
             H5S.close(spaceId);
@@ -54,21 +57,21 @@ namespace Hdf5DotnetWrapper
             }
             H5T.close(datatype);
             H5D.close(datasetId);
-            return strs;
+            return (true,strs);
         }
 
 
-        public static (int success, hid_t CreatedgroupId) WriteStrings(hid_t groupId, string name, IEnumerable<string> strs, string datasetName = null)
+        public static (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> strs, string datasetName = null)
         {
 
             // create UTF-8 encoded test datasets
 
-            hid_t datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+            long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
             H5T.set_cset(datatype, H5T.cset_t.UTF8);
             H5T.set_strpad(datatype, H5T.str_t.SPACEPAD);
 
             int strSz = strs.Count();
-            hid_t spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
+            long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
 
             var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
 
@@ -102,7 +105,7 @@ namespace Hdf5DotnetWrapper
             return (result, datasetId);
         }
 
-        public static int WriteAsciiString(hid_t groupId, string name, string str)
+        public static int WriteAsciiString(long groupId, string name, string str)
         {
             var spaceNullId = H5S.create(H5S.class_t.NULL);
             var spaceScalarId = H5S.create(H5S.class_t.SCALAR);
@@ -144,7 +147,7 @@ namespace Hdf5DotnetWrapper
             return result;
         }
 
-        public static string ReadAsciiString(hid_t groupId, string name)
+        public static string ReadAsciiString(long groupId, string name)
         {
             var datatype = H5T.FORTRAN_S1;
 
@@ -178,17 +181,17 @@ namespace Hdf5DotnetWrapper
             return result;
         }
 
-        public static int WriteUnicodeString(hid_t groupId, string name, string str, H5T.str_t strPad = H5T.str_t.SPACEPAD)
+        public static int WriteUnicodeString(long groupId, string name, string str, H5T.str_t strPad = H5T.str_t.SPACEPAD)
         {
             byte[] wdata = Encoding.UTF8.GetBytes(str);
 
-            hid_t spaceId = H5S.create(H5S.class_t.SCALAR);
+            long spaceId = H5S.create(H5S.class_t.SCALAR);
 
-            hid_t dtype = H5T.create(H5T.class_t.STRING, new IntPtr(wdata.Length));
+            long dtype = H5T.create(H5T.class_t.STRING, new IntPtr(wdata.Length));
             H5T.set_cset(dtype, H5T.cset_t.UTF8);
             H5T.set_strpad(dtype, strPad);
 
-            hid_t datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), dtype, spaceId);
+            long datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), dtype, spaceId);
 
             GCHandle hnd = GCHandle.Alloc(wdata, GCHandleType.Pinned);
             int result = H5D.write(datasetId, dtype, H5S.ALL,
@@ -201,7 +204,7 @@ namespace Hdf5DotnetWrapper
             return result;
         }
 
-        public static string ReadUnicodeString(hid_t groupId, string name)
+        public static string ReadUnicodeString(long groupId, string name)
         {
             var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             var typeId = H5D.get_type(datasetId);
@@ -209,7 +212,7 @@ namespace Hdf5DotnetWrapper
             if (H5T.is_variable_str(typeId) > 0)
             {
                 var spaceId = H5D.get_space(datasetId);
-                hid_t count = H5S.get_simple_extent_npoints(spaceId);
+                long count = H5S.get_simple_extent_npoints(spaceId);
 
                 IntPtr[] rdata = new IntPtr[count];
 
@@ -260,7 +263,7 @@ namespace Hdf5DotnetWrapper
 
             H5D.close(datasetId);
 
-            return Encoding.UTF8.GetString(strDest).TrimEnd((Char)0);
+            return Encoding.UTF8.GetString(strDest).TrimEnd((char)0);
         }
     }
 

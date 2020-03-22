@@ -9,12 +9,12 @@ namespace Hdf5DotnetWrapper
     public static partial class Hdf5
     {
 
-        public static int CloseGroup(hid_t groupId)
+        public static int CloseGroup(long groupId)
         {
             return H5G.close(groupId);
         }
 
-        public static hid_t CreateGroup(hid_t groupId, string groupName)
+        public static long CreateGroup(long groupId, string groupName)
         {
 
             return (GroupExists(groupId, groupName))
@@ -31,10 +31,10 @@ namespace Hdf5DotnetWrapper
         /// <param name="groupOrfileId"></param>
         /// <param name="groupName"></param>
         /// <returns></returns>
-        public static hid_t CreateGroupRecursively(hid_t groupOrfileId, string groupName)
+        public static long CreateGroupRecursively(long groupOrfileId, string groupName)
         {
             IEnumerable<string> grps = groupName.Split('/');
-            hid_t gid = groupOrfileId;
+            long gid = groupOrfileId;
             groupName = "";
             foreach (var name in grps)
             {
@@ -44,7 +44,7 @@ namespace Hdf5DotnetWrapper
             return gid;
         }
 
-        public static bool GroupExists(hid_t groupId, string groupName)
+        public static bool GroupExists(long groupId, string groupName)
         {
             bool exists = false;
             try

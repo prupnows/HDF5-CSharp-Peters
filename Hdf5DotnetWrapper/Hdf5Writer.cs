@@ -10,7 +10,7 @@ namespace Hdf5DotnetWrapper
     {
 
 
-        public static object WriteObject(hid_t groupId, object writeValue, string groupName = null)
+        public static object WriteObject(long groupId, object writeValue, string groupName = null)
         {
             if (writeValue == null)
             {
@@ -45,7 +45,7 @@ namespace Hdf5DotnetWrapper
             return (writeValue);
         }
 
-        private static void WriteHdf5Attributes(Type type, hid_t groupId, string name, string datasetName)
+        private static void WriteHdf5Attributes(Type type, long groupId, string name, string datasetName)
         {
             foreach (Attribute attr in Attribute.GetCustomAttributes(type))
             {
@@ -65,7 +65,7 @@ namespace Hdf5DotnetWrapper
 
         }
 
-        private static void WriteFields(Type tyObject, object writeValue, hid_t groupId)
+        private static void WriteFields(Type tyObject, object writeValue, long groupId)
         {
             FieldInfo[] miMembers = tyObject.GetFields(BindingFlags.DeclaredOnly | /*BindingFlags.NonPublic |*/ BindingFlags.Instance | BindingFlags.Public);
 
@@ -88,7 +88,7 @@ namespace Hdf5DotnetWrapper
             }
         }
 
-        private static void WriteProperties(Type tyObject, object writeValue, hid_t groupId)
+        private static void WriteProperties(Type tyObject, object writeValue, long groupId)
         {
             PropertyInfo[] miMembers = tyObject.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 
@@ -129,7 +129,7 @@ namespace Hdf5DotnetWrapper
             return noSaveAttr;
         }
 
-        private static void WriteField(object infoVal, Dictionary<string, List<string>> attributes, hid_t groupId, string name)
+        private static void WriteField(object infoVal, Dictionary<string, List<string>> attributes, long groupId, string name)
         {
             Type ty = infoVal.GetType();
             TypeCode code = Type.GetTypeCode(ty);
@@ -147,14 +147,14 @@ namespace Hdf5DotnetWrapper
                     dsetRW.WriteArray(groupId, name, (Array)infoVal, string.Empty, attributes);
                 else
                 {
-                    CallByReflection<(int, hid_t)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal, attributes });
+                    CallByReflection<(int, long)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal, attributes });
                 }
             }
             else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
             {
-                (int success, hid_t CreatedgroupId) = //WriteOneValue(groupId, name, infoVal);
+                (int success, long CreatedgroupId) = //WriteOneValue(groupId, name, infoVal);
 
-                    CallByReflection<(int, hid_t)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal, attributes });
+                    CallByReflection<(int, long)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal, attributes });
                 //todo: fix it
                 //add its attributes if there are: 
                 //foreach (Attribute attr in Attribute.GetCustomAttributes(filedInfo))

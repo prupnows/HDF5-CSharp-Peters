@@ -1,78 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hdf5DotnetWrapper.Interfaces;
 
 namespace Hdf5DotnetWrapper
 {
-    public class Hdf5Dataset : IHdf5ReaderWriter
-    {
-        public Array ReadToArray<T>(long groupId, string name, string alternativeName)
-        {
-            return Hdf5.ReadDatasetToArray<T>(groupId, name, alternativeName);
-        }
-
-        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset, string datasetName = null)
-        {
-            return Hdf5.WriteDatasetFromArray<T>(groupId, name, dset, datasetName);
-        }
-        public (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null)
-        {
-            return Hdf5.WriteStrings(groupId, name, (string[])collection, datasetName);
-        }
-        //public void WriteStucts<T>(long groupId, string name, IEnumerable<T> dset, string datasetName = null)
-        //{
-        //    Hdf5.WriteCompounds(groupId, name, dset);
-        //}
-
-        public Array ReadStucts<T>(long groupId, string name) where T : struct
-        {
-            return Hdf5.ReadCompounds<T>(groupId, name).ToArray();
-        }
-
-        public IEnumerable<string> ReadStrings(long groupId, string name, string alternativeName)
-        {
-            return Hdf5.ReadStrings(groupId, name, alternativeName);
-        }
-
-    }
-
-    public class Hdf5AttributeRW : IHdf5ReaderWriter
-    {
-        public Array ReadToArray<T>(long groupId, string name, string alternativeName)
-        {
-            return Hdf5.ReadPrimitiveAttributes<T>(groupId, name, alternativeName);
-        }
-
-        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset, string datasetName)
-        {
-            return Hdf5.WritePrimitiveAttribute<T>(groupId, name, dset, datasetName);
-        }
-
-        public (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null)
-        {
-            return Hdf5.WriteStringAttributes(groupId, name, (string[])collection, datasetName);
-        }
-
-
-        public IEnumerable<string> ReadStrings(long groupId, string name, string alternativeName)
-        {
-            return Hdf5.ReadStringAttributes(groupId, name, alternativeName);
-        }
-
-    }
-
-    public interface IHdf5ReaderWriter
-    {
-        (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset, string datasetName = null);
-        Array ReadToArray<T>(long groupId, string name, string alternativeName);
-
-        (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null);
-        IEnumerable<string> ReadStrings(long groupId, string name, string alternativeName);
-
-
-    }
-
-    public class Hdf5ReaderWriter
+   public class Hdf5ReaderWriter
     {
         IHdf5ReaderWriter rw;
         public Hdf5ReaderWriter(IHdf5ReaderWriter _rw)
@@ -187,35 +120,36 @@ namespace Hdf5DotnetWrapper
         }
 
 
-        public Array ReadArray<T>(long groupId, string name, string alternativeName)
+        public (bool success, Array result) ReadArray<T>(long groupId, string name, string alternativeName)
         {
             return ReadArray(typeof(T), groupId, name, alternativeName);
         }
 
-        public Array ReadArray(Type elementType, long groupId, string name, string alternativeName)
+        public (bool success, Array result) ReadArray(Type elementType, long groupId, string name, string alternativeName)
         {
             TypeCode ty = Type.GetTypeCode(elementType);
-
+            bool success;
+            Array result;
             switch (ty)
             {
                 case TypeCode.Boolean:
-                    var bls = rw.ReadToArray<ushort>(groupId, name, alternativeName);
-                    return bls.ConvertArray<ushort, bool>(Convert.ToBoolean);
+                    (success, result) = rw.ReadToArray<ushort>(groupId, name, alternativeName);
+                    return(success, result.ConvertArray<ushort, bool>(Convert.ToBoolean));
 
                 case TypeCode.Byte:
                     return rw.ReadToArray<byte>(groupId, name, alternativeName);
 
                 case TypeCode.Char:
-                    var chrs = rw.ReadToArray<ushort>(groupId, name, alternativeName);
-                    return chrs.ConvertArray<ushort, char>(Convert.ToChar);
+                    (success, result) = rw.ReadToArray<ushort>(groupId, name, alternativeName);
+                    return (success, result.ConvertArray<ushort, char>(Convert.ToChar));
 
                 case TypeCode.DateTime:
-                    var ticks = rw.ReadToArray<long>(groupId, name, alternativeName);
-                    return ticks.ConvertArray<long, DateTime>(tc => Hdf5Conversions.ToDateTime(tc, Hdf5.Hdf5Settings.DateTimeType));
+                    (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName);
+                    return (success, result.ConvertArray<long, DateTime>(tc => Hdf5Conversions.ToDateTime(tc, Hdf5.Hdf5Settings.DateTimeType)));
 
                 case TypeCode.Decimal:
-                    var decs = rw.ReadToArray<double>(groupId, name, alternativeName);
-                    return decs.ConvertArray<double, decimal>(Convert.ToDecimal);
+                    (success, result) = rw.ReadToArray<double>(groupId, name, alternativeName);
+                    return (success,result.ConvertArray<double, decimal>(Convert.ToDecimal));
 
                 case TypeCode.Double:
                     return rw.ReadToArray<double>(groupId, name, alternativeName);
@@ -245,15 +179,17 @@ namespace Hdf5DotnetWrapper
                     return rw.ReadToArray<ulong>(groupId, name, alternativeName);
 
                 case TypeCode.String:
-                    return rw.ReadStrings(groupId, name, alternativeName).ToArray();
+                    var (valid, strings) = rw.ReadStrings(groupId, name, alternativeName);
+                    return (valid, strings.ToArray());
 
                 default:
                     if (elementType == typeof(TimeSpan))
                     {
-                        var tss = rw.ReadToArray<long>(groupId, name, alternativeName);
-                        return tss.ConvertArray<long, TimeSpan>(tcks => new TimeSpan(tcks));
+                        (success, result) =  rw.ReadToArray<long>(groupId, name, alternativeName);
+                        return (success, result.ConvertArray<long, TimeSpan>(tcks => new TimeSpan(tcks)));
                     }
                     string str = "type is not supported: ";
+                    Hdf5Utils.LogError?.Invoke($"Error: {str}");
                     throw new NotSupportedException(str + elementType.FullName);
 
             }

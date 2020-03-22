@@ -29,7 +29,7 @@ namespace Hdf5UnitTests
                 Assert.IsTrue(fileId > 0);
                 Hdf5.WriteDataset(fileId, "/test", times);
 
-                var timesRead = (DateTime[,])Hdf5.ReadDataset<DateTime>(fileId, "/test");
+                var timesRead = (DateTime[,])Hdf5.ReadDataset<DateTime>(fileId, "/test").result;
                 CompareDatasets(times, timesRead);
 
                 Hdf5.CloseFile(fileId);
@@ -58,7 +58,7 @@ namespace Hdf5UnitTests
                 Assert.IsTrue(fileId > 0);
                 Hdf5.WriteDataset(fileId, "/test", times);
 
-                TimeSpan[,] timesRead = (TimeSpan[,])Hdf5.ReadDataset<TimeSpan>(fileId, "/test");
+                TimeSpan[,] timesRead = (TimeSpan[,])Hdf5.ReadDataset<TimeSpan>(fileId, "/test").result;
                 CompareDatasets(times, timesRead);
 
                 Hdf5.CloseFile(fileId);
@@ -91,7 +91,7 @@ namespace Hdf5UnitTests
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                double[,] dset2 = (double[,])Hdf5.ReadDataset<double>(fileId, "/test");
+                double[,] dset2 = (double[,])Hdf5.ReadDataset<double>(fileId, "/test").result;
                 CompareDatasets(dset, dset2);
                 bool same = dset == dset2;
 
@@ -212,13 +212,13 @@ namespace Hdf5UnitTests
                 //var dset = Hdf5.ReadDatasetToArray<double>(groupId, datasetName);
                 var dset = Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName, "/", datasetName));
 
-                Assert.IsTrue(dset.Rank == dsets.First().Rank);
+                Assert.IsTrue(dset.result.Rank == dsets.First().Rank);
                 var xSum = dsets.Select(d => d.GetLength(0)).Sum();
-                Assert.IsTrue(xSum == dset.GetLength(0));
+                Assert.IsTrue(xSum == dset.result.GetLength(0));
                 var testRange = Enumerable.Range(0, 30).Select(t => (double)t);
 
                 // get every 5th element in the matrix
-                var x0Range = dset.Cast<double>().Where((d, i) => i % 5 == 0);
+                var x0Range = dset.result.Cast<double>().Where((d, i) => i % 5 == 0);
                 Assert.IsTrue(testRange.SequenceEqual(x0Range));
 
                 Hdf5.CloseFile(fileId);
@@ -316,13 +316,13 @@ namespace Hdf5UnitTests
                 //var dset = Hdf5.ReadDatasetToArray<double>(groupId, datasetName);
                 var dset = Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName, "/", datasetName));
 
-                Assert.IsTrue(dset.Rank == dsets.First().Rank);
+                Assert.IsTrue(dset.result.Rank == dsets.First().Rank);
                 var xSum = dsets.Select(d => d.GetLength(0)).Sum();
-                Assert.IsTrue(xSum == dset.GetLength(0));
+                Assert.IsTrue(xSum == dset.result.GetLength(0));
                 var testRange = Enumerable.Range(0, 30).Select(t => (double)t);
 
                 // get every 5th element in the matrix
-                var x0Range = dset.Cast<double>().Where((d, i) => i % 5 == 0);
+                var x0Range = dset.result.Cast<double>().Where((d, i) => i % 5 == 0);
                 Assert.IsTrue(testRange.SequenceEqual(x0Range));
 
                 Hdf5.CloseFile(fileId);

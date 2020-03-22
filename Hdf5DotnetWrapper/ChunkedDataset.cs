@@ -11,12 +11,12 @@ namespace Hdf5DotnetWrapper
         ulong[] currentDims, oldDims;
         readonly ulong[] maxDims = { H5S.UNLIMITED, H5S.UNLIMITED };
         private ulong[] chunkDims;
-        hid_t status, spaceId, datasetId, propId;
-        readonly hid_t typeId, datatype;
+        long status, spaceId, datasetId, propId;
+        readonly long typeId, datatype;
 
         public string Datasetname { get; private set; }
         public int Rank { get; private set; }
-        public hid_t GroupId { get; private set; }
+        public long GroupId { get; private set; }
         protected bool DatasetExists => H5L.exists(GroupId, Hdf5Utils.NormalizedName(Datasetname)) > 0;
         protected bool FalseGroupId => GroupId <= 0;
         /// <summary>
@@ -24,7 +24,7 @@ namespace Hdf5DotnetWrapper
         /// </summary>
         /// <param name="name"></param>
         /// <param name="groupId"></param>
-        public ChunkedDataset(string name, hid_t groupId)
+        public ChunkedDataset(string name, long groupId)
         {
             Datasetname = name;
             GroupId = groupId;
@@ -38,7 +38,7 @@ namespace Hdf5DotnetWrapper
         /// <param name="name"></param>
         /// <param name="groupId"></param>
         /// <param name="chunckSize"></param>
-        public ChunkedDataset(string name, hid_t groupId, ulong[] chunckSize)
+        public ChunkedDataset(string name, long groupId, ulong[] chunckSize)
         {
             Datasetname = name;
             GroupId = groupId;
@@ -53,7 +53,7 @@ namespace Hdf5DotnetWrapper
         /// <param name="name"></param>
         /// <param name="groupId"></param>
         /// <param name="dataset"></param>
-        public ChunkedDataset(string name, hid_t groupId, T[,] dataset) : this(name, groupId, new[] { Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1)) })
+        public ChunkedDataset(string name, long groupId, T[,] dataset) : this(name, groupId, new[] { Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1)) })
         {
             FirstDataset(dataset);
         }

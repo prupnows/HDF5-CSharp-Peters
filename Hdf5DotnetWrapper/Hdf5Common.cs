@@ -15,7 +15,7 @@ namespace Hdf5DotnetWrapper
         public int offset;
         public int size;
         public Type type;
-        public hid_t datatype;
+        public long datatype;
     }
 
 
@@ -74,25 +74,25 @@ namespace Hdf5DotnetWrapper
         /// <param name="filename"></param>
         /// <param name="readOnly"></param>
         /// <returns></returns>
-        public static hid_t OpenFile(string filename, bool readOnly = false)
+        public static long OpenFile(string filename, bool readOnly = false)
         {
             uint access = (readOnly) ? H5F.ACC_RDONLY : H5F.ACC_RDWR;
             var fileId = H5F.open(filename, access);
             return fileId;
         }
 
-        public static hid_t CreateFile(string filename)
+        public static long CreateFile(string filename)
         {
             return H5F.create(filename, H5F.ACC_TRUNC);
         }
 
 
 
-        public static hid_t CloseFile(hid_t fileId)
+        public static long CloseFile(long fileId)
         {
             return H5F.close(fileId);
         }
-        public static hid_t Flush(long objectId, H5F.scope_t scope)
+        public static long Flush(long objectId, H5F.scope_t scope)
         {
             return H5F.flush(objectId, scope);
         }
@@ -102,10 +102,10 @@ namespace Hdf5DotnetWrapper
         //}
 
 
-        internal static hid_t GetDatatype(Type type)
+        internal static long GetDatatype(Type type)
         {
             //var typeName = type.Name;
-            hid_t dataType;
+            long dataType;
 
             var typeCode = Type.GetTypeCode(type);
             switch (typeCode)
@@ -157,10 +157,10 @@ namespace Hdf5DotnetWrapper
             return dataType;
         }
 
-        internal static hid_t GetDatatypeIEEE(Type type)
+        internal static long GetDatatypeIEEE(Type type)
         {
             var typeCode = Type.GetTypeCode(type);
-            hid_t dataType;
+            long dataType;
             switch (typeCode)
             {
                 case TypeCode.Int16:

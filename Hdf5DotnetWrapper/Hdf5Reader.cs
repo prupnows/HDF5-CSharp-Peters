@@ -13,7 +13,7 @@ namespace Hdf5DotnetWrapper
     public partial class Hdf5
     {
 
-        public static T ReadObject<T>(hid_t groupId, T readValue, string groupName)
+        public static T ReadObject<T>(long groupId, T readValue, string groupName)
         {
             if (readValue == null)
             {
@@ -44,13 +44,13 @@ namespace Hdf5DotnetWrapper
             return readValue;
         }
 
-        public static T ReadObject<T>(hid_t groupId, string groupName) where T : new()
+        public static T ReadObject<T>(long groupId, string groupName) where T : new()
         {
             T readValue = new T();
             return ReadObject(groupId, readValue, groupName);
         }
 
-        private static void ReadFields(Type tyObject, object readValue, hid_t groupId)
+        private static void ReadFields(Type tyObject, object readValue, long groupId)
         {
             FieldInfo[] miMembers = tyObject.GetFields(BindingFlags.DeclaredOnly |
        /*BindingFlags.NonPublic |*/ BindingFlags.Public | BindingFlags.Instance);
@@ -80,41 +80,44 @@ namespace Hdf5DotnetWrapper
                 TypeCode code = Type.GetTypeCode(ty);
 
                 string name = info.Name;
-                Trace.WriteLine($"groupname: {tyObject.Name}; field name: {name}");
-
+                Hdf5Utils.LogDebug?.Invoke($"groupname: {tyObject.Name}; field name: {name}");
+                bool success;
+                Array values;
                 if (ty.IsArray)
                 {
                     var elType = ty.GetElementType();
                     TypeCode elCode = Type.GetTypeCode(elType);
 
-                    Array values;
                     if (elCode != TypeCode.Object)
                     {
-                        values = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                       (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
                     }
                     else
                     {
-                        values = CallByReflection<Array>(nameof(ReadCompounds), elType, new object[] { groupId, name });
+                        (success, values) = CallByReflection< (bool,Array)>(nameof(ReadCompounds), elType, new object[] { groupId, name });
                     }
-                    info.SetValue(readValue, values);
+
+                    if (success)
+                        info.SetValue(readValue, values);
                 }
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
-                    Array values = dsetRW.ReadArray(ty, groupId, name, alternativeName);
+                    (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName);
                     // get first value depending on rank of the matrix
                     int[] first = new int[values.Rank].Select(f => 0).ToArray();
-                    info.SetValue(readValue, values.GetValue(first));
+                    if (success)
+                        info.SetValue(readValue, values.GetValue(first));
                 }
                 else
                 {
-                    Object value = info.GetValue(readValue);
+                    object value = info.GetValue(readValue);
                     if (value != null)
                         ReadObject(groupId, value, name);
                 }
             }
         }
 
-        private static void ReadProperties(Type tyObject, object readValue, hid_t groupId)
+        private static void ReadProperties(Type tyObject, object readValue, long groupId)
         {
             PropertyInfo[] miMembers = tyObject.GetProperties(/*BindingFlags.DeclaredOnly |*/
        BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
@@ -140,16 +143,19 @@ namespace Hdf5DotnetWrapper
                 TypeCode code = Type.GetTypeCode(ty);
                 string name = info.Name;
 
-
+                bool success;
+                Array values;
                 if (ty.IsArray)
                 {
                     var elType = ty.GetElementType();
                     TypeCode elCode = Type.GetTypeCode(elType);
 
-                    Array values;
+
                     if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
                     {
-                        values = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                        if (success)
+                            info.SetValue(readValue, values);
                     }
                     else
                     {
@@ -157,13 +163,14 @@ namespace Hdf5DotnetWrapper
                         var objArr = (obj).Cast<object>().ToArray();
                         values = Array.CreateInstance(elType, objArr.Length);
                         Array.Copy(objArr, values, objArr.Length);
+                        info.SetValue(readValue, values);
                     }
-                    info.SetValue(readValue, values);
+              
                 }
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
-                    Array values = dsetRW.ReadArray(ty, groupId, name, alternativeName);
-                    if (values.Length > 0)
+                    (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName);
+                    if (success && values.Length > 0 )
                     {
                         int[] first = new int[values.Rank].Select(f => 0).ToArray();
                         info.SetValue(readValue, values.GetValue(first));
@@ -171,7 +178,7 @@ namespace Hdf5DotnetWrapper
                 }
                 else
                 {
-                    Object value = info.GetValue(readValue, null);
+                    object value = info.GetValue(readValue, null);
                     if (value != null)
                     {
                         value = ReadObject(groupId, value, name);
