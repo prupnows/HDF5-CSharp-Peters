@@ -2,15 +2,15 @@
 
 [![Nuget](https://img.shields.io/nuget/v/Hdf5DotnetWrapper)](https://www.nuget.org/packages/Hdf5DotnetWrapper/) [![Build Status](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_apis/build/status/LiorBanai.Hdf5DotnetWrapper)](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_build?definitionId=1) [![Nuget](https://img.shields.io/nuget/dt/Hdf5DotnetWrapper)](https://www.nuget.org/packages/Hdf5DotnetWrapper/)
 <a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/20655/badge.svg"/></a>
-<a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/releases" alt="Latest Release">
-    <img src="https://img.shields.io/github/v/release/LiorBanai/Hdf5DotnetWrapper"/>
+<a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/releases">
+    <img src="https://img.shields.io/github/v/release/LiorBanai/Hdf5DotnetWrapper"  alt="Latest Release"/>
 </a>
  <a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/compare/V1.0.5.7...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/Hdf5DotnetWrapper/latest"/></a>
-<a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/issues" alt="Issues">
-    <img src="https://img.shields.io/github/issues/LiorBanai/Hdf5DotnetWrapper"/>
+<a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/issues">
+    <img src="https://img.shields.io/github/issues/LiorBanai/Hdf5DotnetWrapper" alt="Issues"/>
 </a>
-<a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/blob/master/LICENSE" alt="License">
-    <img src="https://img.shields.io/github/license/LiorBanai/Hdf5DotnetWrapper"/>
+<a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/LiorBanai/Hdf5DotnetWrapper"  alt="License"/>
 </a>
 
 
