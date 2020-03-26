@@ -100,3 +100,34 @@ The object is written to a file and than read back in a new object.
     Hdf5.CloseFile(fileId);
 
 ```
+
+for more example see unit test project
+
+
+## Additional settings
+ - Hdf5EntryNameAttribute: control the name of the field/property in the h5 file:
+ 
+ ```csharp
+     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    public sealed class Hdf5EntryNameAttribute : Attribute
+    {
+        public string Name { get; }
+        public Hdf5EntryNameAttribute(string name)
+        {
+            Name = name;
+        }
+    }
+```
+
+example:  
+```csharp
+private class TestClass : IEquatable<TestClass>
+        {
+            public int TestInteger { get; set; }
+            public double TestDouble { get; set; }
+            public bool TestBoolean { get; set; }
+            public string TestString { get; set; }
+            [Hdf5EntryNameAttribute("Test_time")]
+            public DateTime TestTime { get; set; }
+        }
+```
