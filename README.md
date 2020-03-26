@@ -160,3 +160,15 @@ usage:
         }
             
 ```
+
+ - Logging: use can set logging callback via: Hdf5Utils.LogError, Hdf5Utils.LogInfo, etc
+ 
+ ```csharp
+public static class Hdf5Utils
+    {
+        public static Action<string> LogError;
+        public static Action<string> LogInfo;
+        public static Action<string> LogDebug;
+        public static Action<string> LogCritical;
+    }
+ ```
