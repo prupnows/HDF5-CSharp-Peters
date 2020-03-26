@@ -131,3 +131,32 @@ private class TestClass : IEquatable<TestClass>
             public DateTime TestTime { get; set; }
         }
 ```
+
+ - Time and fields names in H5 file:
+ 
+ ```csharp
+     public class Settings
+    {
+        public DateTimeType DateTimeType { get; set; }
+        public bool LowerCaseNaming { get; set; }
+    }
+
+    public enum DateTimeType
+    {
+        Ticks,
+        UnixTimeSeconds,
+        UnixTimeMilliseconds
+    }
+    
+```
+
+usage:
+ ```csharp
+        [ClassInitialize()]
+        public static void ClassInitialize(TestContext context)
+        {
+            Hdf5.Hdf5Settings.LowerCaseNaming = true;
+            Hdf5.Hdf5Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
+        }
+            
+```
