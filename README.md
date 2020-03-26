@@ -23,6 +23,9 @@ Hdf5 Wrapper: Set of tools that help in reading and writing hdf5 files for .net 
 In the example below an object is created with some arrays and other variables
 The object is written to a file and than read back in a new object.
 
+
+```csharp
+
      private class TestClassWithArray
         {
             public double[] TestDoubles { get; set; }
@@ -50,7 +53,12 @@ The object is written to a file and than read back in a new object.
 
     Hdf5.CloseFile(fileId);
 
+```
+
+
 ## Write a dataset and append new data to it
+
+```csharp
 
     /// <summary>
     /// create a matrix and fill it with numbers
@@ -90,3 +98,5 @@ The object is written to a file and than read back in a new object.
     ulong endIndex = 21;
     var dset = Hdf5.ReadDataset<double>(fileId, "/test", begIndex, endIndex);
     Hdf5.CloseFile(fileId);
+
+```
