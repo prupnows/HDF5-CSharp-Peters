@@ -1,7 +1,7 @@
 The MIT License (MIT)
 =====================
 
-Copyright © `<2016>` `<LUMC (Leiden University Medical Centre)>`
+Copyright (c) [2020] Lior Banai
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
