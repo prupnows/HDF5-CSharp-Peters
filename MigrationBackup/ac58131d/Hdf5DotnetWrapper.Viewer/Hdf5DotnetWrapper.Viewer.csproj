@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HDF.PInvoke.1.10, Version=1.10.610.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HDF.PInvoke.1.10.1.10.610\lib\netstandard2.0\HDF.PInvoke.1.10.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -76,6 +79,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -94,11 +98,6 @@
       <Project>{7e7b1235-2d9c-4696-9ffb-cf7e14c7202a}</Project>
       <Name>Hdf5DotnetWrapper</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="HDF.PInvoke.1.10">
-      <Version>1.10.610</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

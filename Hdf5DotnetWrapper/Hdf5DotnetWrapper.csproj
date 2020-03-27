@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Hdf5DotnetWrapper</AssemblyName>
     <RootNamespace>Hdf5DotnetWrapper</RootNamespace>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>Hdf5DotNetTools.snk</AssemblyOriginatorKeyFile>
     <Platforms>AnyCPU;x86;x64</Platforms>
@@ -54,7 +54,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HDF.PInvoke.NETStandard" Version="1.10.502" />
+    <PackageReference Include="HDF.PInvoke.1.10" Version="1.10.610" />
     <PackageReference Include="Microsoft.Build.Tasks.Git" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
