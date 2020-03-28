@@ -20,13 +20,15 @@
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/LiorBanai/Hdf5DotnetWrapper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Add support for reading back hdf5 files.</PackageReleaseNotes>
+    <PackageReleaseNotes>- Aligned version with hdf5 binaries version 1.10.610
+- Add support for reading back hdf5 files.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.5.7</Version>
+    <Version>1.10.610.0</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <ApplicationIcon>hdf5Wrapper.ico</ApplicationIcon>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
