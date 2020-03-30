@@ -7,7 +7,7 @@
 <a href="https://github.com/LiorBanai/HDF5-CSharp/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/LiorBanai/HDF5-CSharp"  alt="License"/>
 </a>
-[![Build Status](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_apis/build/status/LiorBanai.Hdf5DotnetWrapper)](https://liorbanai.visualstudio.com/HDF5%20%20Wrapper/_build?definitionId=1) [![Nuget](https://img.shields.io/nuget/dt/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/)
+[![Build Status](https://liorbanai.visualstudio.com/HDF5-CSharp/_apis/build/status/LiorBanai.HDF5-CSharp?branchName=master)](https://liorbanai.visualstudio.com/HDF5-CSharp/_build/latest?definitionId=3&branchName=master)
 <a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/20655/badge.svg"/></a>
 
 [![Nuget](https://img.shields.io/nuget/v/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/)
