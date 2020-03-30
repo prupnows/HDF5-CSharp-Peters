@@ -14,7 +14,7 @@
 <a href="https://github.com/LiorBanai/HDF5-CSharp/releases">
     <img src="https://img.shields.io/github/v/release/LiorBanai/HDF5-CSharp"  alt="Latest Release"/>
 </a>
- <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.0.5.7...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"/></a>
+ <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.10.6...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"/></a>
 
 
 
