@@ -1,4 +1,4 @@
-<h1 align="center">Hdf5 Wrapper: C# wrapper for HDF5 library  <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px"></h1> 
+<h1 align="center">HDF5-CSharp: C# wrapper for HDF5 library <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px"></h1> 
 
 [![Gitter](https://badges.gitter.im/Hdf5DotnetWrapper/community.svg)](https://gitter.im/Hdf5DotnetWrapper/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 <a href="https://github.com/LiorBanai/Hdf5DotnetWrapper/issues">
