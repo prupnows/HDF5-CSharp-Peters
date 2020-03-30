@@ -1,6 +1,6 @@
 <h1 align="center">HDF5-CSharp: C# wrapper for HDF5 library <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px"></h1> 
 
-[![Gitter](https://badges.gitter.im/HDF5-CSharp/community.svg)](https://gitter.im/HDF5-CSharp/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Join the chat at https://gitter.im/HDF5-CSharp/community](https://badges.gitter.im/HDF5-CSharp/community.svg)](https://gitter.im/HDF5-CSharp/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 <a href="https://github.com/LiorBanai/HDF5-CSharp/issues">
     <img src="https://img.shields.io/github/issues/LiorBanai/HDF5-CSharp" alt="Issues"/>
 </a>
@@ -10,7 +10,7 @@
 [![Build Status](https://liorbanai.visualstudio.com/HDF5-CSharp/_apis/build/status/LiorBanai.HDF5-CSharp?branchName=master)](https://liorbanai.visualstudio.com/HDF5-CSharp/_build/latest?definitionId=3&branchName=master)
 <a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/20655/badge.svg"/></a>
 
-[![Nuget](https://img.shields.io/nuget/v/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/) [![Join the chat at https://gitter.im/HDF5-CSharp/community](https://badges.gitter.im/HDF5-CSharp/community.svg)](https://gitter.im/HDF5-CSharp/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Nuget](https://img.shields.io/nuget/v/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/) 
 <a href="https://github.com/LiorBanai/HDF5-CSharp/releases">
     <img src="https://img.shields.io/github/v/release/LiorBanai/HDF5-CSharp"  alt="Latest Release"/>
 </a>
