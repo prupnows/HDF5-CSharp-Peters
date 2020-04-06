@@ -7,8 +7,8 @@
     <ProjectGuid>{9250D586-0B58-400F-BA0A-CA62DAD95B97}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Hdf5DotnetWrapper.frameowrk.UnitTests</RootNamespace>
-    <AssemblyName>Hdf5DotnetWrapper.frameowrk.UnitTests</AssemblyName>
+    <RootNamespace>HDF5CSharp.UnitTests</RootNamespace>
+    <AssemblyName>HDF5CSharp.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -83,6 +83,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="H5ETest.cs" />
     <Compile Include="Hdf5AcquisitionFileTests.cs" />
     <Compile Include="Hdf5AttributeTests.cs" />
     <Compile Include="Hdf5CompoundTests.cs" />

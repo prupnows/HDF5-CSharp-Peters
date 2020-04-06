@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Hdf5DotnetWrapper.UnitTests.Core
+namespace HDF5CSharp.UnitTests.Core
 {
     public static class UtilsExtensions
     {

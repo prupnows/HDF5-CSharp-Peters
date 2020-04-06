@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <AssemblyName>HDF5CSharp.UnitTests.Core</AssemblyName>
+
+    <RootNamespace>HDF5CSharp.UnitTests.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

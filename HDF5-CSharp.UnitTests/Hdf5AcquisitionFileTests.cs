@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using HDF5CSharp;
 using HDF5CSharp.DataTypes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Hdf5DotnetWrapper.frameowrk.UnitTests
+namespace HDF5CSharp.UnitTests
 {
     public partial class Hdf5UnitTests
     {

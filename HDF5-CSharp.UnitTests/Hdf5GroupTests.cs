@@ -2,10 +2,9 @@
 using System.IO;
 using System.Linq;
 using HDF.PInvoke;
-using HDF5CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Hdf5DotnetWrapper.frameowrk.UnitTests
+namespace HDF5CSharp.UnitTests
 {
     public partial class Hdf5UnitTests
     {
