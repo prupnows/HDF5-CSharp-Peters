@@ -12,6 +12,6 @@ namespace HDF5CSharp
         public static Action<string> LogInfo;
         public static Action<string> LogDebug;
         public static Action<string> LogCritical;
-
+        public static Action<string> LogWarning;
     }
 }

@@ -47,12 +47,19 @@ namespace HDF5CSharp
             bool exists = false;
             try
             {
+                Hdf5Errors.EnableErrorReporting(false);
                 H5G.info_t info = new H5G.info_t();
                 var gid = H5G.get_info_by_name(groupId, Hdf5Utils.NormalizedName(groupName), ref info);
                 exists = gid == 0;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Hdf5Errors.EnableErrorReporting(true);
+                Hdf5Utils.LogError?.Invoke($"Error during {nameof(GroupExists)}:{e}");
+            }
+            finally
+            {
+                Hdf5Errors.EnableErrorReporting(true);
             }
             return exists;
         }
