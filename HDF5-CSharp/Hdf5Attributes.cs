@@ -258,7 +258,7 @@ namespace HDF5CSharp
 
             GCHandle[] hnds = new GCHandle[strSz];
             IntPtr[] wdata = new IntPtr[strSz];
-
+ 
             int cntr = 0;
             foreach (string str in values)
             {
