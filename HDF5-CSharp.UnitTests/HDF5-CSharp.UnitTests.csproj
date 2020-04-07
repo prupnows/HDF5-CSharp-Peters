@@ -92,6 +92,7 @@
     <Compile Include="Hdf5ObjectTests.cs" />
     <Compile Include="Hdf5StringsTests.cs" />
     <Compile Include="Hdf5Tests.cs" />
+    <Compile Include="TestsDataTypes.cs" />
     <Compile Include="TestUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

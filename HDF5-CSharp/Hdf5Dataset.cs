@@ -52,16 +52,14 @@ namespace HDF5CSharp
         /// <returns>The n-dimensional dataset</returns>
         public static (bool success, Array result) ReadDatasetToArray<T>(long groupId, string name, string alternativeName = "") //where T : struct
         {
-            var datatype = GetDatatype(typeof(T));
-
-            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
-            if (datasetId < 0) //does not exis?
-                datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
-            if (datasetId <= 0)
+            var (valid,datasetName) = Hdf5Utils.GetRealName(groupId,name,alternativeName);
+            if (!valid)
             {
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
                 return (false, Array.Empty<T>());
             }
+            var datasetId = H5D.open(groupId, datasetName);
+            var datatype = GetDatatype(typeof(T));
             var spaceId = H5D.get_space(datasetId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             long count = H5S.get_simple_extent_npoints(spaceId);

@@ -10,127 +10,6 @@ namespace HDF5CSharp.UnitTests
     [TestClass]
     public partial class Hdf5UnitTests
     {
-        [Hdf5Attributes(new string[] { "some info", "more info" })]
-        class AttributeClass
-        {
-            [Hdf5KeyValuesAttributes("Key", new[] { "NestedInfo some info", "NestedInfo more info" })]
-            public class NestedInfo
-            {
-                public int noAttribute = 10;
-
-                [Hdf5("some money")]
-                public decimal money = 100.12M;
-            }
-
-            [Hdf5("birthdate")]
-            public DateTime aDatetime = new DateTime(1969, 12, 01, 12, 00, 00, DateTimeKind.Local);
-
-            public double noAttribute = 10.0;
-
-            public NestedInfo nested = new NestedInfo();
-        }
-
-        class AllTypesClass
-        {
-            public Boolean aBool = true;
-            public Byte aByte = 10;
-            public Char aChar = 'a';
-            public DateTime aDatetime = new DateTime(1969, 12, 01, 12, 00, 00, DateTimeKind.Local);
-            public Decimal aDecimal = new decimal(2.344);
-            public Double aDouble = 2.1;
-            public Int16 aInt16 = 10;
-            public Int32 aInt32 = 100;
-            public Int64 aInt64 = 1000;
-            public SByte aSByte = 10;
-            public Single aSingle = 100;
-            public UInt16 aUInt16 = 10;
-            public UInt32 aUInt32 = 100;
-            public UInt64 aUInt64 = 1000;
-            public String aString = "test";
-            public TimeSpan aTimeSpan = TimeSpan.FromHours(1);
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct WData
-        {
-            public int serial_no;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-            public string location;
-            public double temperature;
-            public double pressure;
-
-            public DateTime Time
-            {
-                get => new DateTime(timeTicks);
-                set => timeTicks = value.Ticks;
-            }
-
-            public long timeTicks;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct WData2
-        {
-            public int serial_no;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-            public string location;
-            public double temperature;
-            public double pressure;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 5)]
-            public string label;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct Responses
-        {
-            public Int64 MCID;
-            public int PanelIdx;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public short[] ResponseValues;
-        }
-
-        private class TestClass : IEquatable<TestClass>
-        {
-            public int TestInteger { get; set; }
-            public double TestDouble { get; set; }
-            public bool TestBoolean { get; set; }
-            public string TestString { get; set; }
-            [Hdf5EntryName("Test_time")]
-            public DateTime TestTime { get; set; }
-
-            public bool Equals(TestClass other)
-            {
-                return other.TestInteger == TestInteger &&
-            other.TestDouble == TestDouble &&
-            other.TestBoolean == TestBoolean &&
-                        other.TestString == TestString &&
-                other.TestTime == TestTime;
-            }
-        }
-        private class TestClassWithArray : TestClass
-        {
-            public double[] testDoublesField;
-            public string[] testStringsField;
-            public double[] TestDoubles { get; set; }
-            public string[] TestStrings { get; set; }
-
-            public bool Equals(TestClassWithArray other)
-            {
-                return base.Equals(other) &&
-                       other.TestDoubles.SequenceEqual(TestDoubles) &&
-                       other.testDoublesField.SequenceEqual(testDoublesField) &&
-                       other.testStringsField.SequenceEqual(testStringsField);
-
-            }
-        }
-        class TestClassWithStructs
-        {
-            public TestClassWithStructs()
-            {
-            }
-            public WData[] DataList { get; set; }
-        }
-
         static private TestClass testClass;
         static private TestClassWithArray testClassWithArrays;
         static private List<double[,]> dsets;
@@ -141,11 +20,22 @@ namespace HDF5CSharp.UnitTests
         static private TestClassWithStructs classWithStructs;
 
         static private string folder;
+        private static List<string> Errors { get; }
+
+        static Hdf5UnitTests()
+        {
+            Errors = new List<string>();
+        }
 
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
             Hdf5.Hdf5Settings.LowerCaseNaming = true;
+            Hdf5.Hdf5Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
+            Hdf5Utils.LogCritical = (s) => Errors.Add(s);
+            Hdf5Utils.LogError = (s) => Errors.Add(s);
+
             //folder = System.IO.Path.GetTempPath();
             folder = AppDomain.CurrentDomain.BaseDirectory;
             dsets = new List<double[,]> {
@@ -181,17 +71,15 @@ namespace HDF5CSharp.UnitTests
             var files = Directory.GetFiles(folder, "*.H5");
             foreach (var file in files)
             {
-                try
-                {
-                    File.Delete(file);
-                }
-                catch (Exception)
-                {
-
-                    throw;
-                }
-
+                File.Delete(file);
             }
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            Assert.IsTrue(Errors.Count == 0, "Error exists");
+            Errors.Clear();
         }
 
         /// <summary>

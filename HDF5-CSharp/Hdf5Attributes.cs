@@ -139,6 +139,11 @@ namespace HDF5CSharp
         public static T ReadAttribute<T>(long groupId, string name)
         {
             var attrs = attrRW.ReadArray<T>(groupId, name, string.Empty);
+            if (!attrs.success)
+            {
+                Hdf5Utils.LogError?.Invoke($"{name} was not found");
+                return default;
+            }
             int[] first = new int[attrs.result.Rank].Select(f => 0).ToArray();
             T result = (T)attrs.result.GetValue(first);
             return result;

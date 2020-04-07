@@ -1,10 +1,28 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using HDF.PInvoke;
 
 namespace HDF5CSharp
 {
     public static class Hdf5Utils
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static (bool valid,string name) GetRealName(long id,string name,string alternativeName)
+        {
+            string normalized = NormalizedName(name);
+            if (H5L.exists(id, normalized) > 0)
+            {
+                return (true, normalized);
+            }
+
+            normalized = NormalizedName(alternativeName);
+            if (H5L.exists(id, normalized) > 0)
+            {
+                return (true, normalized);
+            }
+
+            return (false, "");
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string NormalizedName(string name) => Hdf5.Hdf5Settings.LowerCaseNaming ? name.ToLowerInvariant() : name;
 

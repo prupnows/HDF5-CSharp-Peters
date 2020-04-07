@@ -1,4 +1,7 @@
-﻿namespace HDF5CSharp
+﻿using System;
+using HDF.PInvoke;
+
+namespace HDF5CSharp
 {
     public static partial class Hdf5
     {
@@ -16,6 +19,16 @@
     {
         public DateTimeType DateTimeType { get; set; }
         public bool LowerCaseNaming { get; set; }
+        public bool ErrorLoggingEnable { get; private set; }
+
+        public bool EnableErrorReporting(bool enable)
+        {
+            ErrorLoggingEnable = enable;   
+            if (enable)
+                return H5E.set_auto(H5E.DEFAULT, Hdf5Errors.ErrorDelegateMethod, IntPtr.Zero) >= 0;
+            return H5E.set_auto(H5E.DEFAULT, null, IntPtr.Zero) >= 0;
+
+        }
     }
 
     public enum DateTimeType

@@ -42,7 +42,7 @@ namespace HDF5CSharp.UnitTests.Core
 
                 string attrStr = "this is an attribute";
                 Hdf5.WriteAttribute(groupId, "time", attrStr);
-                string readStr = Hdf5.ReadAttribute<string>(groupId, "time");
+                string readStr = Hdf5.ReadAttribute<string>(groupId, "time_Non_Exist");
                 Assert.IsTrue(readStr == attrStr);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
             }

@@ -16,7 +16,6 @@ namespace HDF5CSharp
         public string Datasetname { get; private set; }
         public int Rank { get; private set; }
         public long GroupId { get; private set; }
-        protected bool DatasetExists => H5L.exists(GroupId, Hdf5Utils.NormalizedName(Datasetname)) > 0;
         protected bool FalseGroupId => GroupId <= 0;
         /// <summary>
         /// Constructor to create a chuncked dataset object
@@ -60,7 +59,7 @@ namespace HDF5CSharp
         public void FirstDataset(Array dataset)
         {
             if (FalseGroupId) throw new Exception("cannot call FirstDataset because group or file couldn't be created");
-            if (DatasetExists) throw new Exception("cannot call FirstDataset because dataset already exists");
+            if (Hdf5Utils.GetRealName(GroupId, Datasetname,string.Empty).valid) throw new Exception("cannot call FirstDataset because dataset already exists");
 
             Rank = dataset.Rank;
             currentDims = GetDims(dataset);
@@ -117,7 +116,12 @@ namespace HDF5CSharp
         }
         public void AppendDataset(Array dataset)
         {
-            if (!DatasetExists) throw new Exception("call constructor or FirstDataset first before appending.");
+            if (!Hdf5Utils.GetRealName(GroupId, Datasetname, string.Empty).valid)
+            {
+                string msg = "call constructor or FirstDataset first before appending.";
+                Hdf5Utils.LogError?.Invoke(msg);
+                throw new Exception(msg);
+            }
             oldDims = currentDims;
             currentDims = GetDims(dataset);
             int rank = dataset.Rank;
@@ -163,9 +167,9 @@ namespace HDF5CSharp
         /// <param name="itIsSafeToAlsoFreeManagedObjects"></param>
         protected virtual void Dispose(bool itIsSafeToAlsoFreeManagedObjects)
         {
-            if (!DatasetExists)
+            if (!Hdf5Utils.GetRealName(GroupId, Datasetname, string.Empty).valid)
             {
-                Hdf5Utils.LogInfo?.Invoke("Data set does not exist.");
+                Hdf5Utils.LogInfo?.Invoke("Dataset does not exist.");
                 return;
             }
             H5D.close(datasetId);

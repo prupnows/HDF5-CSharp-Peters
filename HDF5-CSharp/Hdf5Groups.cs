@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using HDF.PInvoke;
 
 namespace HDF5CSharp
@@ -41,28 +42,10 @@ namespace HDF5CSharp
             }
             return gid;
         }
-
-        public static bool GroupExists(long groupId, string groupName)
-        {
-            bool exists = false;
-            try
-            {
-                Hdf5Errors.EnableErrorReporting(false);
-                H5G.info_t info = new H5G.info_t();
-                var gid = H5G.get_info_by_name(groupId, Hdf5Utils.NormalizedName(groupName), ref info);
-                exists = gid == 0;
-            }
-            catch (Exception e)
-            {
-                Hdf5Errors.EnableErrorReporting(true);
-                Hdf5Utils.LogError?.Invoke($"Error during {nameof(GroupExists)}:{e}");
-            }
-            finally
-            {
-                Hdf5Errors.EnableErrorReporting(true);
-            }
-            return exists;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool GroupExists(long groupId, string groupName) =>
+            H5L.exists(groupId, Hdf5Utils.NormalizedName(groupName)) > 0; 
+        
 
         public static ulong NumberOfAttributes(int groupId, string groupName)
         {

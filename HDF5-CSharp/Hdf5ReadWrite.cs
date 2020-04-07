@@ -26,7 +26,7 @@ namespace HDF5CSharp
                 case TypeCode.Boolean:
                     var bls = collection.ConvertArray<bool, ushort>(Convert.ToUInt16);
                     result = rw.WriteFromArray<ushort>(groupId, name, bls, datasetName);
-                    Hdf5.WriteStringAttribute(groupId, name, "Boolean", name);
+                    Hdf5.WriteStringAttribute(groupId, name, "Boolean", datasetName);
                     break;
                 case TypeCode.Byte:
                     result = rw.WriteFromArray<byte>(groupId, name, collection, datasetName);
@@ -35,13 +35,13 @@ namespace HDF5CSharp
                 case TypeCode.Char:
                     var chrs = collection.ConvertArray<char, ushort>(Convert.ToUInt16);
                     result = rw.WriteFromArray<ushort>(groupId, name, chrs, datasetName);
-                    Hdf5.WriteStringAttribute(groupId, name, "Char", name);
+                    Hdf5.WriteStringAttribute(groupId, name, "Char", datasetName);
                     break;
 
                 case TypeCode.DateTime:
                     var dts = collection.ConvertArray<DateTime, long>(dt => Hdf5Conversions.FromDatetime(dt, Hdf5.Hdf5Settings.DateTimeType));
                     result = rw.WriteFromArray<long>(groupId, name, dts, datasetName);
-                    Hdf5.WriteStringAttribute(groupId, name, "DateTime", name);
+                    Hdf5.WriteStringAttribute(groupId, name, "DateTime", datasetName);
                     break;
                 case TypeCode.Decimal:
                     var decs = collection.ConvertArray<decimal, double>(Convert.ToDouble);
