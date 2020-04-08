@@ -74,8 +74,8 @@ namespace HDF5CSharp
                 long memId = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
                 long[] lengths = dims.Select(d => Convert.ToInt64(d)).ToArray();
                 dset = Array.CreateInstance(type, lengths);
-                var typeId = H5D.get_type(datasetId);
-                var mem_type = H5T.copy(datatype);
+                //var typeId = H5D.get_type(datasetId);
+                //var mem_type = H5T.copy(datatype);
                 if (datatype == H5T.C_S1)
                     H5T.set_size(datatype, new IntPtr(2));
 
@@ -293,9 +293,11 @@ namespace HDF5CSharp
                 hnd.Free();
                 H5S.close(memId1);
                 H5S.close(memId2);
+               
                 H5D.close(filespaceId);
             }
-
+            //todo: close?
+            H5T.close(datatype);
             H5D.close(datasetId);
             H5S.close(spaceId);
             return status;

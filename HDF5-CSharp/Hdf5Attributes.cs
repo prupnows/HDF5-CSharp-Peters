@@ -5,56 +5,13 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using HDF.PInvoke;
+using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-    public sealed class Hdf5GroupName : Attribute
-    {
-
-        public Hdf5GroupName(string name)
-        {
-            Name = name;
-        }
-
-        public string Name { get; private set; }
-    }
-
-    public sealed class Hdf5KeyValuesAttributes : Attribute
-    {
-        public string Key { get; set; }
-        public string[] Values { get; private set; }
-        public Hdf5KeyValuesAttributes(string key, string[] values)
-        {
-            Values = values;
-            Key = key;
-        }
-
-    }
-    public sealed class Hdf5Attributes : Attribute
-    {
-
-        public Hdf5Attributes(string[] names)
-        {
-            Names = names;
-        }
-
-        public string[] Names { get; private set; }
-    }
-
-    public sealed class Hdf5Attribute : Attribute
-    {
-
-        public Hdf5Attribute(string name)
-        {
-            Name = name;
-        }
-
-        public string Name { get; private set; }
-    }
-
     public static partial class Hdf5
-    {
+    {     
+        private static Hdf5ReaderWriter attrRW = new Hdf5ReaderWriter(new Hdf5AttributeRW());
         public static Dictionary<string, List<string>> Attributes(Type type)
         {
             Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
@@ -129,7 +86,6 @@ namespace HDF5CSharp
             }
             return attributes;
         }
-        private static Hdf5ReaderWriter attrRW = new Hdf5ReaderWriter(new Hdf5AttributeRW());
 
         public static (bool success, Array result) ReadAttributes<T>(long groupId, string name)
         {
@@ -225,7 +181,7 @@ namespace HDF5CSharp
             GCHandle hnd = GCHandle.Alloc(attributes, GCHandleType.Pinned);
             H5A.read(attributeId, datatype, hnd.AddrOfPinnedObject());
             hnd.Free();
-            H5A.close(typeId);
+            H5T.close(typeId);
             H5A.close(attributeId);
             H5S.close(spaceId);
             return (true,attributes);
@@ -304,10 +260,10 @@ namespace HDF5CSharp
         public static void WriteAttributes<T>(long groupId, string name, Array attributes, string datasetName) //
         {
             attrRW.WriteArray(groupId, name, attributes, datasetName, new Dictionary<string, List<string>>());
-            /* if (attributes.GetType().GetElementType() == typeof(string))
-                 return WriteStringAttributes(groupId, name, attributes.Cast<string>(), datasetName);
-             else
-                 return WritePrimitiveAttribute<T>(groupId, name, attributes, datasetName);*/
+             //if (attributes.GetType().GetElementType() == typeof(string))
+             //     WriteStringAttributes(groupId, name, attributes.Cast<string>(), datasetName);
+             //else
+             //    WritePrimitiveAttribute<T>(groupId, name, attributes, datasetName);
         }
 
         public static (int success, long CreatedgroupId) WritePrimitiveAttribute<T>(long groupId, string name, Array attributes, string datasetName) //where T : struct
@@ -341,37 +297,5 @@ namespace HDF5CSharp
         }
     }
 
-    public enum Hdf5Save
-    {
-        Save,
-        DoNotSave
-    }
 
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public sealed class Hdf5SaveAttribute : Attribute
-    {
-        private readonly Hdf5Save saveKind;
-
-        public Hdf5Save SaveKind => saveKind;      // Topic is a named parameter
-
-
-        public Hdf5SaveAttribute(Hdf5Save saveKind)  // url is a positional parameter
-        {
-            this.saveKind = saveKind;
-        }
-
-    }
-
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public sealed class Hdf5EntryNameAttribute : Attribute
-    {
-        public string Name { get; }
-
-
-        public Hdf5EntryNameAttribute(string name)
-        {
-            Name = name;
-        }
-
-    }
 }
