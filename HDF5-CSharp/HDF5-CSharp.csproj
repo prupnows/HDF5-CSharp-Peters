@@ -13,17 +13,19 @@
     <Company />
     <Product>HDF5-CSharp</Product>
     <Description>C# Wrapper for HDF.PInvoke Library</Description>
-    <Copyright>Lior Banai 2020</Copyright>
+    <Copyright>Lior Banai @ 2020</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LiorBanai/HDF5-CSharp</PackageProjectUrl>
     <PackageIcon>hdf5Wrapper.png</PackageIcon>
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>- Aligned version with hdf5 binaries version 1.10.610
+    <PackageReleaseNotes>- Add ability to log errors (#35)
+- Fixed debug errors (#25,#34)
+- Aligned version with hdf5 binaries version 1.10.610
 - Add support for reading back hdf5 files.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.10.610.1</Version>
+    <Version>1.10.610.2</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
