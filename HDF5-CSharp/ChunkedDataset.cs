@@ -80,6 +80,7 @@ namespace HDF5CSharp
                 hnd.AddrOfPinnedObject());
             hnd.Free();
             H5S.close(spaceId);
+            spaceId = -1;
         }
 
         public void AppendOrCreateDataset(Array dataset)
@@ -108,6 +109,7 @@ namespace HDF5CSharp
                     hnd.AddrOfPinnedObject());
                 hnd.Free();
                 H5S.close(spaceId);
+                spaceId = -1;
             }
             else
             {
@@ -172,9 +174,13 @@ namespace HDF5CSharp
                 Hdf5Utils.LogInfo?.Invoke("Dataset does not exist.");
                 return;
             }
-            H5D.close(datasetId);
-            H5P.close(propId);
-            H5S.close(spaceId);
+
+            if (datasetId >= 0)
+                H5D.close(datasetId);
+            if (propId >= 0)
+                H5P.close(propId);
+            if (spaceId >= 0)
+                H5S.close(spaceId);
 
             if (itIsSafeToAlsoFreeManagedObjects)
             {

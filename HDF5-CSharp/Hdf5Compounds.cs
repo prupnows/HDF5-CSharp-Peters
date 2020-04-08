@@ -126,8 +126,8 @@ namespace HDF5CSharp
         public static IEnumerable<OffsetInfo> GetCompoundInfo(Type type, bool ieee = false)
         {
             //Type t = typeof(T);
-            var strtype = H5T.copy(H5T.C_S1);
-            int strsize = (int)H5T.get_size(strtype);
+            //var strtype = H5T.copy(H5T.C_S1);
+            //int strsize = (int)H5T.get_size(strtype);
             int curSize = 0;
             List<OffsetInfo> offsets = new List<OffsetInfo>();
             foreach (var x in type.GetFields())
@@ -144,20 +144,34 @@ namespace HDF5CSharp
                 var fldType = x.FieldType;
                 var marshallAsAttribute = type.GetMember(x.Name).Select(m => m.GetCustomAttribute<MarshalAsAttribute>()).FirstOrDefault();
 
+                long datatype;
+                int size;
+                if (fldType.IsArray)
+                {
+                    datatype = H5T.array_create(
+                        ieee ? GetDatatypeIEEE(fldType.GetElementType()) : GetDatatype(fldType.GetElementType()),
+                        (uint) fldType.GetArrayRank(),
+                        Enumerable.Range(0, fldType.GetArrayRank()).Select(i => (ulong) marshallAsAttribute.SizeConst)
+                            .ToArray());
+                }
+                else
+                {
+                    datatype = ieee ? GetDatatypeIEEE(fldType) : GetDatatype(fldType);
+                }
                 OffsetInfo oi = new OffsetInfo
                 {
                     name = x.Name,
                     type = fldType,
-                    datatype = !fldType.IsArray ? ieee ? GetDatatypeIEEE(fldType) : GetDatatype(fldType)
-                : H5T.array_create(ieee ? GetDatatypeIEEE(fldType.GetElementType()) : GetDatatype(fldType.GetElementType()), (uint)fldType.GetArrayRank(), Enumerable.Range(0, fldType.GetArrayRank()).Select(i => (ulong)marshallAsAttribute.SizeConst).ToArray()),
+                    datatype = datatype,
                     size = fldType == typeof(string) ? StringLength(x) : !fldType.IsArray ? Marshal.SizeOf(fldType) : Marshal.SizeOf(fldType.GetElementType()) * marshallAsAttribute.SizeConst,
                     offset = 0 + curSize
                 };
                 if (oi.datatype == H5T.C_S1)
                 {
-                    strtype = H5T.copy(H5T.C_S1);
+                  var strtype = H5T.copy(H5T.C_S1);
                     H5T.set_size(strtype, new IntPtr(oi.size));
                     oi.datatype = strtype;
+                  //  H5T.close(strtype);
                 }
                 if (oi.datatype == H5T.STD_I64BE)
                     oi.size = oi.size * 2;
@@ -206,7 +220,7 @@ namespace HDF5CSharp
 
                 offsets.Add(oi);
             }*/
-            H5T.close(strtype);
+       
             return offsets;
 
         }

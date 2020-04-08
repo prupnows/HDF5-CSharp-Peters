@@ -96,7 +96,6 @@ namespace HDF5CSharp.UnitTests
                 string readStr = Hdf5.ReadAsciiString(fileId, "/test");
                 Assert.IsTrue(test == readStr);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
-                Hdf5.CloseFile(fileId);
             }
             catch (Exception ex)
             {
@@ -123,7 +122,6 @@ namespace HDF5CSharp.UnitTests
                 //var readStr = Hdf5.ReadStrings(fileId, "/test");
                 Assert.IsTrue(test == readStr);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) >= 0);
-                Hdf5.CloseFile(fileId);
             }
             catch (Exception ex)
             {
