@@ -40,11 +40,15 @@ namespace HDF5CSharp.UnitTests
                 Assert.IsTrue(fileId > 0);
                 var groupId = Hdf5.CreateGroup(fileId, "test");
 
+
                 string attrStr = "this is an attribute";
                 Hdf5.WriteAttribute(groupId, "time", attrStr);
-                string readStr = Hdf5.ReadAttribute<string>(groupId, "time");
+                string readStr = Hdf5.ReadAttribute<string>(groupId, "time_Non_Exist");
+                Assert.IsTrue(string.IsNullOrEmpty(readStr));
+                readStr = Hdf5.ReadAttribute<string>(groupId, "time");
                 Assert.IsTrue(readStr == attrStr);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
+                ErrorCountExpected = 2;
             }
             catch (Exception ex)
             {

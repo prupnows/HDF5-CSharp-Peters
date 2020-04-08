@@ -10,13 +10,31 @@ namespace HDF5CSharp
         internal static (bool valid,string name) GetRealName(long id,string name,string alternativeName)
         {
             string normalized = NormalizedName(name);
-            if (H5L.exists(id, normalized) > 0)
+            if (!string.IsNullOrEmpty(normalized) && H5L.exists(id, normalized) > 0)
             {
                 return (true, normalized);
             }
 
             normalized = NormalizedName(alternativeName);
-            if (H5L.exists(id, normalized) > 0)
+            if (!string.IsNullOrEmpty(normalized) && H5L.exists(id, normalized) > 0)
+            {
+                return (true, normalized);
+            }
+
+            return (false, "");
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static (bool valid, string name) GetRealAttributeName(long id, string name, string alternativeName)
+        {
+            string normalized = NormalizedName(name);
+            if (!string.IsNullOrEmpty(normalized) && H5A.exists(id, normalized) > 0)
+            {
+                return (true, normalized);
+            }
+
+            normalized = NormalizedName(alternativeName);
+            if (!string.IsNullOrEmpty(normalized) && H5A.exists(id, normalized) > 0)
             {
                 return (true, normalized);
             }

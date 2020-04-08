@@ -18,7 +18,7 @@ namespace HDF5CSharp.UnitTests
         static private Responses[] responseList;
         static private AllTypesClass allTypesObject;
         static private TestClassWithStructs classWithStructs;
-
+        protected static int ErrorCountExpected = 0;
         static private string folder;
         private static List<string> Errors { get; }
 
@@ -79,6 +79,7 @@ namespace HDF5CSharp.UnitTests
         public void Cleanup()
         {
             Assert.IsTrue(Errors.Count == 0, "Error exists");
+            ErrorCountExpected = 0;
             Errors.Clear();
         }
 
