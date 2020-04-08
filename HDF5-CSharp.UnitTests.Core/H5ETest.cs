@@ -10,7 +10,9 @@ namespace HDF5CSharp.UnitTests.Core
         [TestMethod]
         public void H5EwalkTest1()
         {
-            H5E.auto_t auto_cb = ErrorDelegateMethod;
+            try
+            {
+                H5E.auto_t auto_cb = ErrorDelegateMethod;
             Assert.IsTrue(
                 H5E.set_auto(H5E.DEFAULT, auto_cb, IntPtr.Zero) >= 0);
 
@@ -18,13 +20,21 @@ namespace HDF5CSharp.UnitTests.Core
             Assert.IsTrue(
                 H5E.walk(H5E.DEFAULT, H5E.direction_t.H5E_WALK_DOWNWARD,
                     walk_cb, IntPtr.Zero) >= 0);
+            }
+            finally
+            {
+                Hdf5UnitTests.EnableErrors();
+            }
         }
+
 
         [TestMethod]
         public void H5EwalkTest2()
         {
            // H5E.set_auto(H5E.DEFAULT, ErrorDelegateMethod, IntPtr.Zero);
-            
+           try
+           {
+
             Assert.IsTrue(
                 H5E.set_auto(H5E.DEFAULT, ErrorDelegateMethod, IntPtr.Zero) >= 0);
 
@@ -40,6 +50,11 @@ namespace HDF5CSharp.UnitTests.Core
             Assert.IsTrue(
                 H5E.walk(H5E.DEFAULT, H5E.direction_t.H5E_WALK_DOWNWARD,
                     walk_cb, IntPtr.Zero) >= 0);
+           }
+           finally
+           {
+               Hdf5UnitTests.EnableErrors();
+           }
         }
 
         public static int ErrorDelegateMethod(long estack, IntPtr client_data)

@@ -15,7 +15,9 @@ namespace HDF5CSharp.UnitTests
         [TestMethod]
         public void H5EwalkTest1()
         {
-            H5E.auto_t auto_cb = ErrorDelegateMethod;
+            try
+            {
+                H5E.auto_t auto_cb = ErrorDelegateMethod;
             Assert.IsTrue(
                 H5E.set_auto(H5E.DEFAULT, auto_cb, IntPtr.Zero) >= 0);
 
@@ -24,28 +26,39 @@ namespace HDF5CSharp.UnitTests
             Assert.IsTrue(
                 H5E.walk(H5E.DEFAULT, H5E.direction_t.H5E_WALK_DOWNWARD,
                     walk_cb, IntPtr.Zero) >= 0);
+            }
+            finally
+            {
+                Hdf5UnitTests.EnableErrors();
+            }
         }
 
         [TestMethod]
         public void H5EwalkTest2()
         {
            // H5E.set_auto(H5E.DEFAULT, ErrorDelegateMethod, IntPtr.Zero);
-            
-            Assert.IsTrue(
-                H5E.set_auto(H5E.DEFAULT, ErrorDelegateMethod, IntPtr.Zero) >= 0);
+           try
+           {
+               Assert.IsTrue(
+                   H5E.set_auto(H5E.DEFAULT, ErrorDelegateMethod, IntPtr.Zero) >= 0);
 
-            H5E.walk_t walk_cb = WalkDelegateMethod;
-            Assert.IsTrue(
-                H5E.push(H5E.DEFAULT, "hello.c", "sqrt", 77, H5E.ERR_CLS,
-                    H5E.NONE_MAJOR, H5E.NONE_MINOR, "Hello, World!") >= 0);
+               H5E.walk_t walk_cb = WalkDelegateMethod;
+               Assert.IsTrue(
+                   H5E.push(H5E.DEFAULT, "hello.c", "sqrt", 77, H5E.ERR_CLS,
+                       H5E.NONE_MAJOR, H5E.NONE_MINOR, "Hello, World!") >= 0);
 
-            Assert.IsTrue(
-                H5E.push(H5E.DEFAULT, "hello.c", "sqr", 78, H5E.ERR_CLS,
-                    H5E.NONE_MAJOR, H5E.NONE_MINOR, "Hello, World!") >= 0);
+               Assert.IsTrue(
+                   H5E.push(H5E.DEFAULT, "hello.c", "sqr", 78, H5E.ERR_CLS,
+                       H5E.NONE_MAJOR, H5E.NONE_MINOR, "Hello, World!") >= 0);
 
-            Assert.IsTrue(
-                H5E.walk(H5E.DEFAULT, H5E.direction_t.H5E_WALK_DOWNWARD,
-                    walk_cb, IntPtr.Zero) >= 0);
+               Assert.IsTrue(
+                   H5E.walk(H5E.DEFAULT, H5E.direction_t.H5E_WALK_DOWNWARD,
+                       walk_cb, IntPtr.Zero) >= 0);
+           }
+           finally
+           {
+               Hdf5UnitTests.EnableErrors();
+           }
         }
 
         public static int ErrorDelegateMethod(long estack, IntPtr client_data)
