@@ -25,7 +25,7 @@
 - Aligned version with hdf5 binaries version 1.10.610
 - Add support for reading back hdf5 files.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.10.610.2</Version>
+    <Version>1.10.610.3</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
