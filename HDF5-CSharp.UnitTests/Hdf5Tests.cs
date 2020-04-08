@@ -20,19 +20,11 @@ namespace HDF5CSharp.UnitTests
         static private TestClassWithStructs classWithStructs;
         protected static int ErrorCountExpected = 0;
         static private string folder;
-        private static List<string> Errors { get; }
-
-        static Hdf5UnitTests()
-        {
-            Errors = new List<string>();
-        }
-
+        private List<string> Errors { get; set; }
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
             Hdf5.Hdf5Settings.LowerCaseNaming = true;
-            EnableErrors();
-
             //folder = System.IO.Path.GetTempPath();
             folder = AppDomain.CurrentDomain.BaseDirectory;
             dsets = new List<double[,]> {
@@ -71,19 +63,27 @@ namespace HDF5CSharp.UnitTests
                 File.Delete(file);
             }
         }
-        public static void EnableErrors()
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Errors = new List<string>();
+            EnableErrors();
+
+        }
+        [TestCleanup]
+        public void Cleanup()
+        {
+            Assert.IsTrue(Errors.Count == ErrorCountExpected, "Error exists");
+            ErrorCountExpected = 0;
+            Errors.Clear();
+        }
+        public void EnableErrors()
         {
             Hdf5.Hdf5Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogCritical = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
-        }
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Assert.IsTrue(Errors.Count == 0, "Error exists");
-            ErrorCountExpected = 0;
-            Errors.Clear();
         }
 
         /// <summary>
