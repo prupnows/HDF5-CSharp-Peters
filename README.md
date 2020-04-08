@@ -176,3 +176,12 @@ public static class Hdf5Utils
         public static Action<string> LogCritical;
     }
  ```
+
+
+in order to log errors use this code snippet:
+```csharp
+            Hdf5.Hdf5Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogWarning = (string s) => {...}
+            Hdf5Utils.LogCritical = (string s) => {...}
+            Hdf5Utils.LogError = (string s) => {...}
+```
