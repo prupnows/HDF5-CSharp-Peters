@@ -14,7 +14,7 @@
 <a href="https://github.com/LiorBanai/HDF5-CSharp/releases">
     <img src="https://img.shields.io/github/v/release/LiorBanai/HDF5-CSharp"  alt="Latest Release"/>
 </a>
- <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.10.6...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"/></a>
+ <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/ V1.10.610.2...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"/></a>
 
 
 
@@ -176,3 +176,12 @@ public static class Hdf5Utils
         public static Action<string> LogCritical;
     }
  ```
+
+
+in order to log errors use this code snippet:
+```csharp
+            Hdf5.Hdf5Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogWarning = (string s) => {...}
+            Hdf5Utils.LogCritical = (string s) => {...}
+            Hdf5Utils.LogError = (string s) => {...}
+```
