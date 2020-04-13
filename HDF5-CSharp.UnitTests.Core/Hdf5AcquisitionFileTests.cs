@@ -361,7 +361,7 @@ namespace HDF5CSharp.UnitTests.Core
         /// for each channel 100 samples are written in two steps of 50 samples to the file
         /// The total number of samples is written to the channels and recording objects
         /// </summary>
-        [TestMethod]
+       // [TestMethod]
         public void WriteAndReadWithCloseThreadSafeDataToAcquisitionFile()
         {
             string filename = Path.Combine(folder, "testWithThreadsDataAcquisition.H5");
