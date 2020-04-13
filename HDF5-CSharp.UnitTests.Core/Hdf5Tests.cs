@@ -7,8 +7,43 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HDF5CSharp.UnitTests.Core
 {
+    public abstract class Hdf5BaseUnitTests
+    {
+        protected static int ErrorCountExpected = 0;
+        private static List<string> Errors { get; set; }
+
+        [ClassInitialize()]
+        public static void ClassInitialize(TestContext context)
+        {
+            Hdf5.Hdf5Settings.LowerCaseNaming = true;
+        }
+
+        [TestInitialize]
+        public static void TestInitialize()
+        {
+            Errors = new List<string>();
+            EnableErrors();
+
+        }
+        [TestCleanup]
+        public void Cleanup()
+        {
+            Assert.IsTrue(Errors.Count == ErrorCountExpected, "Error exists");
+            ErrorCountExpected = 0;
+            Errors.Clear();
+        }
+
+        private static void EnableErrors()
+        {
+            Hdf5.Hdf5Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
+            Hdf5Utils.LogCritical = (s) => Errors.Add(s);
+            Hdf5Utils.LogError = (s) => Errors.Add(s);
+        }
+    }
+
     [TestClass]
-    public partial class Hdf5UnitTests
+    public partial class Hdf5UnitTests: Hdf5BaseUnitTests
     {
         static private TestClass testClass;
         static private TestClassWithArray testClassWithArrays;
@@ -18,12 +53,13 @@ namespace HDF5CSharp.UnitTests.Core
         static private Responses[] responseList;
         static private AllTypesClass allTypesObject;
         static private TestClassWithStructs classWithStructs;
-        protected static int ErrorCountExpected=0;
+
         static private string folder;
-        private List<string> Errors { get; set; }
+  
         [ClassInitialize()]
-        public static void ClassInitialize(TestContext context)
+        public new static void ClassInitialize(TestContext context)
         {
+            Hdf5BaseUnitTests.ClassInitialize(context);
             Hdf5.Hdf5Settings.LowerCaseNaming = true;
             //folder = System.IO.Path.GetTempPath();
             folder = AppDomain.CurrentDomain.BaseDirectory;
@@ -64,27 +100,6 @@ namespace HDF5CSharp.UnitTests.Core
             }
         }
 
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            Errors=new List<string>();
-            EnableErrors();
-
-        }
-        [TestCleanup]
-        public void Cleanup()
-        {
-            Assert.IsTrue(Errors.Count== ErrorCountExpected, "Error exists");
-            ErrorCountExpected = 0;
-            Errors.Clear();
-        }
-        public void EnableErrors()
-        {
-            Hdf5.Hdf5Settings.EnableErrorReporting(true);
-            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
-            Hdf5Utils.LogCritical = (s) => Errors.Add(s);
-            Hdf5Utils.LogError = (s) => Errors.Add(s);
-        }
 
         /// <summary>
         /// create a matrix and fill it with numbers
