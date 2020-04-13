@@ -196,32 +196,44 @@ namespace HDF5CSharp
             }
         }
 
-        public static List<Hdf5Element> ReadFileStructure(string fileName)
+        public static List<Hdf5Element> ReadTreeFileStructure(string fileName)
+        {
+            return ReadFileStructure(fileName).tree;
+        }
+        public static List<Hdf5Element> ReadFlatFileStructure(string fileName)
+        {
+            return ReadFileStructure(fileName).flat;
+        }
+        internal static (List<Hdf5Element> tree, List<Hdf5Element> flat) ReadFileStructure(string fileName)
         {
             var elements = new List<Hdf5Element>();
             var structure = new List<Hdf5Element>();
             if (!File.Exists(fileName))
             {
                 Hdf5Utils.LogError?.Invoke($"File {fileName} does not exist");
-                return structure;
+                return (structure,elements);
             }
 
             long fileId = H5F.open(fileName, H5F.ACC_RDONLY);
             if (fileId < 0)
             {
                 Hdf5Utils.LogError?.Invoke($"Could not open file {fileName}");
-                return structure;
+                return (structure,elements);
             }
-            StringBuilder filePath= new StringBuilder(260);
+            StringBuilder filePath = new StringBuilder(260);
             H5F.get_name(fileId, filePath, new IntPtr(260));
             ulong idx;
 
             idx = 0;
+            bool reEnableErrors = Hdf5Settings.ErrorLoggingEnable;
+
+            Hdf5Settings.EnableErrorReporting(false);
             H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,
                 Marshal.StringToHGlobalAnsi("/"));
-            return structure;
-            
-            int Callback(long campaignGroupId, IntPtr intPtrName, ref H5L.info_t info, IntPtr intPtrUserData)
+            Hdf5Settings.EnableErrorReporting(reEnableErrors);
+            return (structure,elements);
+
+            int Callback(long elementId, IntPtr intPtrName, ref H5L.info_t info, IntPtr intPtrUserData)
             {
                 ulong idx2 = 0;
                 long groupId = -1;
@@ -230,25 +242,23 @@ namespace HDF5CSharp
                 var name = Marshal.PtrToStringAnsi(intPtrName);
                 var userData = Marshal.PtrToStringAnsi(intPtrUserData);
                 var fullName = CombinePath(userData, name);
-                Hdf5ElementType elementType;
+                Hdf5ElementType elementType = Hdf5ElementType.Unknown;
                 // this is necessary, since H5Oget_info_by_name is slow because it wants verbose object header data 
                 // and H5G_loc_info is not directly accessible
                 // only chance is to modify source code (H5Oget_info_by_name)
-                datasetId = H5D.open(campaignGroupId, name);
-
-                if (H5I.is_valid(datasetId) > 0)
+                groupId = (H5L.exists(elementId, name) >= 0) ? H5G.open(elementId, name) : -1L;
+                if (H5I.is_valid(groupId) > 0)
                 {
-                    objectType = H5O.type_t.DATASET;
-                    elementType = Hdf5ElementType.Dataset;
+                    objectType = H5O.type_t.GROUP;
+                    elementType = Hdf5ElementType.Group;
                 }
                 else
                 {
-                    groupId = H5G.open(campaignGroupId, name);
-                   
-                    if (H5I.is_valid(groupId) > 0)
+                    datasetId = H5D.open(elementId, name);
+                    if ((H5I.is_valid(datasetId) > 0))
                     {
-                        objectType = H5O.type_t.GROUP;
-                        elementType = Hdf5ElementType.Group;
+                        objectType = H5O.type_t.DATASET;
+                        elementType = Hdf5ElementType.Dataset;
                     }
                     else
                     {
@@ -257,8 +267,7 @@ namespace HDF5CSharp
                     }
                 }
 
-               
-                 
+
                 var parent = elements.FirstOrDefault(e =>
                 {
                     var index = fullName.LastIndexOf("/", StringComparison.Ordinal);

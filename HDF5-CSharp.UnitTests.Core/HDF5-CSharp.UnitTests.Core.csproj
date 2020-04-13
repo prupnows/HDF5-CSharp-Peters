@@ -27,4 +27,10 @@
     <ProjectReference Include="..\HDF5-CSharp\HDF5-CSharp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="FileStructure.h5">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
