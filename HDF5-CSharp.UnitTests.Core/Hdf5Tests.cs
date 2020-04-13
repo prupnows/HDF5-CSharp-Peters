@@ -13,7 +13,7 @@ namespace HDF5CSharp.UnitTests.Core
         private static List<string> Errors { get; set; }
 
         [ClassInitialize()]
-        public static void ClassInitialize(TestContext context)
+        public void ClassInitialize(TestContext context)
         {
             Hdf5.Hdf5Settings.LowerCaseNaming = true;
         }
@@ -57,9 +57,9 @@ namespace HDF5CSharp.UnitTests.Core
         static private string folder;
   
         [ClassInitialize()]
-        public new static void ClassInitialize(TestContext context)
+        public new void ClassInitialize(TestContext context)
         {
-            Hdf5BaseUnitTests.ClassInitialize(context);
+            base.ClassInitialize(context);
             Hdf5.Hdf5Settings.LowerCaseNaming = true;
             //folder = System.IO.Path.GetTempPath();
             folder = AppDomain.CurrentDomain.BaseDirectory;

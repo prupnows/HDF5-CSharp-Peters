@@ -198,6 +198,7 @@ namespace HDF5CSharp
 
         public static List<Hdf5Element> ReadFileStructure(string fileName)
         {
+            var elements = new List<Hdf5Element>();
             var structure = new List<Hdf5Element>();
             if (!File.Exists(fileName))
             {
@@ -219,28 +220,17 @@ namespace HDF5CSharp
             H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,
                 Marshal.StringToHGlobalAnsi("/"));
             return structure;
-
+            
             int Callback(long campaignGroupId, IntPtr intPtrName, ref H5L.info_t info, IntPtr intPtrUserData)
             {
                 ulong idx2 = 0;
-
                 long groupId = -1;
                 long datasetId = -1;
-
-                int level;
-
-                string name;
-                string fullName;
-                string userData;
-
                 H5O.type_t objectType;
-                Hdf5Element currentElement;
-          
-                name = Marshal.PtrToStringAnsi(intPtrName);
-                userData = Marshal.PtrToStringAnsi(intPtrUserData);
-                fullName = CombinePath(userData, name);
-                level = userData.Split("/".ToArray()).Count();
-
+                var name = Marshal.PtrToStringAnsi(intPtrName);
+                var userData = Marshal.PtrToStringAnsi(intPtrUserData);
+                var fullName = CombinePath(userData, name);
+                Hdf5ElementType elementType;
                 // this is necessary, since H5Oget_info_by_name is slow because it wants verbose object header data 
                 // and H5G_loc_info is not directly accessible
                 // only chance is to modify source code (H5Oget_info_by_name)
@@ -249,42 +239,48 @@ namespace HDF5CSharp
                 if (H5I.is_valid(datasetId) > 0)
                 {
                     objectType = H5O.type_t.DATASET;
+                    elementType = Hdf5ElementType.Dataset;
                 }
                 else
                 {
                     groupId = H5G.open(campaignGroupId, name);
-
-                    objectType = H5I.is_valid(groupId) > 0 ? H5O.type_t.GROUP : H5O.type_t.UNKNOWN;
+                   
+                    if (H5I.is_valid(groupId) > 0)
+                    {
+                        objectType = H5O.type_t.GROUP;
+                        elementType = Hdf5ElementType.Group;
+                    }
+                    else
+                    {
+                        objectType = H5O.type_t.UNKNOWN;
+                        elementType = Hdf5ElementType.Group;
+                    }
                 }
 
-                switch (level)
+               
+                 
+                var parent = elements.FirstOrDefault(e =>
                 {
-                    case 1:
-                    case 2:
-                        break;
+                    var index = fullName.LastIndexOf("/", StringComparison.Ordinal);
+                    var partial = fullName.Substring(0, index);
+                    return partial.Equals(e.Name);
 
-                    case 3:
+                });
 
-                        if (objectType == H5O.type_t.GROUP)
-                        {
-                            //if (!string.IsNullOrWhiteSpace(campaignGroupPath) && fullName != campaignGroupPath)
-                            //{
-                            //    return 0;
-                            //}
-
-                            currentElement = structure.FirstOrDefault(e => e.Name == fullName);
-
-                            if (currentElement == null)
-                            {
-                                currentElement = new Hdf5Element(fullName, null, false);
-                                structure.Add(currentElement);
-                            }
-                        }
-
-                        break;
+                if (parent == null)
+                {
+                    var element = new Hdf5Element(fullName, elementType, null, false);
+                    structure.Add(element);
+                    elements.Add(element);
+                }
+                else
+                {
+                    var element = new Hdf5Element(fullName, elementType, parent, false);
+                    parent.AddChild(element);
+                    elements.Add(element);
                 }
 
-                if (objectType == H5O.type_t.GROUP && level < 3)
+                if (objectType == H5O.type_t.GROUP)
                 {
                     H5L.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx2, Callback,
                         Marshal.StringToHGlobalAnsi(fullName));
