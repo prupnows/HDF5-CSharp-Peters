@@ -34,7 +34,7 @@ namespace HDF5CSharp.UnitTests
 
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void WriteAndReadNoDataAcquisitionFile()
         {
             string filename = Path.Combine(folder, "testNoDataAcquisition.H5");
