@@ -90,7 +90,15 @@ namespace HDF5CSharp.UnitTests.Core
             var files = Directory.GetFiles(folder, "*.H5");
             foreach (var file in files)
             {
-                File.Delete(file);
+                try
+                {
+                    File.Delete(file);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                
             }
         }
 
