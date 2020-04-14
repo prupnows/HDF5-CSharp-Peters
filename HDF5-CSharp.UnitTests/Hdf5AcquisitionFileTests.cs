@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HDF5CSharp.DataTypes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using HDF5CSharp.DataTypes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HDF5CSharp.UnitTests
 {
@@ -278,7 +278,7 @@ namespace HDF5CSharp.UnitTests
         /// for each channel 100 samples are written in two steps of 50 samples to the file
         /// The total number of samples is written to the channels and recording objects
         /// </summary>
-        [TestMethod]
+        //[TestMethod]
         public void WriteAndReadShortThreadSafeDataToAcquisitionFile()
         {
             string filename = Path.Combine(folder, "testWithThreadsDataAcquisition.H5");
