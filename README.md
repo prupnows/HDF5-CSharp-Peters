@@ -14,7 +14,7 @@
 <a href="https://github.com/LiorBanai/HDF5-CSharp/releases"> 
     <img src="https://img.shields.io/github/v/release/LiorBanai/HDF5-CSharp"  alt="Latest Release"/>
 </a>
- <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.10.610.3...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"/></a>
+ <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.10.610.4...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"/></a>
 
 
 
@@ -107,6 +107,19 @@ The object is written to a file and than read back in a new object.
 
 for more example see unit test project
 
+## Reading H5 File:
+you can use the following two method to read the structure of an existing file:
+
+```csharp
+
+string fileName = @"FileStructure.h5";
+var tree =Hdf5.ReadTreeFileStructure(fileName);
+var flat = Hdf5.ReadFlatFileStructure(fileName);
+```
+
+in tree-like format you can drill inside the hierarchy of the file wile the flat option shows all the name is the groups and datasets.
+
+![Flat tree](Assets/hdf5FlatStructure.jpg)
 
 ## Additional settings
  - Hdf5EntryNameAttribute: control the name of the field/property in the h5 file:
@@ -185,3 +198,5 @@ in order to log errors use this code snippet:
             Hdf5Utils.LogCritical = (string s) => {...}
             Hdf5Utils.LogError = (string s) => {...}
 ```
+
+
