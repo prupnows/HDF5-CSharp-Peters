@@ -220,19 +220,32 @@ namespace HDF5CSharp
                 Hdf5Utils.LogError?.Invoke($"Could not open file {fileName}");
                 return (structure,elements);
             }
-            StringBuilder filePath = new StringBuilder(260);
-            H5F.get_name(fileId, filePath, new IntPtr(260));
-            ulong idx;
 
-            idx = 0;
-            bool reEnableErrors = Hdf5Settings.ErrorLoggingEnable;
+            try
+            {
+                StringBuilder filePath = new StringBuilder(260);
+                H5F.get_name(fileId, filePath, new IntPtr(260));
+                ulong idx;
 
-            Hdf5Settings.EnableErrorReporting(false);
-            H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,
-                Marshal.StringToHGlobalAnsi("/"));
-            Hdf5Settings.EnableErrorReporting(reEnableErrors);
-            return (structure,elements);
+                idx = 0;
+                bool reEnableErrors = Hdf5Settings.ErrorLoggingEnable;
 
+                Hdf5Settings.EnableErrorReporting(false);
+                H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,
+                    Marshal.StringToHGlobalAnsi("/"));
+                Hdf5Settings.EnableErrorReporting(reEnableErrors);
+
+
+            }
+            catch (Exception e)
+            {
+                Hdf5Utils.LogError?.Invoke($"Error during reading file structure of {fileName}. Error:{e}");
+            }
+            finally
+            {
+                if (fileId > 0)
+                   H5F.close(fileId);
+            }
             int Callback(long elementId, IntPtr intPtrName, ref H5L.info_t info, IntPtr intPtrUserData)
             {
                 ulong idx2 = 0;
@@ -308,7 +321,7 @@ namespace HDF5CSharp
 
                 return 0;
             }
-
+            return (structure, elements);
         }
 
         private static string CombinePath(string path1, string path2)

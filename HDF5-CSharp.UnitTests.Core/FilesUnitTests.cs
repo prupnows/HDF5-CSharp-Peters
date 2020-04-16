@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,6 +15,8 @@ namespace HDF5CSharp.UnitTests.Core
             string fileName = @"FileStructure.h5";
             var tree =Hdf5.ReadTreeFileStructure(fileName);
             var flat = Hdf5.ReadFlatFileStructure(fileName);
+            File.Delete(fileName);
+            Assert.IsFalse(File.Exists(fileName));
         }
     }
 }
