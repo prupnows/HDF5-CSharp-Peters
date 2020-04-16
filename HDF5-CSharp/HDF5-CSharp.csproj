@@ -20,14 +20,16 @@
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>- Add methods to read H5 file structure (#37)
+    <PackageReleaseNotes>- Fix #38: Byte and SByte types are reversed.
+old releases:
+- Add methods to read H5 file structure (#37)
 - Add example project how to use the library (#36)
 - Add ability to log errors (#35)
 - Fixed debug errors (#25,#34)
 - Aligned version with hdf5 binaries version 1.10.610
 - Add support for reading back hdf5 files.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.10.610.4</Version>
+    <Version>1.10.610.5</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

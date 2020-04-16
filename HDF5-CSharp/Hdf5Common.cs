@@ -110,10 +110,10 @@ namespace HDF5CSharp
             switch (typeCode)
             {
                 case TypeCode.Byte:
-                    dataType = H5T.NATIVE_INT8;
+                    dataType = H5T.NATIVE_UINT8;
                     break;
                 case TypeCode.SByte:
-                    dataType = H5T.NATIVE_UINT8;
+                    dataType = H5T.NATIVE_INT8;
                     break;
                 case TypeCode.Int16:
                     dataType = H5T.NATIVE_INT16;
