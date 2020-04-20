@@ -112,6 +112,8 @@ namespace HDF5CSharp.UnitTests.Core
         [TestCleanup]
         public void Cleanup()
         {
+            foreach(var e in Errors)
+                Console.WriteLine(e);
             Assert.IsTrue(Errors.Count == ErrorCountExpected, "Error exists");
             ErrorCountExpected = 0;
             Errors.Clear();

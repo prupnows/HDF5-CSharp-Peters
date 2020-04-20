@@ -330,5 +330,24 @@ namespace HDF5CSharp.UnitTests.Core
                 CreateExceptionAssert(ex);
             }
         }
+        [TestMethod]
+        public void WriteAndUpdateDataset()
+        {
+            string filename = "blahtest2.h5";
+            long tef2 = Hdf5.CreateFile(filename);
+            int[] blah = { 1, 2, 4, 5, 0 };
+            Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah, null);
+            Hdf5.CloseFile(tef2);
+            var what = "???"; // breakpoint in VS to test h5 file contents independently before next write step
+            tef2 = Hdf5.OpenFile(filename);
+            blah[4] = 6;
+            Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah, null); // This command throws several debug errors from PInvoke
+            var (success, result) = Hdf5.ReadDataset<int>(tef2, "blah");
+            Assert.IsTrue(success);
+            Assert.IsTrue(result.Cast<int>().SequenceEqual(blah));
+            // loading the hdf5 file shows it only has {1, 2, 4, 5, 0} stored.
+            Hdf5.CloseFile(tef2);
+            File.Delete(filename);
+        }
     }
 }

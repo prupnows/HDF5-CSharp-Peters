@@ -206,7 +206,10 @@ namespace HDF5CSharp
             {
                 H5T.set_size(datatype, new IntPtr(2));
             }
-            var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
+
+            var datasetId = (GroupExists(groupId, Hdf5Utils.NormalizedName(name)))
+                ? H5D.open(groupId, Hdf5Utils.NormalizedName(name))
+                : H5D.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
             GCHandle hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
             var result = H5D.write(datasetId, datatype, H5S.ALL, H5S.ALL, H5P.DEFAULT,
                 hnd.AddrOfPinnedObject());
