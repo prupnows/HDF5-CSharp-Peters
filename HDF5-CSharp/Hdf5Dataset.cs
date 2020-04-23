@@ -207,9 +207,30 @@ namespace HDF5CSharp
                 H5T.set_size(datatype, new IntPtr(2));
             }
 
-            var datasetId = (GroupExists(groupId, Hdf5Utils.NormalizedName(name)))
-                ? H5D.open(groupId, Hdf5Utils.NormalizedName(name))
-                : H5D.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
+            string normalizedName = Hdf5Utils.NormalizedName(name);
+            bool exists = GroupExists(groupId, normalizedName);
+            if (exists)
+            {
+                Hdf5Utils.LogMessage($"{normalizedName} already exists",DataTypes.Hdf5LogLevel.Debug);
+                if (!Hdf5Settings.OverrideExistingData)
+                {  if (Hdf5Settings.ThrowOnError)
+                        throw new Exception($"{normalizedName} already exists");
+                    return (-1, -1);
+                }
+
+            }
+            var datasetId = exists
+                ? H5D.open(groupId, normalizedName)
+                : H5D.create(groupId, normalizedName, datatype, spaceId);
+            if (datasetId == -1L)
+            {
+                string error = $"Unable to create dataset for {normalizedName}";
+                Hdf5Utils.LogMessage($"{normalizedName} already exists", DataTypes.Hdf5LogLevel.Error);
+                if (Hdf5Settings.ThrowOnError)
+                    throw new Exception(error);
+                return (-1, -1L);
+            }
+
             GCHandle hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
             var result = H5D.write(datasetId, datatype, H5S.ALL, H5S.ALL, H5P.DEFAULT,
                 hnd.AddrOfPinnedObject());

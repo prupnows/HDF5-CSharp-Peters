@@ -10,7 +10,7 @@ namespace HDF5CSharp
 
         static Hdf5()
         {
-            Hdf5Settings = new Settings { DateTimeType = DateTimeType.Ticks };
+            Hdf5Settings = new Settings();
 
         }
     }
@@ -20,7 +20,23 @@ namespace HDF5CSharp
         public DateTimeType DateTimeType { get; set; }
         public bool LowerCaseNaming { get; set; }
         public bool ErrorLoggingEnable { get; private set; }
+        public bool ThrowOnError { get; set; }
+        public bool OverrideExistingData { get; set; }
 
+        public Settings()
+        {
+            DateTimeType = DateTimeType.Ticks;
+            ThrowOnError = true;
+            OverrideExistingData = true;
+        }
+
+        public Settings(DateTimeType dateTimeType, bool lowerCaseNaming, bool throwOnError, bool overrideExistingData)
+        {
+            DateTimeType = dateTimeType;
+            LowerCaseNaming = lowerCaseNaming;
+            ThrowOnError = throwOnError;
+            OverrideExistingData = overrideExistingData;
+        }
         public bool EnableErrorReporting(bool enable)
         {
             ErrorLoggingEnable = enable;   

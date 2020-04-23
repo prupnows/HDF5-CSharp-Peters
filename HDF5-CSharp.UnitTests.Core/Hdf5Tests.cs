@@ -31,7 +31,6 @@ namespace HDF5CSharp.UnitTests.Core
         {
             Hdf5.Hdf5Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
-            Hdf5Utils.LogCritical = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }
     }
@@ -123,7 +122,6 @@ namespace HDF5CSharp.UnitTests.Core
         {
             Hdf5.Hdf5Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
-            Hdf5Utils.LogCritical = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }
 
