@@ -228,12 +228,12 @@ namespace HDF5CSharp
                 ulong idx;
 
                 idx = 0;
-                bool reEnableErrors = Hdf5Settings.ErrorLoggingEnable;
+                bool reEnableErrors = Settings.ErrorLoggingEnable;
 
-                Hdf5Settings.EnableErrorReporting(false);
+                Settings.EnableErrorReporting(false);
                 H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,
                     Marshal.StringToHGlobalAnsi("/"));
-                Hdf5Settings.EnableErrorReporting(reEnableErrors);
+                Settings.EnableErrorReporting(reEnableErrors);
 
 
             }

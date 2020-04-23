@@ -29,7 +29,7 @@ namespace HDF5CSharp.UnitTests.Core
 
         private static void EnableErrors()
         {
-            Hdf5.Hdf5Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }
@@ -53,7 +53,7 @@ namespace HDF5CSharp.UnitTests.Core
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
-           Hdf5.Hdf5Settings.LowerCaseNaming = true;
+           Hdf5.Settings.LowerCaseNaming = true;
             //folder = System.IO.Path.GetTempPath();
             folder = AppDomain.CurrentDomain.BaseDirectory;
             dsets = new List<double[,]> {
@@ -120,7 +120,7 @@ namespace HDF5CSharp.UnitTests.Core
 
         private static void EnableErrors()
         {
-            Hdf5.Hdf5Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }

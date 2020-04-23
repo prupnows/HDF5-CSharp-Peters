@@ -5,12 +5,12 @@ namespace HDF5CSharp
 {
     public static partial class Hdf5
     {
-        public static Settings Hdf5Settings { get; set; }
+        public static Settings Settings { get; set; }
 
 
         static Hdf5()
         {
-            Hdf5Settings = new Settings();
+            Settings = new Settings();
 
         }
     }

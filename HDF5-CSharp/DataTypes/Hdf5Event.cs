@@ -20,7 +20,7 @@ namespace HDF5CSharp.DataTypes
         public DateTime Time
         {
             get => new DateTime(TimeTicks);
-            set => TimeTicks = Hdf5Conversions.FromDatetime(value, Hdf5.Hdf5Settings.DateTimeType);
+            set => TimeTicks = Hdf5Conversions.FromDatetime(value, Hdf5.Settings.DateTimeType);
         }
 
         public long TimeTicks;

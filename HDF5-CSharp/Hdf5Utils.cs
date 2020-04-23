@@ -48,11 +48,11 @@ namespace HDF5CSharp
             return (false, "");
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string NormalizedName(string name) => Hdf5.Hdf5Settings.LowerCaseNaming ? name.ToLowerInvariant() : name;
+        public static string NormalizedName(string name) => Hdf5.Settings.LowerCaseNaming ? name.ToLowerInvariant() : name;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void LogMessage(string msg, Hdf5LogLevel level)
         {
-            if (!Hdf5.Hdf5Settings.ErrorLoggingEnable) return;
+            if (!Hdf5.Settings.ErrorLoggingEnable) return;
             switch (level)
             {
                 case Hdf5LogLevel.Debug:

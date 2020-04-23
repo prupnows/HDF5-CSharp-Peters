@@ -212,13 +212,14 @@ namespace HDF5CSharp
             if (exists)
             {
                 Hdf5Utils.LogMessage($"{normalizedName} already exists",DataTypes.Hdf5LogLevel.Debug);
-                if (!Hdf5Settings.OverrideExistingData)
-                {  if (Hdf5Settings.ThrowOnError)
+                if (!Settings.OverrideExistingData)
+                {  if (Settings.ThrowOnError)
                         throw new Exception($"{normalizedName} already exists");
                     return (-1, -1);
                 }
 
             }
+
             var datasetId = exists
                 ? H5D.open(groupId, normalizedName)
                 : H5D.create(groupId, normalizedName, datatype, spaceId);
@@ -226,7 +227,7 @@ namespace HDF5CSharp
             {
                 string error = $"Unable to create dataset for {normalizedName}";
                 Hdf5Utils.LogMessage($"{normalizedName} already exists", DataTypes.Hdf5LogLevel.Error);
-                if (Hdf5Settings.ThrowOnError)
+                if (Settings.ThrowOnError)
                     throw new Exception(error);
                 return (-1, -1L);
             }

@@ -35,7 +35,7 @@ namespace HDF5CSharp
                     break;
 
                 case TypeCode.DateTime:
-                    var dts = collection.ConvertArray<DateTime, long>(dt => Hdf5Conversions.FromDatetime(dt, Hdf5.Hdf5Settings.DateTimeType));
+                    var dts = collection.ConvertArray<DateTime, long>(dt => Hdf5Conversions.FromDatetime(dt, Hdf5.Settings.DateTimeType));
                     result = rw.WriteFromArray<long>(groupId, name, dts, datasetName);
                     break;
                 case TypeCode.Decimal:
@@ -136,7 +136,7 @@ namespace HDF5CSharp
 
                 case TypeCode.DateTime:
                     (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName);
-                    return (success, result.ConvertArray<long, DateTime>(tc => Hdf5Conversions.ToDateTime(tc, Hdf5.Hdf5Settings.DateTimeType)));
+                    return (success, result.ConvertArray<long, DateTime>(tc => Hdf5Conversions.ToDateTime(tc, Hdf5.Settings.DateTimeType)));
 
                 case TypeCode.Decimal:
                     (success, result) = rw.ReadToArray<double>(groupId, name, alternativeName);
