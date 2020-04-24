@@ -169,6 +169,7 @@ namespace HDF5CSharp.UnitTests.Core
             Assert.IsTrue(data.Equals(attObject));
 
             attObject.SetStringProperty("third");
+            attObject.datetime=DateTime.Now;
             openFileId = Hdf5.OpenFile(filename);
             Hdf5.WriteObject(openFileId, attObject, groupName);
             Assert.IsTrue(Hdf5.CloseFile(openFileId) == 0);
@@ -177,6 +178,7 @@ namespace HDF5CSharp.UnitTests.Core
             data = Hdf5.ReadObject<AttributeSimpleClass>(openFileId, groupName);
             Hdf5.CloseFile(openFileId);
             Assert.IsTrue(data.Equals(attObject));
+            File.Delete(filename);
         }
     }
 }
