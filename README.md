@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/HDF5-CSharp/community](https://badges.gitter.im/HDF5-CSharp/community.svg)](https://gitter.im/HDF5-CSharp/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 <a href="https://github.com/LiorBanai/HDF5-CSharp/issues">
-    <img src="https://img.shields.io/github/issues/LiorBanai/HDF5-CSharp" alt="Issues"/>
+    <img src="https://img.shields.io/github/issues/LiorBanai/HDF5-CSharp"  alt="Issues"/>
 </a>
 <a href="https://github.com/LiorBanai/HDF5-CSharp/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/LiorBanai/HDF5-CSharp"  alt="License"/>
