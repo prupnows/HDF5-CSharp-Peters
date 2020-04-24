@@ -13,7 +13,7 @@ namespace HDF5CSharp
             rw = _rw;
         }
 
-        public (int success, long CreatedgroupId) WriteArray(long groupId, string name, Array collection, string datasetName, Dictionary<string, List<string>> attributes)
+        public (int success, long CreatedgroupId) WriteArray(long groupId, string name, Array collection, Dictionary<string, List<string>> attributes)
         {
 
             Type type = collection.GetType();
@@ -24,73 +24,73 @@ namespace HDF5CSharp
             {
                 case TypeCode.Boolean:
                     var bls = collection.ConvertArray<bool, ushort>(Convert.ToUInt16);
-                    result = rw.WriteFromArray<ushort>(groupId, name, bls, datasetName);
+                    result = rw.WriteFromArray<ushort>(groupId, name, bls);
                     break;
                 case TypeCode.Byte:
-                    result = rw.WriteFromArray<byte>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<byte>(groupId, name, collection);
                     break;
                 case TypeCode.Char:
                     var chrs = collection.ConvertArray<char, ushort>(Convert.ToUInt16);
-                    result = rw.WriteFromArray<ushort>(groupId, name, chrs, datasetName);
+                    result = rw.WriteFromArray<ushort>(groupId, name, chrs);
                     break;
 
                 case TypeCode.DateTime:
                     var dts = collection.ConvertArray<DateTime, long>(dt => Hdf5Conversions.FromDatetime(dt, Hdf5.Settings.DateTimeType));
-                    result = rw.WriteFromArray<long>(groupId, name, dts, datasetName);
+                    result = rw.WriteFromArray<long>(groupId, name, dts);
                     break;
                 case TypeCode.Decimal:
                     var decs = collection.ConvertArray<decimal, double>(Convert.ToDouble);
-                    result = rw.WriteFromArray<double>(groupId, name, decs, datasetName);
+                    result = rw.WriteFromArray<double>(groupId, name, decs);
                     break;
 
                 case TypeCode.Double:
-                    result = rw.WriteFromArray<double>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<double>(groupId, name, collection);
                     break;
 
                 case TypeCode.Int16:
-                    result = rw.WriteFromArray<short>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<short>(groupId, name, collection);
                     break;
 
                 case TypeCode.Int32:
-                    result = rw.WriteFromArray<int>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<int>(groupId, name, collection);
                     break;
 
                 case TypeCode.Int64:
-                    result = rw.WriteFromArray<long>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<long>(groupId, name, collection);
                     break;
 
                 case TypeCode.SByte:
-                    result = rw.WriteFromArray<sbyte>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<sbyte>(groupId, name, collection);
                     Hdf5.WriteStringAttribute(groupId, name, "SByte", name);
                     break;
 
                 case TypeCode.Single:
-                    result = rw.WriteFromArray<float>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<float>(groupId, name, collection);
                     break;
 
                 case TypeCode.UInt16:
-                    result = rw.WriteFromArray<ushort>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<ushort>(groupId, name, collection);
                     break;
 
                 case TypeCode.UInt32:
-                    result = rw.WriteFromArray<uint>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<uint>(groupId, name, collection);
                     break;
 
                 case TypeCode.UInt64:
-                    result = rw.WriteFromArray<ulong>(groupId, name, collection, datasetName);
+                    result = rw.WriteFromArray<ulong>(groupId, name, collection);
                     break;
 
                 case TypeCode.String:
                     if (collection.Rank > 1 && collection.GetLength(1) > 1)
                         throw new Exception("Only 1 dimensional string arrays allowed: " + name);
-                    result = rw.WriteStrings(groupId, name, (string[])collection, datasetName);
+                    result = rw.WriteStrings(groupId, name, (string[])collection);
                     break;
 
                 default:
                     if (elementType == typeof(TimeSpan))
                     {
                         var tss = collection.ConvertArray<TimeSpan, long>(dt => dt.Ticks);
-                        result = rw.WriteFromArray<long>(groupId, name, tss, datasetName);
+                        result = rw.WriteFromArray<long>(groupId, name, tss);
                         Hdf5.WriteStringAttribute(groupId, name, "TimeSpan", name);
 
                     }

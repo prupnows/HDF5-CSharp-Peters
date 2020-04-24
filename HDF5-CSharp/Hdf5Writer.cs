@@ -39,28 +39,28 @@ namespace HDF5CSharp
 
             WriteProperties(tyObject, writeValue, groupId);
             WriteFields(tyObject, writeValue, groupId);
-            WriteHdf5Attributes(tyObject, groupId, groupName, string.Empty);
+            WriteHdf5Attributes(tyObject, groupId, groupName);
             if (createGroupName)
                 CloseGroup(groupId);
             return (writeValue);
         }
 
-        private static void WriteHdf5Attributes(Type type, long groupId, string name, string datasetName)
+        private static void WriteHdf5Attributes(Type type, long groupId, string name)
         {
             foreach (Attribute attr in Attribute.GetCustomAttributes(type))
             {
                 if (attr is Hdf5Attribute h5At)
                 {
-                    WriteAttribute(groupId, name, h5At.Name, datasetName);
+                    WriteAttribute(groupId, name, h5At.Name);
                 }
                 if (attr is Hdf5Attributes h5Ats)
                 {
-                    WriteAttributes<string>(groupId, name, h5Ats.Names, datasetName);
+                    WriteAttributes<string>(groupId, name, h5Ats.Names);
                 }
             }
             foreach (var attribute in Attributes(type))
             {
-                WriteAttributes<string>(groupId, attribute.Key, attribute.Value.ToArray(), datasetName);
+                WriteAttributes<string>(groupId, attribute.Key, attribute.Value.ToArray());
             }
 
         }
@@ -144,7 +144,7 @@ namespace HDF5CSharp
                 var elType = ty.GetElementType();
                 TypeCode elCode = Type.GetTypeCode(elType);
                 if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
-                    dsetRW.WriteArray(groupId, name, (Array)infoVal, string.Empty, attributes);
+                    dsetRW.WriteArray(groupId, name, (Array)infoVal, attributes);
                 else
                 {
                     CallByReflection<(int, long)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal, attributes });

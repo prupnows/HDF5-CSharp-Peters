@@ -80,10 +80,10 @@ namespace HDF5CSharp.UnitTests.Core
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
                 var groupId = Hdf5.CreateGroup(fileId, groupStr);
-                Hdf5.WriteAttributes<int>(groupId, intName, intValues, string.Empty);
+                Hdf5.WriteAttributes<int>(groupId, intName, intValues);
                 Hdf5.WriteAttribute(groupId, dblName, dblValue);
                 Hdf5.WriteAttribute(groupId, strName, strValue);
-                Hdf5.WriteAttributes<string>(groupId, strNames, strValues, string.Empty);
+                Hdf5.WriteAttributes<string>(groupId, strNames, strValues);
                 Hdf5.WriteAttribute(groupId, boolName, boolValue);
                 Hdf5.WriteAttribute(groupId, dateName, dateValue);
                 H5G.close(groupId);

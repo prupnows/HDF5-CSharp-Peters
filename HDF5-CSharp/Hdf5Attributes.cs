@@ -242,9 +242,9 @@ namespace HDF5CSharp
             return (result, attributeId);
         }
 
-        public static void WriteAttribute<T>(long groupId, string name, T attribute, string datasetName = null) //where T : struct
+        public static void WriteAttribute<T>(long groupId, string name, T attribute) //where T : struct
         {
-            WriteAttributes<T>(groupId, name, new T[1] { attribute }, datasetName);
+            WriteAttributes<T>(groupId, name, new T[1] { attribute });
             /*if (typeof(T) == typeof(string))
                 attrRW.WriteArray(groupId, name, new T[1] { attribute });
             else
@@ -254,24 +254,18 @@ namespace HDF5CSharp
             }*/
         }
 
-        public static void WriteAttributes<T>(long groupId, string name, Array attributes, string datasetName) //
+        public static void WriteAttributes<T>(long groupId, string name, Array attributes) //
         {
-            attrRW.WriteArray(groupId, name, attributes, datasetName, new Dictionary<string, List<string>>());
+            attrRW.WriteArray(groupId, name, attributes, new Dictionary<string, List<string>>());
              //if (attributes.GetType().GetElementType() == typeof(string))
              //     WriteStringAttributes(groupId, name, attributes.Cast<string>(), datasetName);
              //else
              //    WritePrimitiveAttribute<T>(groupId, name, attributes, datasetName);
         }
 
-        public static (int success, long CreatedgroupId) WritePrimitiveAttribute<T>(long groupId, string name, Array attributes, string datasetName) //where T : struct
+        public static (int success, long CreatedgroupId) WritePrimitiveAttribute<T>(long groupId, string name, Array attributes) //where T : struct
         {
-            var tmpId = groupId;
-            if (!string.IsNullOrWhiteSpace(datasetName))
-            {
-                var datasetId = H5D.open(groupId, datasetName);
-                if (datasetId > 0)
-                    groupId = datasetId;
-            }
+            var tmpId = groupId; 
             int rank = attributes.Rank;
             ulong[] dims = Enumerable.Range(0, rank).Select(i => (ulong)attributes.GetLength(i)).ToArray();
             ulong[] maxDims = null;

@@ -228,6 +228,37 @@ namespace HDF5CSharp.UnitTests.Core
         }
 
         [TestMethod]
+        public void WriteAndOverrideChunkedDataset()
+        {
+            var data = CreateDataset();
+            string filename = Path.Combine(folder, "testOverrideChunks.H5");
+            string groupName = "/test";
+            string datasetName = "Data";
+
+            //create
+            var fileId = Hdf5.CreateFile(filename);
+            Assert.IsTrue(fileId > 0);
+            var groupId = Hdf5.CreateGroup(fileId, groupName);
+            Assert.IsTrue(groupId >= 0);
+            using (var chunkedDset = new ChunkedDataset<double>(datasetName, groupId))
+            {
+                chunkedDset.AppendOrCreateDataset(data);
+                
+            }
+
+            Hdf5.CloseFile(fileId);
+
+            //read
+            fileId = Hdf5.OpenFile(filename);
+
+
+            var dataRead = Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName, "/", datasetName));
+            Hdf5.CloseFile(fileId);
+            CompareDatasets(dataRead.result as double[,],data);
+        }
+
+
+        [TestMethod]
         public void WriteAndReadSubsetOfDataset()
         {
             string filename = Path.Combine(folder, "testSubset.H5");
@@ -335,12 +366,12 @@ namespace HDF5CSharp.UnitTests.Core
         {
             long tef2 = Hdf5.CreateFile(filename);
             int[] blah = { 1, 2, 4, 5, 0 };
-            Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah, null);
+            Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah);
             Hdf5.CloseFile(tef2);
             var what = "???"; // breakpoint in VS to test h5 file contents independently before next write step
             tef2 = Hdf5.OpenFile(filename);
             blah[4] = 6;
-            Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah, null); // This command throws several debug errors from PInvoke
+            Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah); // This command throws several debug errors from PInvoke
             var (success, result) = Hdf5.ReadDataset<int>(tef2, "blah");
             Assert.IsTrue(success);
             Assert.IsTrue(result.Cast<int>().SequenceEqual(blah));
@@ -371,7 +402,7 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.Settings.OverrideExistingData = true;
             long tef2 = Hdf5.CreateFile(filename);
             int[] blah = { 1, 2, 4, 5, 0 };
-            Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah, null);
+            Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah);
             Hdf5.CloseFile(tef2);
             var what = "???"; // breakpoint in VS to test h5 file contents independently before next write step
             tef2 = Hdf5.OpenFile(filename);

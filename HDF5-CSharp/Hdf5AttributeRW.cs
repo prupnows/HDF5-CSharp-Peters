@@ -11,9 +11,9 @@ namespace HDF5CSharp
             return Hdf5.ReadPrimitiveAttributes<T>(groupId, name, alternativeName);
         }
 
-        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset, string datasetName)
+        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset)
         {
-            return Hdf5.WritePrimitiveAttribute<T>(groupId, name, dset, datasetName);
+            return Hdf5.WritePrimitiveAttribute<T>(groupId, name, dset);
         }
 
         public (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null)

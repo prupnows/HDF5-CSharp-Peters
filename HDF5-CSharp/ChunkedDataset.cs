@@ -16,7 +16,6 @@ namespace HDF5CSharp
         public string Datasetname { get; private set; }
         public int Rank { get; private set; }
         public long GroupId { get; private set; }
-        protected bool FalseGroupId => GroupId <= 0;
         /// <summary>
         /// Constructor to create a chuncked dataset object
         /// </summary>
@@ -58,7 +57,7 @@ namespace HDF5CSharp
 
         public void FirstDataset(Array dataset)
         {
-            if (FalseGroupId) throw new Exception("cannot call FirstDataset because group or file couldn't be created");
+            if (GroupId <= 0) throw new Exception("cannot call FirstDataset because group or file couldn't be created");
             if (Hdf5Utils.GetRealName(GroupId, Datasetname,string.Empty).valid) throw new Exception("cannot call FirstDataset because dataset already exists");
 
             Rank = dataset.Rank;

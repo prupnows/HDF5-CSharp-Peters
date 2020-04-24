@@ -14,20 +14,16 @@ namespace HDF5CSharp
             return Hdf5.ReadDatasetToArray<T>(groupId, name, alternativeName);
         }
 
-        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset, string datasetName = null)
+        public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset)
         {
-            return Hdf5.WriteDatasetFromArray<T>(groupId, name, dset, datasetName);
+            return Hdf5.WriteDatasetFromArray<T>(groupId, name, dset);
         }
         public (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null)
         {
             return Hdf5.WriteStrings(groupId, name, (string[])collection, datasetName);
         }
-        //public void WriteStucts<T>(long groupId, string name, IEnumerable<T> dset, string datasetName = null)
-        //{
-        //    Hdf5.WriteCompounds(groupId, name, dset);
-        //}
 
-        public Array ReadStucts<T>(long groupId, string name) where T : struct
+        public Array ReadStructs<T>(long groupId, string name) where T : struct
         {
             return Hdf5.ReadCompounds<T>(groupId, name).ToArray();
         }
@@ -182,18 +178,18 @@ namespace HDF5CSharp
         {
             if (typeof(T) == typeof(string))
                 //WriteStrings(groupId, name, new string[] { dset.ToString() });
-                return dsetRW.WriteArray(groupId, name, new T[1] { dset }, string.Empty, attributes);
+                return dsetRW.WriteArray(groupId, name, new T[1] { dset },  attributes);
             Array oneVal = new T[1, 1] { { dset } };
-            return dsetRW.WriteArray(groupId, name, oneVal, string.Empty, attributes);
+            return dsetRW.WriteArray(groupId, name, oneVal,  attributes);
         }
 
         public static void WriteDataset(long groupId, string name, Array collection)
         {
-            dsetRW.WriteArray(groupId, name, collection, string.Empty, new Dictionary<string, List<string>>());
+            dsetRW.WriteArray(groupId, name, collection,  new Dictionary<string, List<string>>());
         }
 
 
-        public static (int success, long CreatedgroupId) WriteDatasetFromArray<T>(long groupId, string name, Array dset, string datasetName = null) //where T : struct
+        public static (int success, long CreatedgroupId) WriteDatasetFromArray<T>(long groupId, string name, Array dset) //where T : struct
         {
             int rank = dset.Rank;
             ulong[] dims = Enumerable.Range(0, rank).Select(i => { return (ulong)dset.GetLength(i); }).ToArray();
