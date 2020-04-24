@@ -20,7 +20,7 @@ namespace HDF5CSharp
         }
         public (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null)
         {
-            return Hdf5.WriteStrings(groupId, name, (string[])collection, datasetName);
+            return Hdf5.WriteStrings(groupId, name, (string[])collection);
         }
 
         public Array ReadStructs<T>(long groupId, string name) where T : struct

@@ -46,6 +46,7 @@ namespace HDF5CSharp.UnitTests.Core
                 Assert.IsTrue(string.IsNullOrEmpty(readStr));
                  readStr = Hdf5.ReadAttribute<string>(groupId, "time");
                 Assert.IsTrue(readStr == attrStr);
+                Assert.IsTrue(H5G.close(groupId)==0);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
                 ErrorCountExpected = 2;
             }

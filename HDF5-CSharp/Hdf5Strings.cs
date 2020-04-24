@@ -60,7 +60,7 @@ namespace HDF5CSharp
         }
 
 
-        public static (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> strs, string datasetName = null)
+        public static (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> strs)
         {
 
             // create UTF-8 encoded test datasets

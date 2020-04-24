@@ -13,13 +13,13 @@ namespace HDF5CSharp
             rw = _rw;
         }
 
-        public (int success, long CreatedgroupId) WriteArray(long groupId, string name, Array collection, Dictionary<string, List<string>> attributes)
+        public (int success, long CreatedId) WriteArray(long groupId, string name, Array collection, Dictionary<string, List<string>> attributes)
         {
 
             Type type = collection.GetType();
             Type elementType = type.GetElementType();
             TypeCode typeCode = Type.GetTypeCode(elementType);
-            (int success, long CreatedgroupId) result;
+            (int success, long CreatedId) result;
             switch (typeCode)
             {
                 case TypeCode.Boolean:
@@ -61,7 +61,6 @@ namespace HDF5CSharp
 
                 case TypeCode.SByte:
                     result = rw.WriteFromArray<sbyte>(groupId, name, collection);
-                    Hdf5.WriteStringAttribute(groupId, name, "SByte", name);
                     break;
 
                 case TypeCode.Single:
@@ -91,7 +90,6 @@ namespace HDF5CSharp
                     {
                         var tss = collection.ConvertArray<TimeSpan, long>(dt => dt.Ticks);
                         result = rw.WriteFromArray<long>(groupId, name, tss);
-                        Hdf5.WriteStringAttribute(groupId, name, "TimeSpan", name);
 
                     }
                     else
@@ -101,10 +99,14 @@ namespace HDF5CSharp
                     }
                     break;
             }
-            //append attributes
-            foreach (KeyValuePair<string, List<string>> entry in attributes)
+
+            if (result.success == 0)//append attributes
             {
-                Hdf5.WriteStringAttribute(groupId, entry.Key, string.Join("',", entry.Value), name);
+                foreach (KeyValuePair<string, List<string>> entry in attributes)
+                {
+                    Hdf5.WriteStringAttribute(groupId, entry.Key, string.Join("',", entry.Value),name);
+                }
+
             }
 
             return result;

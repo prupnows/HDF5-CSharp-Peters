@@ -184,19 +184,23 @@ namespace HDF5CSharp
             return (true,attributes);
         }
 
-        public static (int success, long attributeId) WriteStringAttribute(long groupId, string name, string val, string datasetName = null)
+        public static (int success, long attributeId) WriteStringAttribute(long groupId, string name, string val,string groupOrDatasetName)
         {
-            return WriteStringAttributes(groupId, name, new[] { val }, datasetName);
+            return WriteStringAttributes(groupId, name, new[] { val },groupOrDatasetName);
         }
 
-        public static (int success, long CreatedgroupId) WriteStringAttributes(long groupId, string name, IEnumerable<string> values, string datasetName = null)
+        public static (int success, long CreatedId) WriteStringAttributes(long groupId, string name, IEnumerable<string> values, string groupOrDatasetName = null)
         {
             long tmpId = groupId;
-            if (!string.IsNullOrWhiteSpace(datasetName))
+            if (!string.IsNullOrWhiteSpace(groupOrDatasetName))
             {
-                long datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(datasetName));
+                long datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(groupOrDatasetName));
                 if (datasetId > 0)
                     groupId = datasetId;
+            }
+            else
+            {
+               
             }
 
             // create UTF-8 encoded attributes
@@ -258,9 +262,9 @@ namespace HDF5CSharp
         {
             attrRW.WriteArray(groupId, name, attributes, new Dictionary<string, List<string>>());
              //if (attributes.GetType().GetElementType() == typeof(string))
-             //     WriteStringAttributes(groupId, name, attributes.Cast<string>(), datasetName);
+             //     WriteStringAttributes(groupId, name, attributes.Cast<string>(), attributeName);
              //else
-             //    WritePrimitiveAttribute<T>(groupId, name, attributes, datasetName);
+             //    WritePrimitiveAttribute<T>(groupId, name, attributes, attributeName);
         }
 
         public static (int success, long CreatedgroupId) WritePrimitiveAttribute<T>(long groupId, string name, Array attributes) //where T : struct
