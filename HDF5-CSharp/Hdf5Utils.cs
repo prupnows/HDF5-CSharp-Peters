@@ -127,9 +127,12 @@ namespace HDF5CSharp
                     datasetId = H5D.create(parentId, normalizedName, dataType, spaceId);
                     break;
                 case Hdf5ElementType.Attribute:
-                    datasetId = exists
-                        ? H5A.open(parentId, normalizedName)
-                        : H5A.create(parentId, normalizedName, dataType, spaceId);
+                    if (exists)
+                    {
+                        H5A.delete(parentId, normalizedName);
+                    }
+
+                    datasetId = H5A.create(parentId, normalizedName, dataType, spaceId);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
