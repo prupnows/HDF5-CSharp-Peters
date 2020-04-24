@@ -7,7 +7,72 @@ using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp.UnitTests.Core
 {
-    [Hdf5Attributes(new string[] { "some info", "more info" })]
+    [Hdf5Attributes(new[] {"some info", "more info"})]
+    class AttributeSimpleClass:IEquatable<AttributeSimpleClass>
+    {
+        public class InnerClass:IEquatable<InnerClass>
+        {
+            public string noAttributeName = "empty;";
+
+            [Hdf5("some money")]
+            public decimal money = 100.12M;
+
+            public bool Equals(InnerClass other)
+            {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return noAttributeName == other.noAttributeName && money == other.money;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((InnerClass) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(noAttributeName, money);
+            }
+        }
+        [Hdf5("birthdate")]
+        public DateTime datetime;
+        public double noAttribute = 10.0;
+        public string StringProperty { get; private set; }
+        public InnerClass inner;
+
+        public AttributeSimpleClass()
+        {
+            datetime= new DateTime(1969, 12, 01, 12, 00, 00, DateTimeKind.Local);
+            StringProperty = "stringValue";
+            inner=new InnerClass();
+        }
+
+        public void SetStringProperty(string value) => StringProperty = value;
+        public bool Equals(AttributeSimpleClass other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return datetime.Equals(other.datetime) && noAttribute.Equals(other.noAttribute) &&
+                   Equals(inner, other.inner) && StringProperty == other.StringProperty;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((AttributeSimpleClass) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(datetime, noAttribute, inner, StringProperty);
+        }
+    }
+    [Hdf5Attributes(new[] { "some info", "more info" })]
     class AttributeClass
     {
         [Hdf5KeyValuesAttributes("Key", new[] { "NestedInfo some info", "NestedInfo more info" })]

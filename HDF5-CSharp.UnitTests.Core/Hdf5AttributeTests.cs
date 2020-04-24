@@ -60,7 +60,7 @@ namespace HDF5CSharp.UnitTests.Core
         public void WriteAndReadAttributes()
         {
             string filename = Path.Combine(folder, "testAttributes.H5");
-            int[] intValues = new int[] { 1, 2 };
+            int[] intValues = new[] { 1, 2 };
             double dblValue = 1.1;
             string strValue = "test";
             string[] strValues = new string[2] { "test", "another test" };
@@ -142,6 +142,41 @@ namespace HDF5CSharp.UnitTests.Core
             var OpenFileId = Hdf5.OpenFile(filename);
             var data = Hdf5.ReadObject<AttributeClass>(OpenFileId, groupName);
             Assert.IsTrue(Math.Abs(data.noAttribute - 10.0f) < 0.001);
+        }
+
+        [TestMethod]
+        public void WriteOverrideAndReadObjectWithHdf5Attributes()
+        {
+            string groupName = "simpleObject";
+            string filename = Path.Combine(folder, "testSimpleHdf5Attribute.H5");
+            var attObject = new AttributeSimpleClass();
+            attObject.SetStringProperty("new value");
+            try
+            {
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                Hdf5.WriteObject(fileId, attObject, groupName);
+                Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+            var openFileId = Hdf5.OpenFile(filename);
+            var data = Hdf5.ReadObject<AttributeSimpleClass>(openFileId, groupName);
+            Hdf5.CloseFile(openFileId);
+            Assert.IsTrue(data.Equals(attObject));
+
+            attObject.SetStringProperty("third");
+            openFileId = Hdf5.OpenFile(filename);
+            Hdf5.WriteObject(openFileId, attObject, groupName);
+            Assert.IsTrue(Hdf5.CloseFile(openFileId) == 0);
+
+            openFileId = Hdf5.OpenFile(filename);
+            data = Hdf5.ReadObject<AttributeSimpleClass>(openFileId, groupName);
+            Hdf5.CloseFile(openFileId);
+            Assert.IsTrue(data.Equals(attObject));
         }
     }
 }

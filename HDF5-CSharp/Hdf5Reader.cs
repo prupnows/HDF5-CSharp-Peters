@@ -181,7 +181,13 @@ namespace HDF5CSharp
                     if (success && values.Length > 0)
                     {
                         int[] first = new int[values.Rank].Select(f => 0).ToArray();
-                        info.SetValue(readValue, values.GetValue(first));
+                        if (info.CanWrite)
+                            info.SetValue(readValue, values.GetValue(first));
+                        else
+                        {
+                            Hdf5Utils.LogMessage($"property {info.Name} is readonly. can not set value",
+                                Hdf5LogLevel.Warning);
+                        }
                     }
                 }
                 else

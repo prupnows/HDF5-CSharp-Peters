@@ -14,7 +14,7 @@ namespace HDF5CSharp.UnitTests.Core
         {
             try
             {
-                string[] str = new string[] { "test" };
+                string[] str = new[] { "test" };
 
                 string filename = Path.Combine(folder, "testOneStringList.H5");
 

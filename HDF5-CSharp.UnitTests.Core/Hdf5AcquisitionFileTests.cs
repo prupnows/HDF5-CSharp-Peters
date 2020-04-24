@@ -56,7 +56,7 @@ namespace HDF5CSharp.UnitTests.Core
                 {
                     var header = reader.Header;
                     Assert.IsTrue(header.Patient.Name == "Robert");
-                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new string[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
+                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
                     Assert.IsTrue(header.Events.Events.First() == "an event");
                     Assert.IsTrue(header.Events.Events.Last() == "a second event");
                 }
@@ -108,7 +108,7 @@ namespace HDF5CSharp.UnitTests.Core
                     var header = reader.Header;
                     Assert.IsTrue(header.Patient.Name == "Robert");
                     Assert.IsTrue(header.Recording.NrOfSamples == 100);
-                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new string[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
+                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
                     Assert.IsTrue(header.Channels.Select(c => c.NrOfSamples).SequenceEqual(new ulong[] { 100, 100, 100, 100, 100 }));
                     var data = reader.ReadDouble(0, 49);
                     var sig = data.First().Take(5);
@@ -171,7 +171,7 @@ namespace HDF5CSharp.UnitTests.Core
                     var header = reader.Header;
                     Assert.IsTrue(header.Patient.Name == "Robert");
                     Assert.IsTrue(header.Recording.NrOfSamples == 100);
-                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new string[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
+                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
                     Assert.IsTrue(header.Channels.Select(c => c.NrOfSamples).SequenceEqual(new ulong[] { 100, 100, 100, 100, 100 }));
                     var data = reader.ReadDouble(0, 49);
                     var sig = data.First().Take(5);
@@ -255,8 +255,8 @@ namespace HDF5CSharp.UnitTests.Core
                     Assert.IsTrue(header.Patient.Name == "Robert");
                     ulong samps = Convert.ToUInt64(N * nrNsamples);
                     Assert.IsTrue(header.Recording.NrOfSamples == samps);
-                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new string[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
-                    Assert.IsTrue(header.Channels.Select(c => c.NrOfSamples).SequenceEqual(new ulong[] { samps, samps, samps, samps, samps }));
+                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
+                    Assert.IsTrue(header.Channels.Select(c => c.NrOfSamples).SequenceEqual(new[] { samps, samps, samps, samps, samps }));
                     var data = reader.ReadDouble(0, (ulong)N - 1);
                     var sig = data.First().Take(5);
                     var sim = Enumerable.Range(0, 5).Select(d => d / (double)N);
@@ -337,8 +337,8 @@ namespace HDF5CSharp.UnitTests.Core
                     Assert.IsTrue(header.Patient.Name == "Robert");
                     ulong samps = Convert.ToUInt64(N * nrNsamples);
                     Assert.IsTrue(header.Recording.NrOfSamples == samps);
-                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new string[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
-                    Assert.IsTrue(header.Channels.Select(c => c.NrOfSamples).SequenceEqual(new ulong[] { samps, samps, samps, samps, samps }));
+                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
+                    Assert.IsTrue(header.Channels.Select(c => c.NrOfSamples).SequenceEqual(new[] { samps, samps, samps, samps, samps }));
                     var data = reader.ReadDouble(0, (ulong)N - 1);
                     var sig = data.First().Take(5);
                     var sim = Enumerable.Range(0, 5).Select(d => d / (double)N);
@@ -413,8 +413,8 @@ namespace HDF5CSharp.UnitTests.Core
                     Assert.IsTrue(header.Patient.Name == "Robert");
                     ulong samps = Convert.ToUInt64(N * nrNsamples);
                     Assert.IsTrue(header.Recording.NrOfSamples == samps);
-                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new string[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
-                    Assert.IsTrue(header.Channels.Select(c => c.NrOfSamples).SequenceEqual(new ulong[] { samps, samps, samps, samps, samps }));
+                    Assert.IsTrue(header.Channels.Select(c => c.Label).SequenceEqual(new[] { "DC01", "DC02", "DC03", "DC04", "DC05" }));
+                    Assert.IsTrue(header.Channels.Select(c => c.NrOfSamples).SequenceEqual(new[] { samps, samps, samps, samps, samps }));
                     var data = reader.ReadDouble(0, (ulong)N - 1);
                     var sig = data.First().Take(5);
                     var sim = Enumerable.Range(0, 5).Select(d => d / (double)N);
