@@ -8,13 +8,15 @@
     <img src="https://img.shields.io/github/license/LiorBanai/HDF5-CSharp"  alt="License"/>
 </a>
 [![Build Status](https://liorbanai.visualstudio.com/HDF5-CSharp/_apis/build/status/LiorBanai.HDF5-CSharp?branchName=master)](https://liorbanai.visualstudio.com/HDF5-CSharp/_build/latest?definitionId=3&branchName=master)
-<a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/20655/badge.svg"/></a>
+<a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img src="https://scan.coverity.com/projects/20655/badge.svg" alt="Coverity Scan Build Status"/></a>
 
 [![Nuget](https://img.shields.io/nuget/v/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/)  [![Nuget](https://img.shields.io/nuget/dt/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/) 
 <a href="https://github.com/LiorBanai/HDF5-CSharp/releases"> 
     <img src="https://img.shields.io/github/v/release/LiorBanai/HDF5-CSharp"  alt="Latest Release"/>
 </a>
- <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.10.610.7...master"> <img alt="Commits Since Latest Release" src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"/></a>
+ <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.10.610.7...master">
+    <img src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"  alt="Commits Since Latest Release"/>
+</a>
 
 
 
