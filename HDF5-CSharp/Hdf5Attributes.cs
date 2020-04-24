@@ -210,9 +210,9 @@ namespace HDF5CSharp
 
             int strSz = values.Count();
             long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
-
-            var attributeId = H5A.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
-
+            string normalizedName = Hdf5Utils.NormalizedName(name);
+            
+            var attributeId = Hdf5Utils.GetAttributeId(groupId, normalizedName, datatype, spaceId);
             GCHandle[] hnds = new GCHandle[strSz];
             IntPtr[] wdata = new IntPtr[strSz];
  

@@ -52,7 +52,7 @@ namespace HDF5CSharp.UnitTests.Core
                 dset = dsets.First();
                 dset2 = (double[,])Hdf5.ReadDataset<double>(fileId, Hdf5Utils.NormalizedName("/A/test")).result;
                 CompareDatasets(dset, dset2);
-                Assert.IsTrue(Hdf5.GroupExists(fileId, Hdf5Utils.NormalizedName( "A/B/C/D/E/F/I")));
+                Assert.IsTrue(Hdf5Utils.ItemExists(fileId, Hdf5Utils.NormalizedName( "A/B/C/D/E/F/I"),DataTypes.Hdf5ElementType.Dataset));
 
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
 

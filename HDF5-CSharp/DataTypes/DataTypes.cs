@@ -11,6 +11,7 @@ namespace HDF5CSharp.DataTypes
         Unknown=0,
         Group,
         Dataset,
+        Attribute
     }
     public abstract class Hdf5ElementBase
     {

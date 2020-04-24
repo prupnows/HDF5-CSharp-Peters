@@ -71,8 +71,13 @@ namespace HDF5CSharp
 
             int strSz = strs.Count();
             long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
-
-            var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
+            
+            string normalizedName = Hdf5Utils.NormalizedName(name);
+            var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId);
+            if (datasetId == -1L)
+            {
+                return (-1, -1L);
+            }
 
             GCHandle[] hnds = new GCHandle[strSz];
             IntPtr[] wdata = new IntPtr[strSz];

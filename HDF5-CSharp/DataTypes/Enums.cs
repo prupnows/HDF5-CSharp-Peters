@@ -17,4 +17,5 @@ namespace HDF5CSharp.DataTypes
         Warning,
         Error,
     }
+
 }

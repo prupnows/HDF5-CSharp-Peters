@@ -204,27 +204,9 @@ namespace HDF5CSharp
             }
 
             string normalizedName = Hdf5Utils.NormalizedName(name);
-            bool exists = GroupExists(groupId, normalizedName);
-            if (exists)
-            {
-                Hdf5Utils.LogMessage($"{normalizedName} already exists",DataTypes.Hdf5LogLevel.Debug);
-                if (!Settings.OverrideExistingData)
-                {  if (Settings.ThrowOnError)
-                        throw new Exception($"{normalizedName} already exists");
-                    return (-1, -1);
-                }
-
-            }
-
-            var datasetId = exists
-                ? H5D.open(groupId, normalizedName)
-                : H5D.create(groupId, normalizedName, datatype, spaceId);
+           var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId);
             if (datasetId == -1L)
             {
-                string error = $"Unable to create dataset for {normalizedName}";
-                Hdf5Utils.LogMessage($"{normalizedName} already exists", DataTypes.Hdf5LogLevel.Error);
-                if (Settings.ThrowOnError)
-                    throw new Exception(error);
                 return (-1, -1L);
             }
 
