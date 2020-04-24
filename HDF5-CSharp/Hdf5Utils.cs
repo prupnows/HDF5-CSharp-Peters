@@ -1,7 +1,7 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-using HDF.PInvoke;
+﻿using HDF.PInvoke;
 using HDF5CSharp.DataTypes;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace HDF5CSharp
 {
@@ -13,7 +13,7 @@ namespace HDF5CSharp
         public static Action<string> LogWarning;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static (bool valid,string name) GetRealName(long id,string name,string alternativeName)
+        internal static (bool valid, string name) GetRealName(long id, string name, string alternativeName)
         {
             string normalized = NormalizedName(name);
             if (!String.IsNullOrEmpty(normalized) && H5L.exists(id, normalized) > 0)
@@ -88,7 +88,7 @@ namespace HDF5CSharp
         }
 
 
-        internal static long GetDatasetId(long parentId, string name,long dataType, long spaceId)
+        internal static long GetDatasetId(long parentId, string name, long dataType, long spaceId)
         {
             return GetId(parentId, name, dataType, spaceId, Hdf5ElementType.Dataset);
         }
@@ -100,7 +100,7 @@ namespace HDF5CSharp
         internal static long GetId(long parentId, string name, long dataType, long spaceId, Hdf5ElementType type)
         {
             string normalizedName = Hdf5Utils.NormalizedName(name);
-            bool exists = Hdf5Utils.ItemExists(parentId, normalizedName,type);
+            bool exists = Hdf5Utils.ItemExists(parentId, normalizedName, type);
             if (exists)
             {
                 Hdf5Utils.LogMessage($"{normalizedName} already exists", Hdf5LogLevel.Debug);
@@ -119,9 +119,12 @@ namespace HDF5CSharp
                     break;
                 case Hdf5ElementType.Group:
                 case Hdf5ElementType.Dataset:
-                    datasetId = exists
-                        ? H5D.open(parentId, normalizedName)
-                        : H5D.create(parentId, normalizedName, dataType, spaceId);
+                    if (exists)
+                    {
+                        H5L.delete(parentId, normalizedName);
+                        // datasetId = H5D.open(parentId, normalizedName);
+                    }
+                    datasetId = H5D.create(parentId, normalizedName, dataType, spaceId);
                     break;
                 case Hdf5ElementType.Attribute:
                     datasetId = exists
@@ -131,7 +134,7 @@ namespace HDF5CSharp
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
-           
+
             if (datasetId == -1L)
             {
                 string error = $"Unable to create dataset for {normalizedName}";
