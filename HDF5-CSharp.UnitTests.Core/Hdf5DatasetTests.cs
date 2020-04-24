@@ -330,10 +330,9 @@ namespace HDF5CSharp.UnitTests.Core
                 CreateExceptionAssert(ex);
             }
         }
-        [TestMethod]
-        public void WriteAndUpdateDataset()
+
+        private long WriteDataset(string filename)
         {
-            string filename = "writeandupdatedatset.h5";
             long tef2 = Hdf5.CreateFile(filename);
             int[] blah = { 1, 2, 4, 5, 0 };
             Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah, null);
@@ -346,6 +345,14 @@ namespace HDF5CSharp.UnitTests.Core
             Assert.IsTrue(success);
             Assert.IsTrue(result.Cast<int>().SequenceEqual(blah));
             // loading the hdf5 file shows it only has {1, 2, 4, 5, 0} stored.
+            return tef2;
+
+        }
+        [TestMethod]
+        public void WriteAndUpdateDataset()
+        {
+            string filename = "writeandupdatedatset.h5";
+            long tef2 = WriteDataset(filename);
             Hdf5.CloseFile(tef2);
             File.Delete(filename);
         }
@@ -353,6 +360,12 @@ namespace HDF5CSharp.UnitTests.Core
         [TestMethod]
         public void OverrideDataset()
         {
+            string filename1 = "overridedataset1.h5";
+            long id = WriteDataset(filename1);
+            FileInfo fi= new FileInfo(filename1);
+            var l1 = fi.Length;
+            Hdf5.CloseFile(id);
+            File.Delete(filename1);
             string filename = "overridedataset.h5";
             Hdf5.Settings.EnableErrorReporting(true);
             Hdf5.Settings.OverrideExistingData = true;
@@ -362,7 +375,7 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.CloseFile(tef2);
             var what = "???"; // breakpoint in VS to test h5 file contents independently before next write step
             tef2 = Hdf5.OpenFile(filename);
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 10; i++)
             {
 
                 blah[4] = i + i;
@@ -372,9 +385,11 @@ namespace HDF5CSharp.UnitTests.Core
             var (success, result) = Hdf5.ReadDataset<int>(tef2, "blah");
             Assert.IsTrue(success);
             Assert.IsTrue(result.Cast<int>().SequenceEqual(blah));
-            // loading the hdf5 file shows it only has {1, 2, 4, 5, 0} stored.
+            FileInfo fi2 = new FileInfo(filename);
+            var l2 = fi.Length;
             Hdf5.CloseFile(tef2);
             File.Delete(filename);
+            Assert.IsTrue(l1 == l2);
         }
     }
 }
