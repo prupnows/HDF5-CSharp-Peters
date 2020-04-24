@@ -20,7 +20,8 @@
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>- Fix #39: File is not closed in ReadFileStructure(string fileName) method.
+    <PackageReleaseNotes>- Fix #41: WriteDatasetFromArray does nothing if dataset exists.
+- Fix #39: File is not closed in ReadFileStructure(string fileName) method.
 - Fix #38: Byte and SByte types are reversed.
 old releases:
 - Add methods to read H5 file structure (#37)
@@ -30,7 +31,7 @@ old releases:
 - Aligned version with hdf5 binaries version 1.10.610
 - Add support for reading back hdf5 files.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.10.610.6</Version>
+    <Version>1.10.610.7</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
