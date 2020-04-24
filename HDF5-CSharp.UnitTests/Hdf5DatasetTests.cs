@@ -1,9 +1,9 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HDF.PInvoke;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HDF5CSharp.UnitTests.Core
 {
@@ -243,7 +243,7 @@ namespace HDF5CSharp.UnitTests.Core
             using (var chunkedDset = new ChunkedDataset<double>(datasetName, groupId))
             {
                 chunkedDset.AppendOrCreateDataset(data);
-                
+
             }
 
             Hdf5.CloseFile(fileId);
@@ -254,7 +254,7 @@ namespace HDF5CSharp.UnitTests.Core
 
             var dataRead = Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName, "/", datasetName));
             Hdf5.CloseFile(fileId);
-            CompareDatasets(dataRead.result as double[,],data);
+            CompareDatasets(dataRead.result as double[,], data);
         }
 
 
@@ -393,7 +393,7 @@ namespace HDF5CSharp.UnitTests.Core
         {
             string filename1 = "overridedataset1.h5";
             long id = WriteDataset(filename1);
-            FileInfo fi= new FileInfo(filename1);
+            FileInfo fi = new FileInfo(filename1);
             var l1 = fi.Length;
             Hdf5.CloseFile(id);
             File.Delete(filename1);
@@ -410,7 +410,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
 
                 blah[4] = i + i;
-                Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah); 
+                Hdf5.WriteDatasetFromArray<int>(tef2, "blah", blah);
             }
 
             var (success, result) = Hdf5.ReadDataset<int>(tef2, "blah");
@@ -421,6 +421,41 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.CloseFile(tef2);
             File.Delete(filename);
             Assert.IsTrue(l1 == l2);
+        }
+        [TestMethod]
+        public void OverrideAndIncreaseDataset()
+        {
+            string filename = "overrideandincreasedataset.h5";
+            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.OverrideExistingData = true;
+            long id = Hdf5.CreateFile(filename);
+            int[] d1 = { 1, 2, 3, 4, 5 };
+            int[] d2 = { 11, 12, 13, 14, 15 };
+            Hdf5.WriteDatasetFromArray<int>(id, "d1", d1);
+            Hdf5.WriteDatasetFromArray<int>(id, "d2", d2);
+            Hdf5.CloseFile(id);
+            id = Hdf5.OpenFile(filename);
+            var (success, result) = Hdf5.ReadDataset<int>(id, "d1");
+            var (success1, result2) = Hdf5.ReadDataset<int>(id, "d2");
+            Hdf5.CloseFile(id);
+
+            int[] d3 = { 21, 22, 24, 25, 26, 27, 28, 29, 210 };
+            Assert.IsTrue(success);
+            Assert.IsTrue(result.Cast<int>().SequenceEqual(d1));
+            Assert.IsTrue(success1);
+            Assert.IsTrue(result2.Cast<int>().SequenceEqual(d2));
+
+            id = Hdf5.OpenFile(filename);
+            Hdf5.WriteDatasetFromArray<int>(id, "d1", d3);
+            Hdf5.CloseFile(id);
+            id = Hdf5.OpenFile(filename);
+            var (success3, result3) = Hdf5.ReadDataset<int>(id, "d1");
+            var (success4, result4) = Hdf5.ReadDataset<int>(id, "d2");
+            Hdf5.CloseFile(id);
+            Assert.IsTrue(success3);
+            Assert.IsTrue(result3.Cast<int>().SequenceEqual(d3));
+            Assert.IsTrue(success4);
+            Assert.IsTrue(result4.Cast<int>().SequenceEqual(d2));
         }
     }
 }

@@ -185,8 +185,7 @@ namespace HDF5CSharp
                             info.SetValue(readValue, values.GetValue(first));
                         else
                         {
-                            Hdf5Utils.LogMessage($"property {info.Name} is readonly. can not set value",
-                                Hdf5LogLevel.Warning);
+                            Hdf5Utils.LogMessage($"property {info.Name} is read only. cannot set value", Hdf5LogLevel.Warning);
                         }
                     }
                 }
