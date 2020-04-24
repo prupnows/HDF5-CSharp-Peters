@@ -30,7 +30,7 @@ namespace HDF5CSharp.Example.DataTypes
             {
                 string key = $"file {fileNum++}";
                 Hdf5.WriteStrings(GroupId, key, new[] { filePath, fileContent });
-                Hdf5.WriteAttribute(GroupId, key, "first entry is file name. Second is content", key);
+                Hdf5.WriteAttribute(GroupId, key, "first entry is file name. Second is content");
             }
         }
     }

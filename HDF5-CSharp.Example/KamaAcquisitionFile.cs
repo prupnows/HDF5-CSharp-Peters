@@ -37,8 +37,8 @@ namespace HDF5CSharp.Example
             Logger = logger;
             EITDefaultChunkSize = eitDefaultChunkSize;
             ECGDefaultChunkSize = ecgDefaultChunkSize;
-            Hdf5.Hdf5Settings.LowerCaseNaming = true;
-            Hdf5.Hdf5Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
+            Hdf5.Settings.LowerCaseNaming = true;
+            Hdf5.Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
             RecordNumber = 1;
             H5E.set_auto(H5E.DEFAULT, null, IntPtr.Zero);
             fileId = Hdf5.CreateFile(filename);

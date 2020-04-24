@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HDF5CSharp.Example.DataTypes;
+using System;
 using System.Collections.Generic;
-using HDF5CSharp.Example.DataTypes;
 
 namespace HDF5CSharp.Example
 {
-    public class KamaAcquisitionReadOnlyFile:IDisposable
+    public class KamaAcquisitionReadOnlyFile : IDisposable
     {
         public string FileName { get; }
         public ProcedureInformation ProcedureInformation { get; set; }
@@ -31,58 +31,58 @@ namespace HDF5CSharp.Example
             PatientInformation = new Patient();
             ECG = new ECGData();
             EITs = new List<EITEntry>();
-            Hdf5.Hdf5Settings.LowerCaseNaming = true;
-            Hdf5.Hdf5Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
+            Hdf5.Settings.LowerCaseNaming = true;
+            Hdf5.Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
             fileId = Hdf5.OpenFile(filename);
         }
 
         public void ReadSystemInformation()
         {
             string groupName = rootName + system_informationName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
             {
                 SystemInformation = Hdf5.ReadObject<SystemInformation>(fileId, groupName);
                 return;
             }
             groupName = rootNameOld + system_informationName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
                 SystemInformation = Hdf5.ReadObject<SystemInformation>(fileId, groupName);
         }
         public void ReadProcedureInformation()
         {
             string groupName = rootName + procedure_informationName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
             {
                 ProcedureInformation = Hdf5.ReadObject<ProcedureInformation>(fileId, groupName);
                 return;
             }
             groupName = rootNameOld + procedure_informationName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
                 ProcedureInformation = Hdf5.ReadObject<ProcedureInformation>(fileId, groupName);
         }
         public void ReadPatientInformation()
         {
             string groupName = rootName + patient_informationName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
             {
                 PatientInformation = Hdf5.ReadObject<Patient>(fileId, groupName);
                 return;
             }
             groupName = rootNameOld + patient_informationName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
                 PatientInformation = Hdf5.ReadObject<Patient>(fileId, groupName);
         }
 
         public void ReadECGData()
         {
             string groupName = rootName + ecgName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
             {
                 ECG = Hdf5.ReadObject<ECGData>(fileId, groupName);
                 return;
             }
             groupName = rootNameOld + ecgName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
                 ECG = Hdf5.ReadObject<ECGData>(fileId, groupName);
         }
         public void ReadEITData()
@@ -90,9 +90,9 @@ namespace HDF5CSharp.Example
 
             int index = 1;
             string rootGroup = rootName + eitName;
-            if (!Hdf5.GroupExists(fileId, rootGroup))
+            if (!Hdf5Utils.ItemExists(fileId, rootGroup, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
                 rootGroup = rootNameOld + eitName;
-            while (Hdf5.GroupExists(fileId, rootGroup + "/d" + index))
+            while (Hdf5Utils.ItemExists(fileId, rootGroup + "/d" + index, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
             {
                 var entry = Hdf5.ReadObject<EITEntry>(fileId, rootGroup + "/d" + index);
                 EITs.Add(entry);
@@ -103,16 +103,16 @@ namespace HDF5CSharp.Example
         public void ReadSystemEvents()
         {
             string groupName = rootName + eventsName;
-            if (Hdf5.GroupExists(fileId, groupName))
+            if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
             {
-                Events = Hdf5.ReadObject<Hdf5Events>(fileId,  groupName);
+                Events = Hdf5.ReadObject<Hdf5Events>(fileId, groupName);
             }
-            
+
 
         }
 
         public void Dispose()
-        { 
+        {
             if (!fileClosed)
             {
                 Hdf5.CloseFile(fileId);
