@@ -303,3 +303,4 @@ Temporary Items
 *.nuspec
 /Hdf5DotnetWrapper/cov-int
 /Hdf5DotnetWrapper/cov-int.zip
+/HDF5-CSharp.UnitTests/coverage.json
