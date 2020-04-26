@@ -1,9 +1,10 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using HDF5CSharp.DataTypes;
+using HDF5CSharp.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using HDF.PInvoke;
-using HDF5CSharp.Interfaces;
 
 namespace HDF5CSharp
 {
@@ -38,6 +39,7 @@ namespace HDF5CSharp
     {
         static Hdf5ReaderWriter dsetRW = new Hdf5ReaderWriter(new Hdf5Dataset());
 
+        public static bool DatasetExists(long groupId, string datasetName) => Hdf5Utils.ItemExists(groupId, datasetName, Hdf5ElementType.Dataset);
         /// <summary>
         /// Reads an n-dimensional dataset.
         /// </summary>
@@ -48,7 +50,7 @@ namespace HDF5CSharp
         /// <returns>The n-dimensional dataset</returns>
         public static (bool success, Array result) ReadDatasetToArray<T>(long groupId, string name, string alternativeName = "") //where T : struct
         {
-            var (valid,datasetName) = Hdf5Utils.GetRealName(groupId,name,alternativeName);
+            var (valid, datasetName) = Hdf5Utils.GetRealName(groupId, name, alternativeName);
             if (!valid)
             {
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
@@ -90,7 +92,7 @@ namespace HDF5CSharp
                 dset = Array.CreateInstance(type, new long[1] { 0 });
             H5D.close(datasetId);
             H5S.close(spaceId);
-            return (true,dset);
+            return (true, dset);
 
         }
 
@@ -178,14 +180,14 @@ namespace HDF5CSharp
         {
             if (typeof(T) == typeof(string))
                 //WriteStrings(groupId, name, new string[] { dset.ToString() });
-                return dsetRW.WriteArray(groupId, name, new T[1] { dset },  attributes);
+                return dsetRW.WriteArray(groupId, name, new T[1] { dset }, attributes);
             Array oneVal = new T[1, 1] { { dset } };
-            return dsetRW.WriteArray(groupId, name, oneVal,  attributes);
+            return dsetRW.WriteArray(groupId, name, oneVal, attributes);
         }
 
         public static void WriteDataset(long groupId, string name, Array collection)
         {
-            dsetRW.WriteArray(groupId, name, collection,  new Dictionary<string, List<string>>());
+            dsetRW.WriteArray(groupId, name, collection, new Dictionary<string, List<string>>());
         }
 
 
@@ -204,7 +206,7 @@ namespace HDF5CSharp
             }
 
             string normalizedName = Hdf5Utils.NormalizedName(name);
-           var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId);
+            var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId);
             if (datasetId == -1L)
             {
                 return (-1, -1L);
@@ -296,7 +298,7 @@ namespace HDF5CSharp
                 hnd.Free();
                 H5S.close(memId1);
                 H5S.close(memId2);
-               
+
                 H5D.close(filespaceId);
             }
             //todo: close?

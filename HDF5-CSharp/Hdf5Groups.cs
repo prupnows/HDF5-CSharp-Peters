@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using HDF.PInvoke;
+﻿using HDF.PInvoke;
 using HDF5CSharp.DataTypes;
+using System.Collections.Generic;
 
 namespace HDF5CSharp
 {
     public static partial class Hdf5
     {
+        public static bool GroupExists(long groupId, string groupName) => Hdf5Utils.ItemExists(groupId, groupName, Hdf5ElementType.Group);
 
         public static int CloseGroup(long groupId)
         {
@@ -17,7 +16,7 @@ namespace HDF5CSharp
         public static long CreateGroup(long groupId, string groupName)
         {
 
-            return (Hdf5Utils.ItemExists(groupId, groupName,Hdf5ElementType.Group))
+            return (Hdf5Utils.ItemExists(groupId, groupName, Hdf5ElementType.Group))
                 ? H5G.open(groupId, Hdf5Utils.NormalizedName(groupName))
                 : H5G.create(groupId, Hdf5Utils.NormalizedName(groupName));
         }
@@ -43,7 +42,7 @@ namespace HDF5CSharp
             }
             return gid;
         }
-        
+
         public static ulong NumberOfAttributes(int groupId, string groupName)
         {
             H5O.info_t info = new H5O.info_t();

@@ -1,16 +1,16 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using HDF5CSharp.DataTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using HDF.PInvoke;
-using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp
 {
     public static partial class Hdf5
-    {     
+    {
         private static Hdf5ReaderWriter attrRW = new Hdf5ReaderWriter(new Hdf5AttributeRW());
         public static Dictionary<string, List<string>> Attributes(Type type)
         {
@@ -91,7 +91,7 @@ namespace HDF5CSharp
         {
             return attrRW.ReadArray<T>(groupId, name, string.Empty);
         }
-
+        public static bool AttributeExists(long groupId, string attributeName) => Hdf5Utils.ItemExists(groupId, attributeName, Hdf5ElementType.Attribute);
         public static T ReadAttribute<T>(long groupId, string name)
         {
             var attrs = attrRW.ReadArray<T>(groupId, name, string.Empty);
@@ -143,7 +143,7 @@ namespace HDF5CSharp
             hnd.Free();
             H5T.close(datatype);
             H5A.close(datasetId);
-            return (true,strs);
+            return (true, strs);
         }
 
         public static (bool success, Array result) ReadPrimitiveAttributes<T>(long groupId, string name, string alternativeName) //where T : struct
@@ -181,12 +181,12 @@ namespace HDF5CSharp
             H5T.close(typeId);
             H5A.close(attributeId);
             H5S.close(spaceId);
-            return (true,attributes);
+            return (true, attributes);
         }
 
-        public static (int success, long attributeId) WriteStringAttribute(long groupId, string name, string val,string groupOrDatasetName)
+        public static (int success, long attributeId) WriteStringAttribute(long groupId, string name, string val, string groupOrDatasetName)
         {
-            return WriteStringAttributes(groupId, name, new[] { val },groupOrDatasetName);
+            return WriteStringAttributes(groupId, name, new[] { val }, groupOrDatasetName);
         }
 
         public static (int success, long CreatedId) WriteStringAttributes(long groupId, string name, IEnumerable<string> values, string groupOrDatasetName = null)
@@ -200,7 +200,7 @@ namespace HDF5CSharp
             }
             else
             {
-               
+
             }
 
             // create UTF-8 encoded attributes
@@ -211,11 +211,11 @@ namespace HDF5CSharp
             int strSz = values.Count();
             long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
             string normalizedName = Hdf5Utils.NormalizedName(name);
-            
+
             var attributeId = Hdf5Utils.GetAttributeId(groupId, normalizedName, datatype, spaceId);
             GCHandle[] hnds = new GCHandle[strSz];
             IntPtr[] wdata = new IntPtr[strSz];
- 
+
             int cntr = 0;
             foreach (string str in values)
             {
@@ -261,15 +261,15 @@ namespace HDF5CSharp
         public static void WriteAttributes<T>(long groupId, string name, Array attributes) //
         {
             attrRW.WriteArray(groupId, name, attributes, new Dictionary<string, List<string>>());
-             //if (attributes.GetType().GetElementType() == typeof(string))
-             //     WriteStringAttributes(groupId, name, attributes.Cast<string>(), attributeName);
-             //else
-             //    WritePrimitiveAttribute<T>(groupId, name, attributes, attributeName);
+            //if (attributes.GetType().GetElementType() == typeof(string))
+            //     WriteStringAttributes(groupId, name, attributes.Cast<string>(), attributeName);
+            //else
+            //    WritePrimitiveAttribute<T>(groupId, name, attributes, attributeName);
         }
 
         public static (int success, long CreatedgroupId) WritePrimitiveAttribute<T>(long groupId, string name, Array attributes) //where T : struct
         {
-            var tmpId = groupId; 
+            var tmpId = groupId;
             int rank = attributes.Rank;
             ulong[] dims = Enumerable.Range(0, rank).Select(i => (ulong)attributes.GetLength(i)).ToArray();
             ulong[] maxDims = null;
