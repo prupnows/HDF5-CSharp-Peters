@@ -1,16 +1,49 @@
-﻿using System;
+﻿using HDF5CSharp.DataTypes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using HDF5CSharp.DataTypes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HDF5CSharp.UnitTests.Core
 {
     public partial class Hdf5UnitTests
     {
+        //[TestMethod]
+        public void WriteAndReadList()
+        {
+            string filename = Path.Combine(folder, $"{nameof(WriteAndReadList)}.H5");
+            var obj = new TestClassWithList();
+            try
+            {
 
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var status = Hdf5.WriteObject(fileId, obj, "test");
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+            try
+            {
+                var fileId = Hdf5.OpenFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var objWithList = Hdf5.ReadObject<TestClassWithList>(fileId, "test");
+                obj.PublicInstanceFieldsEqual(objWithList);
+                Hdf5.CloseFile(fileId);
+
+
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+        }
         [TestMethod]
         public void WriteAndReadObjectWithStructs()
         {

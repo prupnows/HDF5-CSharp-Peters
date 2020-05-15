@@ -1,16 +1,15 @@
-﻿using System;
+﻿using HDF5CSharp.DataTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp.UnitTests.Core
 {
-    [Hdf5Attributes(new[] {"some info", "more info"})]
-    class AttributeSimpleClass:IEquatable<AttributeSimpleClass>
+    [Hdf5Attributes(new[] { "some info", "more info" })]
+    class AttributeSimpleClass : IEquatable<AttributeSimpleClass>
     {
-        public class InnerClass:IEquatable<InnerClass>
+        public class InnerClass : IEquatable<InnerClass>
         {
             public string noAttributeName = "empty;";
 
@@ -29,7 +28,7 @@ namespace HDF5CSharp.UnitTests.Core
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
                 if (obj.GetType() != this.GetType()) return false;
-                return Equals((InnerClass) obj);
+                return Equals((InnerClass)obj);
             }
 
             public override int GetHashCode()
@@ -45,9 +44,9 @@ namespace HDF5CSharp.UnitTests.Core
 
         public AttributeSimpleClass()
         {
-            datetime= new DateTime(1969, 12, 01, 12, 00, 00, DateTimeKind.Local);
+            datetime = new DateTime(1969, 12, 01, 12, 00, 00, DateTimeKind.Local);
             StringProperty = "stringValue";
-            inner=new InnerClass();
+            inner = new InnerClass();
         }
 
         public void SetStringProperty(string value) => StringProperty = value;
@@ -64,7 +63,7 @@ namespace HDF5CSharp.UnitTests.Core
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((AttributeSimpleClass) obj);
+            return Equals((AttributeSimpleClass)obj);
         }
 
         public override int GetHashCode()
@@ -192,6 +191,19 @@ namespace HDF5CSharp.UnitTests.Core
         {
         }
         public WData[] DataList { get; set; }
+    }
+
+    class TestClassWithList
+    {
+        public DateTime time;
+        public List<int> numbers;
+
+        public TestClassWithList()
+        {
+            time = DateTime.Now;
+            numbers = new List<int> { 1, 2, 3 };
+        }
+
     }
 
 }
