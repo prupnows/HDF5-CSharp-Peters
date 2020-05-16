@@ -1,14 +1,13 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using HDF5CSharp.DataTypes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using HDF.PInvoke;
-using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp
 {
@@ -99,11 +98,44 @@ namespace HDF5CSharp
                     else
                     {
                         (success, values) = CallByReflection<(bool, Array)>(nameof(ReadCompounds), elType,
-                            new object[] {groupId, name});
+                            new object[] { groupId, name });
                     }
 
                     if (success)
                         info.SetValue(readValue, values);
+                }
+
+                else if (ty.IsGenericType && ty.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    var elType = Hdf5Utils.GetEnumerableType(ty);
+                    TypeCode elCode = Type.GetTypeCode(elType);
+                    if (elCode != TypeCode.Object)
+                    {
+                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                    }
+                    else
+                    {
+                        (success, values) = CallByReflection<(bool, Array)>(nameof(ReadCompounds), elType,
+                            new object[] { groupId, name });
+                    }
+
+                    if (success)
+                    {
+                        Type genericClass = typeof(List<>);
+                        // MakeGenericType is badly named
+                        Type constructedClass = genericClass.MakeGenericType(elType);
+
+                        IList created = (IList)Activator.CreateInstance(constructedClass);
+                        foreach (var o in values)
+                        {
+                            created.Add(o);
+
+                        }
+
+                        info.SetValue(readValue, created);
+                    }
+
+
                 }
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
@@ -167,7 +199,7 @@ namespace HDF5CSharp
                     else
                     {
                         var obj = CallByReflection<IEnumerable>(nameof(ReadCompounds), elType,
-                            new object[] {groupId, name});
+                            new object[] { groupId, name });
                         var objArr = (obj).Cast<object>().ToArray();
                         values = Array.CreateInstance(elType, objArr.Length);
                         Array.Copy(objArr, values, objArr.Length);
@@ -175,6 +207,43 @@ namespace HDF5CSharp
                     }
 
                 }
+                else if (ty.IsGenericType && ty.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    var elType = Hdf5Utils.GetEnumerableType(ty);
+                    TypeCode elCode = Type.GetTypeCode(elType);
+                    if (elCode != TypeCode.Object)
+                    {
+                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                    }
+                    else
+                    {
+                        (success, values) = CallByReflection<(bool, Array)>(nameof(ReadCompounds), elType,
+                            new object[] { groupId, name });
+                    }
+
+                    if (success)
+                    {
+                        Type genericClass = typeof(List<>);
+                        // MakeGenericType is badly named
+                        Type constructedClass = genericClass.MakeGenericType(elType);
+
+                        IList created = (IList)Activator.CreateInstance(constructedClass);
+                        foreach (var o in values)
+                        {
+                            created.Add(o);
+
+                        }
+
+                        info.SetValue(readValue, created);
+                    }
+
+
+                }
+
+
+
+
+
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
                     (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName);
@@ -216,14 +285,14 @@ namespace HDF5CSharp
             if (!File.Exists(fileName))
             {
                 Hdf5Utils.LogError?.Invoke($"File {fileName} does not exist");
-                return (structure,elements);
+                return (structure, elements);
             }
 
             long fileId = H5F.open(fileName, H5F.ACC_RDONLY);
             if (fileId < 0)
             {
                 Hdf5Utils.LogError?.Invoke($"Could not open file {fileName}");
-                return (structure,elements);
+                return (structure, elements);
             }
 
             try
@@ -249,7 +318,7 @@ namespace HDF5CSharp
             finally
             {
                 if (fileId > 0)
-                   H5F.close(fileId);
+                    H5F.close(fileId);
             }
             int Callback(long elementId, IntPtr intPtrName, ref H5L.info_t info, IntPtr intPtrUserData)
             {

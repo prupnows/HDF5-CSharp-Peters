@@ -42,7 +42,7 @@ old releases:
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;TRACE,HDF5_VER1_10</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;TRACE,HDF5_VER1_10</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
