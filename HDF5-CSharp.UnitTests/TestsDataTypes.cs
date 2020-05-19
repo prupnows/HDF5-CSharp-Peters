@@ -192,16 +192,27 @@ namespace HDF5CSharp.UnitTests.Core
         }
         public WData[] DataList { get; set; }
     }
+    class TestClassWithArrayOfFloats
+    {
+        public float[] floats { get; set; }
+        public TestClassWithArrayOfFloats(float seed)
+        {
+            floats = new[] { 1f + seed, 2 + seed, 3f + seed, 4f + seed };
+        }
+
+    }
+
 
     class TestClassWithList
     {
         public DateTime time;
         public List<int> numbers;
-
+        public List<TestClassWithArrayOfFloats> floats;
         public TestClassWithList()
         {
             time = DateTime.Now;
             numbers = new List<int> { 1, 2, 3 };
+            floats = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(1f), new TestClassWithArrayOfFloats(2f) };
         }
 
     }

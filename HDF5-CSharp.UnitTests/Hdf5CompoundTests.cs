@@ -10,7 +10,7 @@ namespace HDF5CSharp.UnitTests.Core
 {
     public partial class Hdf5UnitTests
     {
-        //[TestMethod]
+        [TestMethod]
         public void WriteAndReadList()
         {
             string filename = Path.Combine(folder, $"{nameof(WriteAndReadList)}.H5");
