@@ -192,25 +192,80 @@ namespace HDF5CSharp.UnitTests.Core
         }
         public WData[] DataList { get; set; }
     }
-    class TestClassWithArrayOfFloats
+    [Serializable]
+    public class TestClassWithArrayOfFloats : IEquatable<TestClassWithArrayOfFloats>
     {
         public float[] floats { get; set; }
+
+        public TestClassWithArrayOfFloats()
+        {
+
+        }
         public TestClassWithArrayOfFloats(float seed)
         {
             floats = new[] { 1f + seed, 2 + seed, 3f + seed, 4f + seed };
         }
 
-    }
+        public bool Equals(TestClassWithArrayOfFloats other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return floats.SequenceEqual(other.floats);
+        }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TestClassWithArrayOfFloats)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (floats != null ? floats.GetHashCode() : 0);
+        }
+    }
+    public struct TestStructWithArrayOfFloats : IEquatable<TestStructWithArrayOfFloats>
+    {
+        public float[] floats { get; set; }
+        public TestStructWithArrayOfFloats(float seed)
+        {
+            floats = new[] { 1f + seed, 2 + seed, 3f + seed, 4f + seed };
+        }
+
+        public bool Equals(TestStructWithArrayOfFloats other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return floats.SequenceEqual(other.floats);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TestClassWithArrayOfFloats)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (floats != null ? floats.GetHashCode() : 0);
+        }
+    }
 
     class TestClassWithLists : IEquatable<TestClassWithLists>
     {
         public DateTime time;
         public List<int> numbers;
         public List<DateTime> times;
+
         public DateTime TimeProperty { get; set; }
         public List<int> NumbersProperty { get; set; }
         public List<DateTime> TimesProperty { get; set; }
+        public List<TestClassWithArrayOfFloats> floats;
+        // public List<TestClassWithArrayOfFloats> FloatsProperties { get; set; }
         public TestClassWithLists()
         {
             time = DateTime.Now;
@@ -221,6 +276,9 @@ namespace HDF5CSharp.UnitTests.Core
             numbers = new List<int> { 1, 2, 3 };
             TimeProperty = DateTime.Now;
             NumbersProperty = new List<int> { 4, 5, 6 };
+            floats = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(1f), new TestClassWithArrayOfFloats(2) };
+
+            //  FloatsProperties = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(3f), new TestClassWithArrayOfFloats(4) };
         }
 
         public bool Equals(TestClassWithLists other)
@@ -229,7 +287,8 @@ namespace HDF5CSharp.UnitTests.Core
             if (ReferenceEquals(this, other)) return true;
             return numbers.SequenceEqual(other.numbers) && time.Equals(other.time) &&
                    NumbersProperty.SequenceEqual(other.NumbersProperty) && TimeProperty.Equals(other.TimeProperty) &&
-                times.SequenceEqual(other.times) && TimesProperty.SequenceEqual(other.TimesProperty);
+                   times.SequenceEqual(other.times) && TimesProperty.SequenceEqual(other.TimesProperty);
+            //floats.SequenceEqual(other.floats) && FloatsProperties.SequenceEqual(other.FloatsProperties);
         }
 
         public override bool Equals(object obj)
