@@ -203,18 +203,44 @@ namespace HDF5CSharp.UnitTests.Core
     }
 
 
-    class TestClassWithList
+    class TestClassWithLists : IEquatable<TestClassWithLists>
     {
         public DateTime time;
         public List<int> numbers;
-        public List<TestClassWithArrayOfFloats> floats;
-        public TestClassWithList()
+        public List<DateTime> times;
+        public DateTime TimeProperty { get; set; }
+        public List<int> NumbersProperty { get; set; }
+        public List<DateTime> TimesProperty { get; set; }
+        public TestClassWithLists()
         {
             time = DateTime.Now;
+            times = new List<DateTime>
+                {DateTime.Now.AddSeconds(10), DateTime.Now.AddSeconds(20), DateTime.Now.AddSeconds(30)};
+            TimesProperty = new List<DateTime>
+                {DateTime.Now.AddSeconds(10), DateTime.Now.AddSeconds(20), DateTime.Now.AddSeconds(30)};
             numbers = new List<int> { 1, 2, 3 };
-            floats = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(1f), new TestClassWithArrayOfFloats(2f) };
+            TimeProperty = DateTime.Now;
+            NumbersProperty = new List<int> { 4, 5, 6 };
         }
 
+        public bool Equals(TestClassWithLists other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return numbers.SequenceEqual(other.numbers) && time.Equals(other.time) &&
+                   NumbersProperty.SequenceEqual(other.NumbersProperty) && TimeProperty.Equals(other.TimeProperty) &&
+                times.SequenceEqual(other.times) && TimesProperty.SequenceEqual(other.TimesProperty);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TestClassWithLists)obj);
+        }
+
+        public override int GetHashCode() => (numbers != null ? numbers.GetHashCode() : 0);
     }
 
 }

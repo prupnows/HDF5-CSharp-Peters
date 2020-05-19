@@ -76,8 +76,7 @@ namespace HDF5CSharp.UnitTests.Core
                     if (selfType == typeof(TimeSpan))
                         if (TimeSpan.Compare((TimeSpan)selfValue, (TimeSpan)toValue) != 0)
                             return false;
-
-                    if (selfValue != toValue && (selfValue == null || !selfValue.Equals(toValue)))
+                    if (selfValue != toValue && (!selfValue.Equals(toValue)))
                     {
                         return false;
                     }

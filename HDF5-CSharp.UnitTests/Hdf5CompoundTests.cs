@@ -14,7 +14,7 @@ namespace HDF5CSharp.UnitTests.Core
         public void WriteAndReadList()
         {
             string filename = Path.Combine(folder, $"{nameof(WriteAndReadList)}.H5");
-            var obj = new TestClassWithList();
+            var obj = new TestClassWithLists();
             try
             {
 
@@ -32,8 +32,8 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var objWithList = Hdf5.ReadObject<TestClassWithList>(fileId, "test");
-                obj.PublicInstanceFieldsEqual(objWithList);
+                var objWithList = Hdf5.ReadObject<TestClassWithLists>(fileId, "test");
+                Assert.IsTrue(obj.Equals(objWithList));
                 Hdf5.CloseFile(fileId);
 
 

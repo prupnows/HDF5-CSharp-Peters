@@ -1,8 +1,9 @@
-﻿using System;
+﻿using HDF5CSharp.DataTypes;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp
 {
@@ -149,6 +150,29 @@ namespace HDF5CSharp
                 {
                     CallByReflection<(int, long)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal, attributes });
                 }
+            }
+            else if (ty.IsGenericType && ty.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                var elType = Hdf5Utils.GetEnumerableType(ty);
+
+                TypeCode elCode = Type.GetTypeCode(elType);
+              
+
+                if (elCode != TypeCode.Object || ty == typeof(List<TimeSpan>))
+                {
+                    IList infoAsList = (IList)infoVal;
+                    Array arr = Array.CreateInstance(elType, infoAsList.Count);
+                    for (var i = 0; i < infoAsList.Count; i++)
+                    {
+                        arr.SetValue(infoAsList[i], i);
+                    }
+                    dsetRW.WriteArray(groupId, name, arr, attributes);
+                }
+                else
+                {
+                    CallByReflection<(int, long)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal, attributes });
+                }
+
             }
             else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
             {

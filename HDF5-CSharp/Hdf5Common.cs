@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using HDF.PInvoke;
 
 namespace HDF5CSharp
 {
@@ -223,7 +223,8 @@ namespace HDF5CSharp
         /// <summary>
         /// http://stackoverflow.com/questions/9914230/iterate-through-an-array-of-arbitrary-dimension
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T1"></typeparam>
+        /// <typeparam name="T2"></typeparam>
         /// <param name="array"></param>
         /// <returns></returns>
         public static Array ConvertArray<T1, T2>(this Array array, Func<T1, T2> convertFunc)
@@ -236,24 +237,25 @@ namespace HDF5CSharp
                 lowerBounds[numDimension] = array.GetLowerBound(numDimension);
                 lengths[numDimension] = array.GetLength(numDimension);
             }
-            Func<Array, int[]> firstIndex = a => Enumerable.Range(0, a.Rank).Select(_i => a.GetLowerBound(_i)).ToArray();
 
-            Func<Array, int[], int[]> nextIndex = (a, index) =>
+            int[] FirstIndex(Array a) => Enumerable.Range(0, a.Rank).Select(a.GetLowerBound).ToArray();
+
+            int[] NextIndex(Array a, int[] index)
             {
                 for (int i = index.Length - 1; i >= 0; --i)
                 {
                     index[i]++;
-                    if (index[i] <= array.GetUpperBound(i))
-                        return index;
+                    if (index[i] <= array.GetUpperBound(i)) return index;
                     index[i] = array.GetLowerBound(i);
                 }
+
                 return null;
-            };
+            }
 
             Type type = typeof(T2);
             Array ar = Array.CreateInstance(type, lengths, lowerBounds);
             if (lowerBounds[0] != 0 || lengths[0] != 0)
-                for (var index = firstIndex(array); index != null; index = nextIndex(array, index))
+                for (var index = FirstIndex(array); index != null; index = NextIndex(array, index))
                 {
                     var v = (T1)array.GetValue(index);
                     ar.SetValue(convertFunc(v), index);
@@ -262,7 +264,7 @@ namespace HDF5CSharp
             return ar;
         }
 
-        private static T[] convert2DtoArray<T>(T[,] set)
+        private static T[] Convert2DtoArray<T>(T[,] set)
         {
             int rows = set.GetLength(0);
             int cols = set.GetLength(1);
@@ -277,11 +279,11 @@ namespace HDF5CSharp
             return output;
         }
 
-        private static Tout[] convert2DtoArray<Tin, Tout>(Tin[,] set, Func<Tin, Tout> convert)
+        private static TOut[] Convert2DtoArray<TIn, TOut>(TIn[,] set, Func<TIn, TOut> convert)
         {
             int rows = set.GetLength(0);
             int cols = set.GetLength(1);
-            Tout[] output = new Tout[cols * rows];
+            TOut[] output = new TOut[cols * rows];
             for (int i = 0; i < cols; i++)
             {
                 for (int j = 0; j < rows; j++)
@@ -292,31 +294,6 @@ namespace HDF5CSharp
             return output;
         }
 
-        //private static T[] getdataOfType<T>(int datatype) where T : struct
-        //{
-        //    System.Type type;
-        //    switch (datatype)
-        //    {
-        //        case H5T.NATIVE_INT16:
-        //            type = Int16.;
-        //            break;
-        //        case nameof(Int32):
-        //            dataType = H5T.NATIVE_INT;
-        //            break;
-        //        case nameof(Int64):
-        //            dataType = H5T.NATIVE_INT64;
-        //            break;
-        //        case nameof(Double):
-        //            dataType = H5T.NATIVE_DOUBLE;
-        //            break;
-        //        case nameof(Boolean):
-        //            dataType = H5T.NATIVE_INT8;
-        //            break;
-        //        default:
-        //            throw new Exception(string.Format("Datatype {0} not supported", type));
-        //    }
-        //    return type;
-        //}
 
         public static bool Similar(this IEnumerable<double> first, IEnumerable<double> second, double precision = 1e-2)
         {

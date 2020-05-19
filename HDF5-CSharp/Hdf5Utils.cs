@@ -1,6 +1,8 @@
 ﻿using HDF.PInvoke;
 using HDF5CSharp.DataTypes;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace HDF5CSharp
@@ -86,8 +88,6 @@ namespace HDF5CSharp
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
-
-
         internal static long GetDatasetId(long parentId, string name, long dataType, long spaceId)
         {
             return GetId(parentId, name, dataType, spaceId, Hdf5ElementType.Dataset);
@@ -97,7 +97,7 @@ namespace HDF5CSharp
             return GetId(parentId, name, dataType, spaceId, Hdf5ElementType.Attribute);
         }
 
-        internal static long GetId(long parentId, string name, long dataType, long spaceId, Hdf5ElementType type)
+        private static long GetId(long parentId, string name, long dataType, long spaceId, Hdf5ElementType type)
         {
             string normalizedName = Hdf5Utils.NormalizedName(name);
             bool exists = Hdf5Utils.ItemExists(parentId, normalizedName, type);
@@ -146,6 +146,20 @@ namespace HDF5CSharp
                     throw new Exception(error);
             }
             return datasetId;
+        }
+
+        public static Type GetEnumerableType(Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                return type.GetGenericArguments()[0];
+
+            var iface = (type.GetInterfaces()
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))).FirstOrDefault();
+
+            if (iface == null)
+                throw new ArgumentException("Does not represent an enumerable type.", "type");
+
+            return GetEnumerableType(iface);
         }
     }
 }
