@@ -1,7 +1,8 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using HDF5CSharp.DataTypes;
+using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using HDF.PInvoke;
 
 namespace HDF5CSharp
 {
@@ -57,8 +58,8 @@ namespace HDF5CSharp
 
         public void FirstDataset(Array dataset)
         {
-            if (GroupId <= 0) throw new Exception("cannot call FirstDataset because group or file couldn't be created");
-            if (Hdf5Utils.GetRealName(GroupId, Datasetname,string.Empty).valid) throw new Exception("cannot call FirstDataset because dataset already exists");
+            if (GroupId <= 0) throw new Hdf5Exception("cannot call FirstDataset because group or file couldn't be created");
+            if (Hdf5Utils.GetRealName(GroupId, Datasetname, string.Empty).valid) throw new Hdf5Exception("cannot call FirstDataset because dataset already exists");
 
             Rank = dataset.Rank;
             currentDims = GetDims(dataset);
@@ -121,7 +122,7 @@ namespace HDF5CSharp
             {
                 string msg = "call constructor or FirstDataset first before appending.";
                 Hdf5Utils.LogError?.Invoke(msg);
-                throw new Exception(msg);
+                throw new Hdf5Exception(msg);
             }
             oldDims = currentDims;
             currentDims = GetDims(dataset);

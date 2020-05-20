@@ -1,11 +1,12 @@
-﻿using System;
+﻿using HDF5CSharp.DataTypes;
+using HDF5CSharp.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using HDF5CSharp.Interfaces;
 
 namespace HDF5CSharp
 {
-   public class Hdf5ReaderWriter
+    public class Hdf5ReaderWriter
     {
         IHdf5ReaderWriter rw;
         public Hdf5ReaderWriter(IHdf5ReaderWriter _rw)
@@ -81,7 +82,7 @@ namespace HDF5CSharp
 
                 case TypeCode.String:
                     if (collection.Rank > 1 && collection.GetLength(1) > 1)
-                        throw new Exception("Only 1 dimensional string arrays allowed: " + name);
+                        throw new Hdf5Exception("Only 1 dimensional string arrays allowed: " + name);
                     result = rw.WriteStrings(groupId, name, (string[])collection);
                     break;
 
@@ -104,7 +105,7 @@ namespace HDF5CSharp
             {
                 foreach (KeyValuePair<string, List<string>> entry in attributes)
                 {
-                    Hdf5.WriteStringAttribute(groupId, entry.Key, string.Join("',", entry.Value),name);
+                    Hdf5.WriteStringAttribute(groupId, entry.Key, string.Join("',", entry.Value), name);
                 }
 
             }
@@ -127,7 +128,7 @@ namespace HDF5CSharp
             {
                 case TypeCode.Boolean:
                     (success, result) = rw.ReadToArray<ushort>(groupId, name, alternativeName);
-                    return(success, result.ConvertArray<ushort, bool>(Convert.ToBoolean));
+                    return (success, result.ConvertArray<ushort, bool>(Convert.ToBoolean));
 
                 case TypeCode.Byte:
                     return rw.ReadToArray<byte>(groupId, name, alternativeName);
@@ -142,7 +143,7 @@ namespace HDF5CSharp
 
                 case TypeCode.Decimal:
                     (success, result) = rw.ReadToArray<double>(groupId, name, alternativeName);
-                    return (success,result.ConvertArray<double, decimal>(Convert.ToDecimal));
+                    return (success, result.ConvertArray<double, decimal>(Convert.ToDecimal));
 
                 case TypeCode.Double:
                     return rw.ReadToArray<double>(groupId, name, alternativeName);
@@ -178,7 +179,7 @@ namespace HDF5CSharp
                 default:
                     if (elementType == typeof(TimeSpan))
                     {
-                        (success, result) =  rw.ReadToArray<long>(groupId, name, alternativeName);
+                        (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName);
                         return (success, result.ConvertArray<long, TimeSpan>(tcks => new TimeSpan(tcks)));
                     }
                     string str = "type is not supported: ";

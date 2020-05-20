@@ -107,7 +107,7 @@ namespace HDF5CSharp
                 if (!Hdf5.Settings.OverrideExistingData)
                 {
                     if (Hdf5.Settings.ThrowOnError)
-                        throw new Exception($"{normalizedName} already exists");
+                        throw new Hdf5Exception($"{normalizedName} already exists");
                     return -1;
                 }
             }
@@ -143,7 +143,7 @@ namespace HDF5CSharp
                 string error = $"Unable to create dataset for {normalizedName}";
                 Hdf5Utils.LogMessage($"{normalizedName} already exists", Hdf5LogLevel.Error);
                 if (Hdf5.Settings.ThrowOnError)
-                    throw new Exception(error);
+                    throw new Hdf5Exception(error);
             }
             return datasetId;
         }
@@ -157,7 +157,7 @@ namespace HDF5CSharp
                 .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))).FirstOrDefault();
 
             if (iface == null)
-                throw new ArgumentException("Does not represent an enumerable type.", "type");
+                throw new ArgumentException($"{type} Does not represent an enumerable type.", type.Name);
 
             return GetEnumerableType(iface);
         }

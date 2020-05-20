@@ -103,7 +103,7 @@ namespace HDF5CSharp
 
         internal static long GetDatatype(Type type)
         {
-            //var typeName = type.Name;
+
             long dataType;
 
             var typeCode = Type.GetTypeCode(type);
@@ -151,7 +151,7 @@ namespace HDF5CSharp
                     dataType = H5T.C_S1;
                     break;
                 default:
-                    throw new Exception(string.Format("Datatype {0} not supported", type));
+                    throw new ArgumentOutOfRangeException(type.Name, $"Data Type {type} not supported");
             }
             return dataType;
         }
@@ -198,27 +198,10 @@ namespace HDF5CSharp
                     dataType = H5T.C_S1;
                     break;
                 default:
-                    throw new Exception(string.Format("Datatype {0} not supported", type));
+                    throw new ArgumentOutOfRangeException(type.Name, $"Data Type {type} not supported");
             }
             return dataType;
         }
-
-        /*private static T[,] convertArrayToType<T>(Array collection)
-        {
-            System.Collections.IEnumerator myEnumerator = collection.GetEnumerator();
-            if (collection.Rank > 2)
-                throw new Exception("rank of the array rank is to high");
-            int rows = collection.GetLength(0);
-            int cols = (collection.Rank == 1) ? 1 : collection.GetLength(1);
-            T[,] output = new T[rows, cols];
-            for (int row = 0; row <= collection.GetUpperBound(0); row++)
-                if (cols == 1)
-                    output[row, 0] = (T)collection.GetValue(row);
-                else
-                    for (int col = 0; col <= collection.GetUpperBound(1); col++)
-                        output[row, col] = (T)collection.GetValue(row, col);
-            return output;
-        }*/
 
         /// <summary>
         /// http://stackoverflow.com/questions/9914230/iterate-through-an-array-of-arbitrary-dimension
