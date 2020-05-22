@@ -1,10 +1,11 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using HDF.PInvoke;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace HDF5CSharp
 {
@@ -16,57 +17,90 @@ namespace HDF5CSharp
         public static (int success, long CreatedgroupId) WriteCompounds<T>(long groupId, string name, IEnumerable<T> list, Dictionary<string, List<string>> attributes) //where T : struct
         {
             Type type = typeof(T);
-            var size = Marshal.SizeOf(type);
-            var cnt = list.Count();
+            if (type.IsValueType)
+            {
+                var size = Marshal.SizeOf(type);
 
-            var typeId = CreateType(type);
+                var cnt = list.Count();
 
-            var log10 = (int)Math.Log10(cnt);
-            ulong pow = (ulong)Math.Pow(10, log10);
-            ulong c_s = Math.Min(1000, pow);
-            ulong[] chunk_size = { c_s };
+                var typeId = CreateType(type);
 
-            ulong[] dims = { (ulong)cnt };
+                var log10 = (int)Math.Log10(cnt);
+                ulong pow = (ulong)Math.Pow(10, log10);
+                ulong c_s = Math.Min(1000, pow);
+                ulong[] chunk_size = { c_s };
 
-            long dcpl = 0;
-            if (!list.Any() || log10 == 0) { }
+                ulong[] dims = { (ulong)cnt };
+
+                long dcpl = 0;
+                if (!list.Any() || log10 == 0)
+                {
+                }
+                else
+                {
+                    dcpl = CreateProperty(chunk_size);
+                }
+
+                // Create dataspace.  Setting maximum size to NULL sets the maximum
+                // size to be the current size.
+                var spaceId = H5S.create_simple(dims.Length, dims, null);
+
+                // Create the dataset and write the compound data to it.
+
+                var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT, dcpl);
+
+                IntPtr p = Marshal.AllocHGlobal(size * (int)dims[0]);
+
+                var ms = new MemoryStream();
+                BinaryWriter writer = new BinaryWriter(ms);
+                foreach (var strct in list)
+                    writer.Write(getBytes(strct));
+                var bytes = ms.ToArray();
+
+                GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                var statusId = H5D.write(datasetId, typeId, spaceId, H5S.ALL,
+                    H5P.DEFAULT, hnd.AddrOfPinnedObject());
+
+                hnd.Free();
+                /*
+                 * Close and release resources.
+                 */
+                H5D.close(datasetId);
+                H5S.close(spaceId);
+                H5T.close(typeId);
+                H5P.close(dcpl);
+                Marshal.FreeHGlobal(p);
+                return (statusId, datasetId);
+            }
             else
             {
-                dcpl = CreateProperty(chunk_size);
+                byte[] rawdata = ObjectToByteArray(list);
+                return WriteCompounds(groupId, name, rawdata, attributes);
             }
-
-            // Create dataspace.  Setting maximum size to NULL sets the maximum
-            // size to be the current size.
-            var spaceId = H5S.create_simple(dims.Length, dims, null);
-
-            // Create the dataset and write the compound data to it.
-
-            var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT, dcpl);
-
-            IntPtr p = Marshal.AllocHGlobal(size * (int)dims[0]);
-
-            var ms = new MemoryStream();
-            BinaryWriter writer = new BinaryWriter(ms);
-            foreach (var strct in list)
-                writer.Write(getBytes(strct));
-            var bytes = ms.ToArray();
-
-            GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-            var statusId = H5D.write(datasetId, typeId, spaceId, H5S.ALL,
-                H5P.DEFAULT, hnd.AddrOfPinnedObject());
-
-            hnd.Free();
-            /*
-             * Close and release resources.
-             */
-            H5D.close(datasetId);
-            H5S.close(spaceId);
-            H5T.close(typeId);
-            H5P.close(dcpl);
-            Marshal.FreeHGlobal(p);
-            return (statusId, datasetId);
         }
 
+        private static byte[] ObjectToByteArray<T>(T obj)
+        {
+            if (obj == null)
+                return null;
+
+            BinaryFormatter bf = new BinaryFormatter();
+            MemoryStream ms = new MemoryStream();
+            bf.Serialize(ms, obj);
+
+            return ms.ToArray();
+        }
+
+        // Convert a byte array to an Object
+        private static object ByteArrayToObject(byte[] arrBytes)
+        {
+            MemoryStream memStream = new MemoryStream();
+            BinaryFormatter binForm = new BinaryFormatter();
+            memStream.Write(arrBytes, 0, arrBytes.Length);
+            memStream.Seek(0, SeekOrigin.Begin);
+            object obj = binForm.Deserialize(memStream);
+            return obj;
+        }
         private static long CreateProperty(ulong[] chunk_size)
         {
             var dcpl = H5P.create(H5P.DATASET_CREATE);
@@ -82,7 +116,11 @@ namespace HDF5CSharp
             var float_size = Marshal.SizeOf(typeof(float));
             var int_size = Marshal.SizeOf(typeof(int));
             var typeId = H5T.create(H5T.class_t.COMPOUND, new IntPtr(size));
-
+            if (t == typeof(byte))
+            {
+                H5T.insert(typeId, t.Name, IntPtr.Zero, GetDatatype(t));
+                return typeId;
+            }
             var compoundInfo = GetCompoundInfo(t);
             foreach (var cmp in compoundInfo)
             {
@@ -150,8 +188,8 @@ namespace HDF5CSharp
                 {
                     datatype = H5T.array_create(
                         ieee ? GetDatatypeIEEE(fldType.GetElementType()) : GetDatatype(fldType.GetElementType()),
-                        (uint) fldType.GetArrayRank(),
-                        Enumerable.Range(0, fldType.GetArrayRank()).Select(i => (ulong) marshallAsAttribute.SizeConst)
+                        (uint)fldType.GetArrayRank(),
+                        Enumerable.Range(0, fldType.GetArrayRank()).Select(i => (ulong)marshallAsAttribute.SizeConst)
                             .ToArray());
                 }
                 else
@@ -168,10 +206,10 @@ namespace HDF5CSharp
                 };
                 if (oi.datatype == H5T.C_S1)
                 {
-                  var strtype = H5T.copy(H5T.C_S1);
+                    var strtype = H5T.copy(H5T.C_S1);
                     H5T.set_size(strtype, new IntPtr(oi.size));
                     oi.datatype = strtype;
-                  //  H5T.close(strtype);
+                    //  H5T.close(strtype);
                 }
                 if (oi.datatype == H5T.STD_I64BE)
                     oi.size = oi.size * 2;
@@ -220,7 +258,7 @@ namespace HDF5CSharp
 
                 offsets.Add(oi);
             }*/
-       
+
             return offsets;
 
         }
@@ -233,49 +271,57 @@ namespace HDF5CSharp
             return constSize;
         }
 
-        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name) where T : struct
+        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name) where T : new()
         {
             Type type = typeof(T);
-            long typeId = 0;
-            // open dataset
-            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
+            if (type.IsValueType)
+            {
+                long typeId = 0;
+                // open dataset
+                var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
 
-            typeId = CreateType(type);
-            var compoundSize = Marshal.SizeOf(type);
+                typeId = CreateType(type);
+                var compoundSize = Marshal.SizeOf(type);
 
-            /*
-             * Get dataspace and allocate memory for read buffer.
-             */
-            var spaceId = H5D.get_space(datasetId);
-            int rank = H5S.get_simple_extent_ndims(spaceId);
-            ulong[] dims = new ulong[rank];
-            var ndims = H5S.get_simple_extent_dims(spaceId, dims, null);
-            int rows = Convert.ToInt32(dims[0]);
+                /*
+                 * Get dataspace and allocate memory for read buffer.
+                 */
+                var spaceId = H5D.get_space(datasetId);
+                int rank = H5S.get_simple_extent_ndims(spaceId);
+                ulong[] dims = new ulong[rank];
+                var ndims = H5S.get_simple_extent_dims(spaceId, dims, null);
+                int rows = Convert.ToInt32(dims[0]);
 
-            byte[] bytes = new byte[rows * compoundSize];
-            // Read the data.
-            GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-            IntPtr hndAddr = hnd.AddrOfPinnedObject();
-            H5D.read(datasetId, typeId, spaceId, H5S.ALL, H5P.DEFAULT, hndAddr);
-            int counter = 0;
-            IEnumerable<T> strcts = Enumerable.Range(1, rows).Select(i =>
-             {
-                 byte[] select = new byte[compoundSize];
-                 Array.Copy(bytes, counter, select, 0, compoundSize);
-                 T s = fromBytes<T>(select);
-                 counter = counter + compoundSize;
-                 return s;
-             });
-            /*
-             * Close and release resources.
-             */
-            H5D.vlen_reclaim(typeId, spaceId, H5P.DEFAULT, hndAddr);
-            hnd.Free();
-            H5D.close(datasetId);
-            H5S.close(spaceId);
-            H5T.close(typeId);
+                byte[] bytes = new byte[rows * compoundSize];
+                // Read the data.
+                GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                IntPtr hndAddr = hnd.AddrOfPinnedObject();
+                H5D.read(datasetId, typeId, spaceId, H5S.ALL, H5P.DEFAULT, hndAddr);
+                int counter = 0;
+                IEnumerable<T> strcts = Enumerable.Range(1, rows).Select(i =>
+                {
+                    byte[] select = new byte[compoundSize];
+                    Array.Copy(bytes, counter, select, 0, compoundSize);
+                    T s = fromBytes<T>(select);
+                    counter = counter + compoundSize;
+                    return s;
+                });
+                /*
+                 * Close and release resources.
+                 */
+                H5D.vlen_reclaim(typeId, spaceId, H5P.DEFAULT, hndAddr);
+                hnd.Free();
+                H5D.close(datasetId);
+                H5S.close(spaceId);
+                H5T.close(typeId);
 
-            return strcts;
+                return strcts;
+            }
+            else
+            {
+                var result = ReadCompounds<byte>(groupId, name);
+                return (IEnumerable<T>)ByteArrayToObject(result.ToArray());
+            }
         }
 
     }
