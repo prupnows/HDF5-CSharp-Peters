@@ -255,6 +255,45 @@ namespace HDF5CSharp.UnitTests.Core
         }
     }
 
+    class TestClassWithJaggedArray : IEquatable<TestClassWithJaggedArray>
+    {
+        public List<int[][]> Data { get; set; }
+        public List<int[][]> dataField;
+        public TestClassWithJaggedArray()
+        {
+            Data = new List<int[][]>()
+            {
+                new[] {new[] {1, 2, 3, 4, 5}},
+                new[] {new[] {11, 12, 13, 14, 15}}
+            };
+            dataField = new List<int[][]>()
+            {
+                new[] {new[] {1, 2, 3, 4, 5}},
+                new[] {new[] {11, 12, 13, 14, 15}}
+            };
+        }
+
+        public bool Equals(TestClassWithJaggedArray other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Data[0][0].SequenceEqual(other.Data[0][0]) &&
+                   Data[1][0].SequenceEqual(other.Data[1][0]) &&
+                   dataField[0][0].SequenceEqual(other.dataField[0][0]) &&
+                   dataField[1][0].SequenceEqual(other.dataField[1][0]);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TestClassWithJaggedArray)obj);
+        }
+
+        public override int GetHashCode() => HashCode.Combine(dataField, Data);
+    }
+
     class TestClassWithLists : IEquatable<TestClassWithLists>
     {
         public DateTime time;

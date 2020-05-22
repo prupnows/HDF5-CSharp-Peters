@@ -40,19 +40,19 @@ namespace HDF5CSharp
             return 0;
         }
 
-        public static T fromBytes<T>(byte[] arr) where T : new()
+        public static T fromBytes<T>(byte[] arr)
         {
-            T strct = new T();
+            T objectData = Activator.CreateInstance<T>();
 
-            int size = Marshal.SizeOf(strct);
+            int size = Marshal.SizeOf(objectData);
             IntPtr ptr = Marshal.AllocHGlobal(size);
 
             Marshal.Copy(arr, 0, ptr, size);
 
-            strct = (T)Marshal.PtrToStructure(ptr, strct.GetType());
+            objectData = (T)Marshal.PtrToStructure(ptr, objectData.GetType());
             Marshal.FreeHGlobal(ptr);
 
-            return strct;
+            return objectData;
         }
 
         public static byte[] getBytes<T>(T strct)

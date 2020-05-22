@@ -44,6 +44,41 @@ namespace HDF5CSharp.UnitTests.Core
             }
 
         }
+
+        [TestMethod]
+        public void WriteAndReadJaggedArray()
+        {
+            string filename = Path.Combine(folder, $"{nameof(WriteAndReadJaggedArray)}.H5");
+            var obj = new TestClassWithJaggedArray();
+            try
+            {
+
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var status = Hdf5.WriteObject(fileId, obj, "test");
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+            try
+            {
+                var fileId = Hdf5.OpenFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var obj2 = Hdf5.ReadObject<TestClassWithJaggedArray>(fileId, "test");
+                Assert.IsTrue(obj.Equals(obj2));
+                Hdf5.CloseFile(fileId);
+
+
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+        }
         [TestMethod]
         public void WriteAndReadObjectWithStructs()
         {
@@ -126,7 +161,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var cmpList = Hdf5.ReadCompounds<SystemEvent>(fileId, "/test").ToArray();
+                var cmpList = Hdf5.ReadCompounds<SystemEvent>(fileId, "/test", "").ToArray();
                 Hdf5.CloseFile(fileId);
                 CollectionAssert.AreEqual(se, cmpList);
 
@@ -160,7 +195,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var cmpList = Hdf5.ReadCompounds<WData2>(fileId, "/test").ToArray();
+                var cmpList = Hdf5.ReadCompounds<WData2>(fileId, "/test", "").ToArray();
                 Hdf5.CloseFile(fileId);
                 CollectionAssert.AreEqual(wData2List, cmpList);
 
@@ -194,7 +229,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var cmpList = Hdf5.ReadCompounds<WData>(fileId, "/test").ToArray();
+                var cmpList = Hdf5.ReadCompounds<WData>(fileId, "/test", "").ToArray();
                 Hdf5.CloseFile(fileId);
                 CollectionAssert.AreEqual(wDataList, cmpList);
 
@@ -228,7 +263,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                Responses[] cmpList = Hdf5.ReadCompounds<Responses>(fileId, "/test").ToArray();
+                Responses[] cmpList = Hdf5.ReadCompounds<Responses>(fileId, "/test", "").ToArray();
                 Hdf5.CloseFile(fileId);
                 var isSame = responseList.Zip(cmpList, (r, c) =>
                 {

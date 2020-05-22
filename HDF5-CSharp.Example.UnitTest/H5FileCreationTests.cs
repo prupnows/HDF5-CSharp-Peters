@@ -115,6 +115,27 @@ namespace HDF5_CSharp.Example.UnitTest
 
         }
 
+        [TestMethod]
+        public void TestManyPatientsWriteRead()
+        {
+            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogError += (s) => { Assert.Fail(s);};
+            string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{nameof(TestManyPatientsWriteRead)}.h5");
+            var fileId = Hdf5.CreateFile(filename);
+            var groupId = Hdf5.CreateGroup(fileId, "root");
+            PatientsContainer container = new PatientsContainer(fileId, groupId, Logger);
+            container.FlushData();
+            container.Dispose();
+            Hdf5.CloseGroup(groupId);
+            Hdf5.CloseFile(fileId);
+            fileId = Hdf5.OpenFile(filename, true);
+            var readBack = Hdf5.ReadObject<PatientsContainer>(fileId, "root/patients");
+            Assert.IsTrue(container.Equals(readBack));
+            Hdf5.CloseFile(fileId);
+            File.Delete(filename);
+
+        }
+
 
         [TestMethod]
         public async Task TestFullFileWriteRead()
@@ -391,57 +412,5 @@ namespace HDF5_CSharp.Example.UnitTest
             });
         }
 
-        //[TestMethod]
-        public void TestRead()
-        {
-            //string filename = @"D:\Data\9_pig.h5";
-            string filename = @"c:\kalpa\test.h5";
-            //string filename = @"d:\data\test2400.h5";
-            var fileId = Hdf5.OpenFile(filename);
-            Stopwatch st = Stopwatch.StartNew();
-            var ds = Hdf5.ReadDatasetToArray<float>(fileId, "/eit/d1/voltages.im");
-            st.Stop();
-            Console.WriteLine(ds.result.Length);
-            Console.WriteLine("read time im: " + st.ElapsedMilliseconds);
-            st.Restart();
-            ds = Hdf5.ReadDatasetToArray<float>(fileId, "/eit/d1/voltages.re");
-            st.Stop();
-            Console.WriteLine(ds.result.Length);
-            Console.WriteLine("read time re: " + st.ElapsedMilliseconds);
-            Hdf5.CloseFile(fileId);
-        }
-
-        public async Task TestEventsWrite()
-        {
-            int testDurationSeconds = 10;
-            int sleepsBetweenWritesMilliseconds = 100;
-            string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testEvents.h5");
-            Console.WriteLine(filename);
-            if (File.Exists(filename))
-                File.Delete(filename);
-            kama = new KamaAcquisitionFile(filename, Logger);
-            ProcedureInfo info = new ProcedureInfo
-            {
-                Age = 18,
-                FirstName = "First",
-                LastName = "Last",
-                ExamDate = DateTime.Now,
-                Procedure = "test",
-                ProcedureID = "ID",
-                Patient = new PatientInfo()
-            };
-
-            kama.SavePatientInfo(info);
-            kama.UpdateSystemInformation("32423423", new[] { "11", "12" });
-            string data = File.ReadAllText(AcquisitionScanProtocolPath);
-            AcquisitionProtocolParameters parameters = AcquisitionProtocolParameters.FromJson(data);
-            await kama.StartLogging(parameters);
-
-
-
-            kama.StopRecording();
-            await kama.StopProcedure();
-            File.Delete(filename);
-        }
     }
 }

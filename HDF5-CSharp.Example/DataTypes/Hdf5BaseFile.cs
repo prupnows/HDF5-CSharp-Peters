@@ -4,6 +4,7 @@ using System;
 
 namespace HDF5CSharp.Example.DataTypes
 {
+    [Serializable]
     public abstract class Hdf5BaseFile
     {
         [Hdf5Save(Hdf5Save.DoNotSave)] private long FileId { get; }

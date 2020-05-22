@@ -1,4 +1,5 @@
 ﻿using HDF.PInvoke;
+using HDF5CSharp.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -271,14 +272,18 @@ namespace HDF5CSharp
             return constSize;
         }
 
-        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name) where T : new()
+        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name, string alternativeName)
         {
             Type type = typeof(T);
             if (type.IsValueType)
             {
                 long typeId = 0;
                 // open dataset
-                var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
+                name = Hdf5Utils.NormalizedName(name);
+                alternativeName = Hdf5Utils.NormalizedName(alternativeName);
+                var nameToUse = Hdf5Utils.ItemExists(groupId, name, Hdf5ElementType.Dataset) ? name : alternativeName;
+
+                var datasetId = H5D.open(groupId,nameToUse);
 
                 typeId = CreateType(type);
                 var compoundSize = Marshal.SizeOf(type);
@@ -317,11 +322,9 @@ namespace HDF5CSharp
 
                 return strcts;
             }
-            else
-            {
-                var result = ReadCompounds<byte>(groupId, name);
-                return (IEnumerable<T>)ByteArrayToObject(result.ToArray());
-            }
+
+            var result = ReadCompounds<byte>(groupId, name, alternativeName);
+            return (IEnumerable<T>)ByteArrayToObject(result.ToArray());
         }
 
     }

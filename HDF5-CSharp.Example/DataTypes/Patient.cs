@@ -4,6 +4,7 @@ using System;
 
 namespace HDF5CSharp.Example.DataTypes
 {
+    [Serializable]
     [Hdf5GroupName("patient")]
     public class Patient : Hdf5BaseFile, IDisposable, IEquatable<Patient>
     {

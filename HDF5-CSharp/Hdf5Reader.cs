@@ -86,7 +86,7 @@ namespace HDF5CSharp
                 Hdf5Utils.LogDebug?.Invoke($"groupname: {tyObject.Name}; field name: {name}");
                 bool success;
                 Array values;
-            
+
                 if (ty.IsArray)
                 {
                     var elType = ty.GetElementType();
@@ -98,8 +98,8 @@ namespace HDF5CSharp
                     }
                     else
                     {
-                        (success, values) = CallByReflection<(bool, Array)>(nameof(ReadCompounds), elType,
-                            new object[] { groupId, name });
+                        values = CallByReflection<Array>(nameof(ReadCompounds), elType, new object[] { groupId, name, alternativeName });
+                        success = true;
                     }
 
                     if (success)
@@ -131,12 +131,12 @@ namespace HDF5CSharp
                     }
                     else
                     {
-                        var result = CallByReflection<object>(nameof(ReadCompounds), elType, new object[] { groupId, name });
+                        var result = CallByReflection<object>(nameof(ReadCompounds), elType, new object[] { groupId, name, alternativeName });
                         info.SetValue(readValue, result);
-                        
+
                     }
 
-            
+
 
 
                 }
@@ -192,7 +192,6 @@ namespace HDF5CSharp
                     var elType = ty.GetElementType();
                     TypeCode elCode = Type.GetTypeCode(elType);
 
-
                     if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
                     {
                         (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
@@ -202,7 +201,7 @@ namespace HDF5CSharp
                     else
                     {
                         var obj = CallByReflection<IEnumerable>(nameof(ReadCompounds), elType,
-                            new object[] { groupId, name });
+                            new object[] { groupId, name, alternativeName });
                         var objArr = (obj).Cast<object>().ToArray();
                         values = Array.CreateInstance(elType, objArr.Length);
                         Array.Copy(objArr, values, objArr.Length);
@@ -217,30 +216,28 @@ namespace HDF5CSharp
                     if (elCode != TypeCode.Object)
                     {
                         (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                        if (success)
+                        {
+                            Type genericClass = typeof(List<>);
+                            // MakeGenericType is badly named
+                            Type constructedClass = genericClass.MakeGenericType(elType);
+
+                            IList created = (IList)Activator.CreateInstance(constructedClass);
+                            foreach (var o in values)
+                            {
+                                created.Add(o);
+
+                            }
+
+                            info.SetValue(readValue, created);
+                        }
+
                     }
                     else
                     {
-                        (success, values) = CallByReflection<(bool, Array)>(nameof(ReadCompounds), elType,
-                            new object[] { groupId, name });
+                        var result = CallByReflection<object>(nameof(ReadCompounds), elType, new object[] { groupId, name, alternativeName });
+                        info.SetValue(readValue, result);
                     }
-
-                    if (success)
-                    {
-                        Type genericClass = typeof(List<>);
-                        // MakeGenericType is badly named
-                        Type constructedClass = genericClass.MakeGenericType(elType);
-
-                        IList created = (IList)Activator.CreateInstance(constructedClass);
-                        foreach (var o in values)
-                        {
-                            created.Add(o);
-
-                        }
-
-                        info.SetValue(readValue, created);
-                    }
-
-
                 }
 
 

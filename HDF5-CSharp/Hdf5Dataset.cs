@@ -24,9 +24,9 @@ namespace HDF5CSharp
             return Hdf5.WriteStrings(groupId, name, (string[])collection);
         }
 
-        public Array ReadStructs<T>(long groupId, string name) where T : struct
+        public Array ReadStructs<T>(long groupId, string name, string alternativeName) where T : struct
         {
-            return Hdf5.ReadCompounds<T>(groupId, name).ToArray();
+            return Hdf5.ReadCompounds<T>(groupId, name, alternativeName).ToArray();
         }
 
         public (bool success, IEnumerable<string>) ReadStrings(long groupId, string name, string alternativeName)
