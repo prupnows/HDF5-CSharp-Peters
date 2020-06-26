@@ -115,8 +115,39 @@ namespace HDF5CSharp.UnitTests.Core
             }
 
         }
+        [TestMethod]
+        public void WriteAndReadListOfList()
+        {
+            string filename = Path.Combine(folder, $"{nameof(WriteAndReadList)}.H5");
+            TestClassListOfList data = new TestClassListOfList();
+            try
+            {
 
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                Hdf5.WriteObject(fileId, data, "test");
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
 
+            try
+            {
+                var fileId = Hdf5.OpenFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var objWithList = Hdf5.ReadObject<TestClassListOfList>(fileId, "test");
+                Hdf5.CloseFile(fileId);
+                Assert.IsTrue(objWithList.Data[0].SequenceEqual(data.Data[0]));
+                Assert.IsTrue(objWithList.Data[1].SequenceEqual(data.Data[1]));
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+        }
 
 
         public struct SystemEvent

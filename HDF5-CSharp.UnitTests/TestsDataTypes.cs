@@ -294,6 +294,17 @@ namespace HDF5CSharp.UnitTests.Core
         public override int GetHashCode() => HashCode.Combine(dataField, Data);
     }
 
+    class TestClassListOfList
+    {
+        public List<int[]> Data { get; set; }
+        public List<int[]> dataField;
+
+        public TestClassListOfList()
+        {
+            Data = new List<int[]>(2) { new[] { 1 }, new[] { 1, 2 } };
+            dataField = new List<int[]>(21) { new[] { 2 }, new[] { 4, 5} };
+        }
+    }
     class TestClassWithLists : IEquatable<TestClassWithLists>
     {
         public DateTime time;
@@ -304,7 +315,7 @@ namespace HDF5CSharp.UnitTests.Core
         public List<int> NumbersProperty { get; set; }
         public List<DateTime> TimesProperty { get; set; }
         public List<TestClassWithArrayOfFloats> floats;
-        // public List<TestClassWithArrayOfFloats> FloatsProperties { get; set; }
+        public List<TestClassWithArrayOfFloats> FloatsProperties { get; set; }
         public TestClassWithLists()
         {
             time = DateTime.Now;
@@ -317,7 +328,7 @@ namespace HDF5CSharp.UnitTests.Core
             NumbersProperty = new List<int> { 4, 5, 6 };
             floats = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(1f), new TestClassWithArrayOfFloats(2) };
 
-            //  FloatsProperties = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(3f), new TestClassWithArrayOfFloats(4) };
+              FloatsProperties = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(3f), new TestClassWithArrayOfFloats(4) };
         }
 
         public bool Equals(TestClassWithLists other)
