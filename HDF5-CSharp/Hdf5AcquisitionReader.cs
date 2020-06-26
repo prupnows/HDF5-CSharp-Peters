@@ -22,6 +22,7 @@ namespace HDF5CSharp
         /// Initializes a new instance of the <see cref="Hdf5AcquisitionFileReader"/> class.
         /// </summary>
         /// <param name="filename">A filename.</param>
+        /// <param name="labels"></param>
         /// <param name="groupName">a root group. If not specified used "ROOT</param>
         public Hdf5AcquisitionFileReader(string filename, string[] labels = null, string groupName = "ROOT")
         {

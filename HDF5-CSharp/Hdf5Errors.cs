@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Reflection;
-using HDF.PInvoke;
+﻿using HDF.PInvoke;
+using System;
 
 namespace HDF5CSharp
 {
@@ -18,7 +15,7 @@ namespace HDF5CSharp
         {
             string msg =
                 $"{err_desc.desc}. (function: {err_desc.func_name}. Line:{err_desc.line}. File: {err_desc.file_name})";
-           Hdf5Utils.LogError?.Invoke(msg);
+            Hdf5Utils.LogError?.Invoke(msg);
             return 0;
         }
     }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HDF5CSharp.DataTypes
 {
@@ -53,14 +51,12 @@ namespace HDF5CSharp.DataTypes
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
     public sealed class Hdf5SaveAttribute : Attribute
     {
-        private readonly Hdf5Save saveKind;
-
-        public Hdf5Save SaveKind => saveKind;      // Topic is a named parameter
+        public Hdf5Save SaveKind { get; }      // Topic is a named parameter
 
 
         public Hdf5SaveAttribute(Hdf5Save saveKind)  // url is a positional parameter
         {
-            this.saveKind = saveKind;
+            this.SaveKind = saveKind;
         }
 
     }

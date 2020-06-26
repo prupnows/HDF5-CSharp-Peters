@@ -1,5 +1,5 @@
-﻿using System;
-using HDF.PInvoke;
+﻿using HDF.PInvoke;
+using System;
 
 namespace HDF5CSharp
 {
@@ -22,12 +22,13 @@ namespace HDF5CSharp
         public bool ErrorLoggingEnable { get; private set; }
         public bool ThrowOnError { get; set; }
         public bool OverrideExistingData { get; set; }
-
+        public float Version { get; set; }
         public Settings()
         {
             DateTimeType = DateTimeType.Ticks;
             ThrowOnError = true;
             OverrideExistingData = true;
+            Version = 1.0f;
         }
 
         public Settings(DateTimeType dateTimeType, bool lowerCaseNaming, bool throwOnError, bool overrideExistingData)
@@ -39,7 +40,7 @@ namespace HDF5CSharp
         }
         public bool EnableErrorReporting(bool enable)
         {
-            ErrorLoggingEnable = enable;   
+            ErrorLoggingEnable = enable;
             if (enable)
                 return H5E.set_auto(H5E.DEFAULT, Hdf5Errors.ErrorDelegateMethod, IntPtr.Zero) >= 0;
             return H5E.set_auto(H5E.DEFAULT, null, IntPtr.Zero) >= 0;

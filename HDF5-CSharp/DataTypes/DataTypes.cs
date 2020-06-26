@@ -1,14 +1,12 @@
-﻿using System;
+﻿using HDF.PInvoke;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using HDF.PInvoke;
 
 namespace HDF5CSharp.DataTypes
 {
     public enum Hdf5ElementType
     {
-        Unknown=0,
+        Unknown = 0,
         Group,
         Dataset,
         Attribute
@@ -21,14 +19,14 @@ namespace HDF5CSharp.DataTypes
 
         public Hdf5ElementBase Parent { get; set; }
 
-        protected bool HasLoadedOnce { get; private set; }
+        protected bool HasLoadedOnce { get; set; }
         public abstract string GetPath();
         public abstract string GetDisplayName();
         public abstract IEnumerable<Hdf5ElementBase> GetChildren();
         protected abstract long GetId(long fileId);
         protected abstract void CloseId(long id);
-    
-        public Hdf5ElementBase(string name,Hdf5ElementType type, Hdf5ElementBase parent, bool isLazyLoading)
+
+        public Hdf5ElementBase(string name, Hdf5ElementType type, Hdf5ElementBase parent, bool isLazyLoading)
         {
             Name = name;
             Type = type;
@@ -42,9 +40,9 @@ namespace HDF5CSharp.DataTypes
     public class Hdf5Element : Hdf5ElementBase
     {
         private List<Hdf5Element> Children { get; }
-        public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, bool isLazyLoading) : base(name,type, parent, isLazyLoading)
+        public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, bool isLazyLoading) : base(name, type, parent, isLazyLoading)
         {
-            Children=new List<Hdf5Element>();
+            Children = new List<Hdf5Element>();
         }
 
         public bool HasChildren => Children.Any();
@@ -79,7 +77,7 @@ namespace HDF5CSharp.DataTypes
 
         public void AddChild(Hdf5Element child)
         {
-         Children.Add(child);
+            Children.Add(child);
         }
 
         public Hdf5Element GetChildWithName(string childName)

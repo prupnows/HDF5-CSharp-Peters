@@ -9,11 +9,9 @@ namespace HDF5CSharp
     {
         private BlockingCollection<T> _queue = new BlockingCollection<T>();
         private readonly Action<T> _action;
-        private readonly int _milliSeconds;
 
-        public DataProducerConsumer(Action<T> action, int milliSeconds = 0)
+        public DataProducerConsumer(Action<T> action)
         {
-            _milliSeconds = milliSeconds;
             _action = action;
 
             var thread = new Thread(StartConsuming)
@@ -63,7 +61,7 @@ namespace HDF5CSharp
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Debug.WriteLine("Work queue on thread {0} has been closed.", Thread.CurrentThread.ManagedThreadId);
+                    Debug.WriteLine($"Work queue on thread {0} has been closed. {ex}", Thread.CurrentThread.ManagedThreadId);
                 }
             }
             IsDone?.Invoke(this, new EventArgs());
