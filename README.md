@@ -8,8 +8,6 @@
 <a href="https://github.com/LiorBanai/HDF5-CSharp/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/LiorBanai/HDF5-CSharp"  alt="License"/>
 </a>
-
-
 <a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img src="https://scan.coverity.com/projects/20655/badge.svg" alt="Coverity Scan Build Status"/>
 </a>
 
