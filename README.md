@@ -1,13 +1,15 @@
 <h1 align="center">HDF5-CSharp: C# wrapper for HDF5 library <img src="./Assets/hdf5Wrapper.png" align="right" width="155px" height="155px"></h1> 
 
-[![Join the chat at https://gitter.im/HDF5-CSharp/community](https://badges.gitter.im/HDF5-CSharp/community.svg)](https://gitter.im/HDF5-CSharp/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  [![Nuget](https://img.shields.io/nuget/dt/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/)
+[![Join the chat at https://gitter.im/HDF5-CSharp/community](https://badges.gitter.im/HDF5-CSharp/community.svg)](https://gitter.im/HDF5-CSharp/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://liorbanai.visualstudio.com/HDF5-CSharp/_apis/build/status/LiorBanai.HDF5-CSharp?branchName=master)](https://liorbanai.visualstudio.com/HDF5-CSharp/_build/latest?definitionId=3&branchName=master) ![.NET Core Desktop](https://github.com/LiorBanai/HDF5-CSharp/workflows/.NET%20Core%20Desktop/badge.svg)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=LiorBanai/HDF5-CSharp)](https://dependabot.com)
 <a href="https://github.com/LiorBanai/HDF5-CSharp/issues">
     <img src="https://img.shields.io/github/issues/LiorBanai/HDF5-CSharp"  alt="Issues"/>
 </a>
 <a href="https://github.com/LiorBanai/HDF5-CSharp/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/LiorBanai/HDF5-CSharp"  alt="License"/>
 </a>
-[![Build Status](https://liorbanai.visualstudio.com/HDF5-CSharp/_apis/build/status/LiorBanai.HDF5-CSharp?branchName=master)](https://liorbanai.visualstudio.com/HDF5-CSharp/_build/latest?definitionId=3&branchName=master)
+
+
 <a href="https://scan.coverity.com/projects/liorbanai-hdf5dotnetwrapper"> <img src="https://scan.coverity.com/projects/20655/badge.svg" alt="Coverity Scan Build Status"/>
 </a>
 
@@ -18,7 +20,7 @@
  <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.10.610.9...master">
     <img src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"  alt="Commits Since Latest Release"/>
 </a>
-
+[![Nuget](https://img.shields.io/nuget/dt/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/)
 
 
 
