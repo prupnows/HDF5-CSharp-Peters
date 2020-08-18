@@ -20,19 +20,16 @@
 		<PackageIconUrl />
 		<RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>
-			- Add support for collections and generic lists of complex types
-			- Add support for jagged arrays
-		</PackageReleaseNotes>
+		<PackageReleaseNotes>- Add Support for older objects for ReadObject method (#73).</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.10.610.9</Version>
+		<Version>1.10.610.10</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<ApplicationIcon>hdf5Wrapper.ico</ApplicationIcon>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>1.10.610.9</AssemblyVersion>
-		<FileVersion>1.10.610.9</FileVersion>
+		<AssemblyVersion>1.10.610.10</AssemblyVersion>
+		<FileVersion>1.10.610.10</FileVersion>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 	</PropertyGroup>
 
@@ -70,7 +67,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="System.Resources.Extensions" Version="4.6.0"/>
+		<PackageReference Include="System.Resources.Extensions" Version="4.6.0" />
 	</ItemGroup>
 
 	<ItemGroup>

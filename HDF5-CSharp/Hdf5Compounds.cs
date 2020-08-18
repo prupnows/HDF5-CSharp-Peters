@@ -282,8 +282,12 @@ namespace HDF5CSharp
                 name = Hdf5Utils.NormalizedName(name);
                 alternativeName = Hdf5Utils.NormalizedName(alternativeName);
                 var nameToUse = Hdf5Utils.ItemExists(groupId, name, Hdf5ElementType.Dataset) ? name : alternativeName;
-
-                var datasetId = H5D.open(groupId,nameToUse);
+                if (!Hdf5Utils.ItemExists(groupId, nameToUse, Hdf5ElementType.Dataset))
+                {
+                    Hdf5Utils.LogMessage($"Item {nameToUse} does not exist.",Hdf5LogLevel.Warning);
+                    return Enumerable.Empty<T>();
+                }
+                var datasetId = H5D.open(groupId, nameToUse);
 
                 typeId = CreateType(type);
                 var compoundSize = Marshal.SizeOf(type);
