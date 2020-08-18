@@ -4,7 +4,7 @@
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=LiorBanai/HDF5-CSharp)](https://dependabot.com)
 <a href="https://github.com/LiorBanai/HDF5-CSharp/issues">
     <img src="https://img.shields.io/github/issues/LiorBanai/HDF5-CSharp"  alt="Issues"/>
-</a>
+</a> ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/LiorBanai/HDF5-CSharp)
 <a href="https://github.com/LiorBanai/HDF5-CSharp/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/LiorBanai/HDF5-CSharp"  alt="License"/>
 </a>
