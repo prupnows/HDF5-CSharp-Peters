@@ -9,7 +9,8 @@ on:
       tags:
         description: 'Test scenario tags'  
         
-jobs:
+jobs:  
+  build:
     runs-on: windows-latest
     steps:
     - run: |
