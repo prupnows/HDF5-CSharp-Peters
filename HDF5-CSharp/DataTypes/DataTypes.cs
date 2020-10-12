@@ -18,7 +18,7 @@ namespace HDF5CSharp.DataTypes
         public bool IsLazyLoading { get; }
 
         public Hdf5ElementBase Parent { get; set; }
-
+        public long Id { get; set; }
         protected bool HasLoadedOnce { get; set; }
         public abstract string GetPath();
         public abstract string GetDisplayName();
@@ -26,21 +26,22 @@ namespace HDF5CSharp.DataTypes
         protected abstract long GetId(long fileId);
         protected abstract void CloseId(long id);
 
-        public Hdf5ElementBase(string name, Hdf5ElementType type, Hdf5ElementBase parent, bool isLazyLoading)
+        public Hdf5ElementBase(string name, Hdf5ElementType type, Hdf5ElementBase parent,long id, bool isLazyLoading)
         {
             Name = name;
             Type = type;
             Parent = parent;
             IsLazyLoading = isLazyLoading;
+            Id = id;
         }
 
-        public override string ToString() => $"{nameof(Name)}: {Name} ({Type})";
+        public override string ToString() => $"{nameof(Name)}: {Name} ({Type}) ID:{Id}";
     }
 
     public class Hdf5Element : Hdf5ElementBase
     {
         private List<Hdf5Element> Children { get; }
-        public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, bool isLazyLoading) : base(name, type, parent, isLazyLoading)
+        public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, long id, bool isLazyLoading) : base(name, type, parent,id, isLazyLoading)
         {
             Children = new List<Hdf5Element>();
         }

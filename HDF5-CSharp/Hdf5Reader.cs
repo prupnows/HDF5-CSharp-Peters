@@ -365,13 +365,13 @@ namespace HDF5CSharp
 
                 if (parent == null)
                 {
-                    var element = new Hdf5Element(fullName, elementType, null, false);
+                    var element = new Hdf5Element(fullName, elementType, null, elementId, false);
                     structure.Add(element);
                     elements.Add(element);
                 }
                 else
                 {
-                    var element = new Hdf5Element(fullName, elementType, parent, false);
+                    var element = new Hdf5Element(fullName, elementType, parent, elementId,false);
                     parent.AddChild(element);
                     elements.Add(element);
                 }
