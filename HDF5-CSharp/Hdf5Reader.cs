@@ -299,14 +299,11 @@ namespace HDF5CSharp
             {
                 StringBuilder filePath = new StringBuilder(260);
                 H5F.get_name(fileId, filePath, new IntPtr(260));
-                ulong idx;
-
-                idx = 0;
+                ulong idx = 0;
                 bool reEnableErrors = Settings.ErrorLoggingEnable;
 
                 Settings.EnableErrorReporting(false);
-                H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,
-                    Marshal.StringToHGlobalAnsi("/"));
+                H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback, Marshal.StringToHGlobalAnsi("/"));
                 Settings.EnableErrorReporting(reEnableErrors);
 
 
@@ -320,6 +317,7 @@ namespace HDF5CSharp
                 if (fileId > 0)
                     H5F.close(fileId);
             }
+         
             int Callback(long elementId, IntPtr intPtrName, ref H5L.info_t info, IntPtr intPtrUserData)
             {
                 ulong idx2 = 0;
@@ -336,8 +334,11 @@ namespace HDF5CSharp
                 groupId = (H5L.exists(elementId, name) >= 0) ? H5G.open(elementId, name) : -1L;
                 if (H5I.is_valid(groupId) > 0)
                 {
+                
                     objectType = H5O.type_t.GROUP;
                     elementType = Hdf5ElementType.Group;
+                    ulong attId = 0;
+                    H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
                 }
                 else
                 {
@@ -346,6 +347,8 @@ namespace HDF5CSharp
                     {
                         objectType = H5O.type_t.DATASET;
                         elementType = Hdf5ElementType.Dataset;
+                        ulong attId = 0;
+                        H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
                     }
                     else
                     {
@@ -396,6 +399,18 @@ namespace HDF5CSharp
                 return 0;
             }
             return (structure, elements);
+        }
+
+        private static int AttributeCallback(long location_id, IntPtr attr_name, ref H5A.info_t ainfo, IntPtr op_data)
+        {
+            ulong idx2 = 0;
+            long groupId = -1;
+            long datasetId = -1;
+            H5O.type_t objectType;
+            var name = Marshal.PtrToStringAnsi(attr_name);
+            var userData = Marshal.PtrToStringAnsi(op_data);
+            var fullName = CombinePath(userData, name);
+            return 0;
         }
 
         private static string CombinePath(string path1, string path2)

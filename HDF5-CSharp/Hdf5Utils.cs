@@ -81,9 +81,9 @@ namespace HDF5CSharp
             {
                 case Hdf5ElementType.Group:
                 case Hdf5ElementType.Dataset:
-                    return H5L.exists(groupId, Hdf5Utils.NormalizedName(groupName)) > 0;
+                    return H5L.exists(groupId, NormalizedName(groupName)) > 0;
                 case Hdf5ElementType.Attribute:
-                    return H5A.exists(groupId, Hdf5Utils.NormalizedName(groupName)) > 0;
+                    return H5A.exists(groupId, NormalizedName(groupName)) > 0;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -99,11 +99,11 @@ namespace HDF5CSharp
 
         private static long GetId(long parentId, string name, long dataType, long spaceId, Hdf5ElementType type)
         {
-            string normalizedName = Hdf5Utils.NormalizedName(name);
-            bool exists = Hdf5Utils.ItemExists(parentId, normalizedName, type);
+            string normalizedName = NormalizedName(name);
+            bool exists = ItemExists(parentId, normalizedName, type);
             if (exists)
             {
-                Hdf5Utils.LogMessage($"{normalizedName} already exists", Hdf5LogLevel.Debug);
+                LogMessage($"{normalizedName} already exists", Hdf5LogLevel.Debug);
                 if (!Hdf5.Settings.OverrideExistingData)
                 {
                     if (Hdf5.Settings.ThrowOnError)
@@ -141,7 +141,7 @@ namespace HDF5CSharp
             if (datasetId == -1L)
             {
                 string error = $"Unable to create dataset for {normalizedName}";
-                Hdf5Utils.LogMessage($"{normalizedName} already exists", Hdf5LogLevel.Error);
+                LogMessage($"{normalizedName} already exists", Hdf5LogLevel.Error);
                 if (Hdf5.Settings.ThrowOnError)
                     throw new Hdf5Exception(error);
             }
@@ -160,6 +160,50 @@ namespace HDF5CSharp
                 throw new ArgumentException($"{type} Does not represent an enumerable type.", type.Name);
 
             return GetEnumerableType(iface);
+        }
+
+
+        public static (string value, bool success) ReadAttributeByPath(string fileName, string xpath, string attributeName)
+        {
+            long fileId = -1;
+
+            try
+            {
+                var fileStructure = Hdf5.ReadFlatFileStructure(fileName);
+                fileId = Hdf5.OpenFile(fileName, true);
+                if (fileId <= 0)
+                {
+                    LogMessage("Invalid type", Hdf5LogLevel.Error);
+                    return (string.Empty, false);
+                }
+
+                var group = fileStructure.SingleOrDefault(element => element.Name == xpath);
+                if (group == null)
+                {
+                    LogMessage($"group {xpath} was not found", Hdf5LogLevel.Error);
+                    return (string.Empty, false);
+                }
+
+                var groupAccessId = H5G.open(fileId, group.Name);
+                if (groupAccessId <= 0)
+                {
+                    LogMessage($"unable to open group", Hdf5LogLevel.Error);
+                    return (string.Empty, false);
+                }
+
+                var value = Hdf5.ReadPrimitiveAttributes<string>(groupAccessId, attributeName,"");
+                return ("value", true);
+            }
+            catch (Exception e)
+            {
+                LogMessage($"Error reading Attribute: {e.Message}", Hdf5LogLevel.Error);
+                return (string.Empty, false);
+            }
+            finally
+            {
+                if (fileId > 0)
+                    H5F.close(fileId);
+            }
         }
     }
 }

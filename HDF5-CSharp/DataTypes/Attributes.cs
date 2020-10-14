@@ -56,7 +56,7 @@ namespace HDF5CSharp.DataTypes
 
         public Hdf5SaveAttribute(Hdf5Save saveKind)  // url is a positional parameter
         {
-            this.SaveKind = saveKind;
+            SaveKind = saveKind;
         }
 
     }
