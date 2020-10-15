@@ -19,7 +19,7 @@ namespace HDF5CSharp.Example.DataTypes
             GroupRoot = groupRoot;
             GroupName = groupName;
             Logger = logger;
-            GroupId = Hdf5.CreateGroup(groupRoot, GroupName);
+            GroupId = Hdf5.CreateOrOpenGroup(groupRoot, GroupName);
 
         }
         protected Hdf5BaseFile()

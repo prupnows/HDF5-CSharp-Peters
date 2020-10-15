@@ -122,7 +122,7 @@ namespace HDF5_CSharp.Example.UnitTest
             Hdf5Utils.LogError += (s) => { Assert.Fail(s);};
             string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{nameof(TestManyPatientsWriteRead)}.h5");
             var fileId = Hdf5.CreateFile(filename);
-            var groupId = Hdf5.CreateGroup(fileId, "root");
+            var groupId = Hdf5.CreateOrOpenGroup(fileId, "root");
             PatientsContainer container = new PatientsContainer(fileId, groupId, Logger);
             container.FlushData();
             container.Dispose();

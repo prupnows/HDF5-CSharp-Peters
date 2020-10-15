@@ -191,8 +191,8 @@ namespace HDF5CSharp
                     return (string.Empty, false);
                 }
 
-                var value = Hdf5.ReadPrimitiveAttributes<string>(groupAccessId, attributeName,"");
-                return ("value", true);
+                var value = Hdf5.ReadAttribute<string>(groupAccessId, attributeName);
+                return (value, true);
             }
             catch (Exception e)
             {
@@ -203,6 +203,50 @@ namespace HDF5CSharp
             {
                 if (fileId > 0)
                     H5F.close(fileId);
+            }
+        }
+        public static bool WriteAttributeByPath(string fileName, string xpath, string attributeName, string value)
+        {
+            long fileId = -1;
+
+            try
+            {
+                var fileStructure = Hdf5.ReadFlatFileStructure(fileName);
+                fileId = Hdf5.OpenFile(fileName, true);
+                if (fileId <= 0)
+                {
+                    LogMessage("Invalid type", Hdf5LogLevel.Error);
+                    return false;
+                }
+
+                var group = fileStructure.SingleOrDefault(element => element.Name == xpath);
+                if (group == null)
+                {
+                    LogMessage($"group {xpath} was not found", Hdf5LogLevel.Error);
+                    return false;
+                }
+
+                var groupAccessId = H5G.open(fileId, group.Name);
+                if (groupAccessId <= 0)
+                {
+                    LogMessage($"unable to open group", Hdf5LogLevel.Error);
+                    return false;
+                }
+
+                var result = Hdf5.WriteAttribute(groupAccessId, attributeName, value);
+                return result.success >= 0;
+            }
+            catch (Exception e)
+            {
+                LogMessage($"Error reading Attribute: {e.Message}", Hdf5LogLevel.Error);
+                return false;
+            }
+            finally
+            {
+                if (fileId > 0)
+                {
+                    H5F.close(fileId);
+                }
             }
         }
     }

@@ -25,7 +25,7 @@ namespace HDF5CSharp
             }
             bool createGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (createGroupName)
-                groupId = CreateGroup(groupId, groupName);
+                groupId = CreateOrOpenGroup(groupId, groupName);
 
 
             foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))

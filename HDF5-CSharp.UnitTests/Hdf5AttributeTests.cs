@@ -1,14 +1,33 @@
-﻿using System;
+﻿using HDF.PInvoke;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using HDF.PInvoke;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HDF5CSharp.UnitTests.Core
 {
     public partial class Hdf5UnitTests
     {
+        [TestMethod]
+        public void WriteAndReadAttributeByPath()
+        {
+            string filename = Path.Combine(folder, "testAttributeByPath.H5");
+            string path = "/A/B/C/D/E/F/I";
+            string attributeValue = "test";
+            Hdf5.Settings.LowerCaseNaming = false;
+            var fileId = Hdf5.CreateFile(filename);
+            Assert.IsTrue(fileId > 0);
+            var groupId = Hdf5.CreateGroupRecursively(fileId, Hdf5Utils.NormalizedName(path));
+            var result = Hdf5Utils.WriteAttributeByPath(filename, path, "VALID", attributeValue);
+            Assert.IsTrue(result);
+            var write = Hdf5Utils.ReadAttributeByPath(filename, path, "VALID");
+            Assert.IsTrue(write.success);
+            Assert.IsTrue(write.value== attributeValue); 
+            Assert.IsTrue(H5G.close(groupId) == 0);
+            Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
+        }
+
         [TestMethod]
         public void WriteAndReadAttribute()
         {
@@ -17,7 +36,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var groupId = Hdf5.CreateGroup(fileId, "test");
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, "test");
                 DateTime nowTime = DateTime.Now;
                 Hdf5.WriteAttribute(groupId, "time", nowTime);
                 DateTime readTime = Hdf5.ReadAttribute<DateTime>(groupId, "time");
@@ -38,15 +57,15 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var groupId = Hdf5.CreateGroup(fileId, "test");
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, "test");
 
                 string attrStr = "this is an attribute";
                 Hdf5.WriteAttribute(groupId, "time", attrStr);
                 string readStr = Hdf5.ReadAttribute<string>(groupId, "time_Non_Exist");
                 Assert.IsTrue(string.IsNullOrEmpty(readStr));
-                 readStr = Hdf5.ReadAttribute<string>(groupId, "time");
+                readStr = Hdf5.ReadAttribute<string>(groupId, "time");
                 Assert.IsTrue(readStr == attrStr);
-                Assert.IsTrue(H5G.close(groupId)==0);
+                Assert.IsTrue(H5G.close(groupId) == 0);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
                 ErrorCountExpected = 2;
             }
@@ -80,7 +99,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var groupId = Hdf5.CreateGroup(fileId, groupStr);
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, groupStr);
                 Hdf5.WriteAttributes<int>(groupId, intName, intValues);
                 Hdf5.WriteAttribute(groupId, dblName, dblValue);
                 Hdf5.WriteAttribute(groupId, strName, strValue);
@@ -169,7 +188,7 @@ namespace HDF5CSharp.UnitTests.Core
             Assert.IsTrue(data.Equals(attObject));
 
             attObject.SetStringProperty("third");
-            attObject.datetime=DateTime.Now;
+            attObject.datetime = DateTime.Now;
             openFileId = Hdf5.OpenFile(filename);
             Hdf5.WriteObject(openFileId, attObject, groupName);
             Assert.IsTrue(Hdf5.CloseFile(openFileId) == 0);

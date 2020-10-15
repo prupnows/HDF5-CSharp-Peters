@@ -116,7 +116,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var groupId = Hdf5.CreateGroup(fileId, groupStr);
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, groupStr);
                 Hdf5.WriteOneValue(groupId, concatFunc(nameof(intValue)), intValue, attributes);
                 Hdf5.WriteOneValue(groupId, concatFunc(nameof(dblValue)), dblValue, attributes);
                 Hdf5.WriteOneValue(groupId, concatFunc(nameof(strValue)), strValue, attributes);
@@ -185,7 +185,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var groupId = Hdf5.CreateGroup(fileId, groupName);
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, groupName);
                 Assert.IsTrue(groupId >= 0);
                 //var chunkSize = new ulong[] { 5, 5 };
                 using (var chunkedDset = new ChunkedDataset<double>(datasetName, groupId, dsets.First()))
@@ -238,7 +238,7 @@ namespace HDF5CSharp.UnitTests.Core
             //create
             var fileId = Hdf5.CreateFile(filename);
             Assert.IsTrue(fileId > 0);
-            var groupId = Hdf5.CreateGroup(fileId, groupName);
+            var groupId = Hdf5.CreateOrOpenGroup(fileId, groupName);
             Assert.IsTrue(groupId >= 0);
             using (var chunkedDset = new ChunkedDataset<double>(datasetName, groupId))
             {
@@ -320,7 +320,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.CreateFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var groupId = Hdf5.CreateGroup(fileId, groupName);
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, groupName);
                 Assert.IsTrue(groupId >= 0);
                 //var chunkSize = new ulong[] { 5, 5 };
                 using (var chunkedDset = new ChunkedDataset<double>(datasetName, groupId))

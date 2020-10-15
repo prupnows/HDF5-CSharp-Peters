@@ -43,7 +43,7 @@ namespace HDF5CSharp.Example
             H5E.set_auto(H5E.DEFAULT, null, IntPtr.Zero);
             fileId = Hdf5.CreateFile(filename);
             groupRoot = fileId;
-            groupEIT = Hdf5.CreateGroup(groupRoot, "eit");
+            groupEIT = Hdf5.CreateOrOpenGroup(groupRoot, "eit");
             ProcedureInformation = new ProcedureInformation(fileId, groupRoot, logger)
             {
                 ProcedureDirectory = Path.GetDirectoryName(filename),

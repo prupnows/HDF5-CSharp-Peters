@@ -246,9 +246,9 @@ namespace HDF5CSharp
             return (result, attributeId);
         }
 
-        public static void WriteAttribute<T>(long groupId, string name, T attribute) //where T : struct
+        public static (int success, long CreatedId) WriteAttribute<T>(long groupId, string name, T attribute) //where T : struct
         {
-            WriteAttributes<T>(groupId, name, new T[1] { attribute });
+           return WriteAttributes<T>(groupId, name, new T[1] { attribute });
             /*if (typeof(T) == typeof(string))
                 attrRW.WriteArray(groupId, name, new T[1] { attribute });
             else
@@ -258,9 +258,9 @@ namespace HDF5CSharp
             }*/
         }
 
-        public static void WriteAttributes<T>(long groupId, string name, Array attributes) //
+        public static (int success, long CreatedId) WriteAttributes<T>(long groupId, string name, Array attributes) //
         {
-            attrRW.WriteArray(groupId, name, attributes, new Dictionary<string, List<string>>());
+         return   attrRW.WriteArray(groupId, name, attributes, new Dictionary<string, List<string>>());
             //if (attributes.GetType().GetElementType() == typeof(string))
             //     WriteStringAttributes(groupId, name, attributes.Cast<string>(), attributeName);
             //else

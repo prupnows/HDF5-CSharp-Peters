@@ -27,7 +27,7 @@ namespace HDF5CSharp
             _filename = filename;
             fileId = Hdf5.CreateFile(filename);
             _groupName = groupName;
-            _groupId = Hdf5.CreateGroup(fileId, Hdf5Utils.NormalizedName(_groupName));
+            _groupId = Hdf5.CreateOrOpenGroup(fileId, Hdf5Utils.NormalizedName(_groupName));
 
             Header = new Hdf5AcquisitionFile();
             _nrOfRecords = 0;

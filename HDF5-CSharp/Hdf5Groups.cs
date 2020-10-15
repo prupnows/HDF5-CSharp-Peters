@@ -13,7 +13,7 @@ namespace HDF5CSharp
             return H5G.close(groupId);
         }
 
-        public static long CreateGroup(long groupId, string groupName)
+        public static long CreateOrOpenGroup(long groupId, string groupName)
         {
 
             return (Hdf5Utils.ItemExists(groupId, groupName, Hdf5ElementType.Group))
@@ -27,18 +27,18 @@ namespace HDF5CSharp
         /// <summary>
         /// creates a structure of groups at once
         /// </summary>
-        /// <param name="groupOrfileId"></param>
+        /// <param name="groupOrFileId"></param>
         /// <param name="groupName"></param>
         /// <returns></returns>
-        public static long CreateGroupRecursively(long groupOrfileId, string groupName)
+        public static long CreateGroupRecursively(long groupOrFileId, string groupName)
         {
             IEnumerable<string> grps = groupName.Split('/');
-            long gid = groupOrfileId;
+            long gid = groupOrFileId;
             groupName = "";
             foreach (var name in grps)
             {
                 groupName = string.Concat(groupName, "/", name);
-                gid = CreateGroup(gid, groupName);
+                gid = CreateOrOpenGroup(gid, groupName);
             }
             return gid;
         }
