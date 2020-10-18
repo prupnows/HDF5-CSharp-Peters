@@ -22,14 +22,12 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageReleaseNotes>- Add Support for older objects for ReadObject method (#73).</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.10.610.10</Version>
+		<Version>1.11.0.0</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<ApplicationIcon>hdf5Wrapper.ico</ApplicationIcon>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>1.10.610.10</AssemblyVersion>
-		<FileVersion>1.10.610.10</FileVersion>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 	</PropertyGroup>
 
