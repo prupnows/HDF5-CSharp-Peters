@@ -15,7 +15,7 @@
 <a href="https://github.com/LiorBanai/HDF5-CSharp/releases"> 
     <img src="https://img.shields.io/github/v/release/LiorBanai/HDF5-CSharp"  alt="Latest Release"/>
 </a>
- <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.10.610.9...master">
+ <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.11.0...master">
     <img src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"  alt="Commits Since Latest Release"/>
 </a>
 [![Nuget](https://img.shields.io/nuget/dt/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/)
