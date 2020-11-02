@@ -26,7 +26,9 @@ namespace HDF5CSharp.Example.DataTypes
             {
                 yield return item;
                 if (cancellationToken.IsCancellationRequested)
+                {
                     yield break;
+                }
             }
         }
         public IEnumerable<T> GetConsumingEnumerable()

@@ -69,28 +69,52 @@ namespace HDF5CSharp.Example.DataTypes
 
         public bool Equals(PatientsContainer other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             for (var i = 0; i < Patients.Count; i++)
             {
                 var p = Patients[i];
                 if (!p.SequenceEqual(other.Patients[i]))
+                {
                     return false;
+                }
             }
             for (var i = 0; i < PatientsField.Count; i++)
             {
                 var p = PatientsField[i];
                 if (!p.SequenceEqual(other.PatientsField[i]))
+                {
                     return false;
+                }
             }
             return true;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((PatientsContainer)obj);
         }
 

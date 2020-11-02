@@ -18,16 +18,36 @@ namespace HDF5CSharp.UnitTests.Core
 
             public bool Equals(InnerClass other)
             {
-                if (ReferenceEquals(null, other)) return false;
-                if (ReferenceEquals(this, other)) return true;
+                if (ReferenceEquals(null, other))
+                {
+                    return false;
+                }
+
+                if (ReferenceEquals(this, other))
+                {
+                    return true;
+                }
+
                 return noAttributeName == other.noAttributeName && money == other.money;
             }
 
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
+                if (ReferenceEquals(null, obj))
+                {
+                    return false;
+                }
+
+                if (ReferenceEquals(this, obj))
+                {
+                    return true;
+                }
+
+                if (obj.GetType() != this.GetType())
+                {
+                    return false;
+                }
+
                 return Equals((InnerClass)obj);
             }
 
@@ -52,17 +72,37 @@ namespace HDF5CSharp.UnitTests.Core
         public void SetStringProperty(string value) => StringProperty = value;
         public bool Equals(AttributeSimpleClass other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return datetime.Equals(other.datetime) && noAttribute.Equals(other.noAttribute) &&
                    Equals(inner, other.inner) && StringProperty == other.StringProperty;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((AttributeSimpleClass)obj);
         }
 
@@ -208,16 +248,36 @@ namespace HDF5CSharp.UnitTests.Core
 
         public bool Equals(TestClassWithArrayOfFloats other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return floats.SequenceEqual(other.floats);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((TestClassWithArrayOfFloats)obj);
         }
 
@@ -236,16 +296,36 @@ namespace HDF5CSharp.UnitTests.Core
 
         public bool Equals(TestStructWithArrayOfFloats other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return floats.SequenceEqual(other.floats);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((TestClassWithArrayOfFloats)obj);
         }
 
@@ -275,8 +355,16 @@ namespace HDF5CSharp.UnitTests.Core
 
         public bool Equals(TestClassWithJaggedArray other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return Data[0][0].SequenceEqual(other.Data[0][0]) &&
                    Data[1][0].SequenceEqual(other.Data[1][0]) &&
                    dataField[0][0].SequenceEqual(other.dataField[0][0]) &&
@@ -285,9 +373,21 @@ namespace HDF5CSharp.UnitTests.Core
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((TestClassWithJaggedArray)obj);
         }
 
@@ -333,8 +433,16 @@ namespace HDF5CSharp.UnitTests.Core
 
         public bool Equals(TestClassWithLists other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return numbers.SequenceEqual(other.numbers) && time.Equals(other.time) &&
                    NumbersProperty.SequenceEqual(other.NumbersProperty) && TimeProperty.Equals(other.TimeProperty) &&
                    times.SequenceEqual(other.times) && TimesProperty.SequenceEqual(other.TimesProperty);
@@ -343,9 +451,21 @@ namespace HDF5CSharp.UnitTests.Core
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((TestClassWithLists)obj);
         }
 

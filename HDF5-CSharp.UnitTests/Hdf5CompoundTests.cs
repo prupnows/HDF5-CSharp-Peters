@@ -312,5 +312,49 @@ namespace HDF5CSharp.UnitTests.Core
 
         }
 
+
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Compound
+        {
+            public double timestamp;
+            public Int32 id;
+            [MarshalAs(UnmanagedType.SafeArray, SafeArraySubType = VarEnum.VT_R8)]
+            public double[] double_array;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
+            public string name;
+
+            public Compound(double timestamp, int id, double[] doubleArray, string name)
+            {
+                this.timestamp = timestamp;
+                this.id = id;
+                double_array = doubleArray;
+                this.name = name;
+            }
+        }
+
+       // [TestMethod]
+        public void WriteCompoundTest()
+        {
+            string filename = Path.Combine(folder, "WriteCompound.H5");
+            try
+            {
+                var timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                var id = Int32.MaxValue;
+                var double_array = new[] { 10.0, 20, 30 };
+                var name = "test";
+                var c = new Compound(timestamp, id, double_array, name);
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var status = Hdf5.WriteCompounds(fileId, "/Sample Data", new List<Compound>() { c }, new Dictionary<string, List<string>>());
+                Hdf5.CloseFile(fileId);
+
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+        }
     }
 }

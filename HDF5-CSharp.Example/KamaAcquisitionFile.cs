@@ -124,7 +124,11 @@ namespace HDF5CSharp.Example
 
         public async Task<(bool, string)> StopProcedure()
         {
-            if (FileClosed) return GeneralUtils.CheckFileSize(FileName);
+            if (FileClosed)
+            {
+                return GeneralUtils.CheckFileSize(FileName);
+            }
+
             FileClosed = true;
             Logger?.LogInformation("Stop Procedure called");
             ProcedureInformation.EndDateTime = DateTime.Now;
@@ -139,7 +143,9 @@ namespace HDF5CSharp.Example
             Hdf5.CloseGroup(groupRoot);
             long result = Hdf5.CloseFile(fileId);
             if (result >= 0)
+            {
                 Logger?.LogInformation("Stop Procedure H5 File closed");
+            }
             else
             {
                 Logger?.LogError("Cannot close H5 File: " + result);

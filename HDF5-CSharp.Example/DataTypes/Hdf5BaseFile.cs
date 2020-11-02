@@ -29,7 +29,11 @@ namespace HDF5CSharp.Example.DataTypes
 
         public void FlushData()
         {
-            if (Disposed) return;
+            if (Disposed)
+            {
+                return;
+            }
+
             try
             {
                 Hdf5.WriteObject(GroupRoot, this, GroupName);
@@ -44,7 +48,11 @@ namespace HDF5CSharp.Example.DataTypes
         {
             try
             {
-                if (Disposed) return;
+                if (Disposed)
+                {
+                    return;
+                }
+
                 FlushData();
                 Hdf5.CloseGroup(GroupId);
             }

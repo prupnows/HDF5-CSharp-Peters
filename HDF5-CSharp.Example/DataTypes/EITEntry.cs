@@ -26,8 +26,16 @@ namespace HDF5CSharp.Example.DataTypes
 
         public bool Equals(EITEntry other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return Configuration == other.Configuration && StartDateTime.EqualsUpToMilliseconds(other.StartDateTime) &&
                    EndDateTime.EqualsUpToMilliseconds(other.EndDateTime) &&
 
@@ -65,9 +73,21 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((EITEntry)obj);
         }
 

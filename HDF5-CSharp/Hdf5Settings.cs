@@ -42,7 +42,10 @@ namespace HDF5CSharp
         {
             ErrorLoggingEnable = enable;
             if (enable)
+            {
                 return H5E.set_auto(H5E.DEFAULT, Hdf5Errors.ErrorDelegateMethod, IntPtr.Zero) >= 0;
+            }
+
             return H5E.set_auto(H5E.DEFAULT, null, IntPtr.Zero) >= 0;
 
         }

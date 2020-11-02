@@ -77,9 +77,16 @@ namespace HDF5CSharp
         {
             //lock_.EnterWriteLock();
             int cols = signals.Count();
-            if (cols == 0) return;
+            if (cols == 0)
+            {
+                return;
+            }
+
             int rows = signals.First().Length;
-            if (rows == 0) return;
+            if (rows == 0)
+            {
+                return;
+            }
             //double sr = _header.Recording.SampleRate;
 
             var data = new short[rows, cols];
@@ -88,7 +95,10 @@ namespace HDF5CSharp
             foreach (var sig in signals)
             {
                 for (int j = 0; j < rows; j++)
+                {
                     data[j, i] = Convert2Short(sig[j], i);
+                }
+
                 i++;
             }
             Write(data);
@@ -118,7 +128,10 @@ namespace HDF5CSharp
                 dset = new ChunkedDataset<short>(dataName, _groupId, data);
             }
             else
+            {
                 dset.AppendDataset(data);
+            }
+
             _sampleCount += (ulong)data.GetLongLength(0);
             _nrOfRecords++;
             //lock_.ExitWriteLock();
@@ -139,9 +152,15 @@ namespace HDF5CSharp
             val = (val - Header.Channels[channelNr].Offset) / Header.Channels[channelNr].Amplification;
             //val = val * short.MaxValue;
             if (val > short.MaxValue)
+            {
                 val = short.MaxValue;
+            }
+
             if (val < short.MinValue)
+            {
                 val = short.MinValue;
+            }
+
             return Convert.ToInt16(Math.Round(val, MidpointRounding.AwayFromZero));
 
         }

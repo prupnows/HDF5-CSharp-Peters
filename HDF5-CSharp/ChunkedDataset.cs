@@ -58,8 +58,15 @@ namespace HDF5CSharp
 
         public void FirstDataset(Array dataset)
         {
-            if (GroupId <= 0) throw new Hdf5Exception("cannot call FirstDataset because group or file couldn't be created");
-            if (Hdf5Utils.GetRealName(GroupId, Datasetname, string.Empty).valid) throw new Hdf5Exception("cannot call FirstDataset because dataset already exists");
+            if (GroupId <= 0)
+            {
+                throw new Hdf5Exception("cannot call FirstDataset because group or file couldn't be created");
+            }
+
+            if (Hdf5Utils.GetRealName(GroupId, Datasetname, string.Empty).valid)
+            {
+                throw new Hdf5Exception("cannot call FirstDataset because dataset already exists");
+            }
 
             Rank = dataset.Rank;
             _currentDims = GetDims(dataset);
@@ -79,7 +86,10 @@ namespace HDF5CSharp
             _status = H5D.write(_datasetId, _datatype, H5S.ALL, H5S.ALL, H5P.DEFAULT,
                 hnd.AddrOfPinnedObject());
             if (_status < 0)
+            {
                 Hdf5Utils.LogError("Unable  to write dataset");
+            }
+
             hnd.Free();
             H5S.close(_spaceId);
             _spaceId = -1;
@@ -178,11 +188,19 @@ namespace HDF5CSharp
             }
 
             if (_datasetId >= 0)
+            {
                 H5D.close(_datasetId);
+            }
+
             if (_propId >= 0)
+            {
                 H5P.close(_propId);
+            }
+
             if (_spaceId >= 0)
+            {
                 H5S.close(_spaceId);
+            }
 
             if (itIsSafeToAlsoFreeManagedObjects)
             {

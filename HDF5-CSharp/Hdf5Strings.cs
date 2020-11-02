@@ -21,7 +21,10 @@ namespace HDF5CSharp
 
             var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             if (datasetId < 0) //does not exist?
+            {
                 datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
+            }
+
             if (datasetId <= 0)
             {
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");

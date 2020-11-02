@@ -31,11 +31,20 @@ namespace HDF5CSharp.UnitTests.Core
                     Type selfType = selfValue.GetType();
                     TypeCode code = Type.GetTypeCode(selfType);
                     if (code == TypeCode.DateTime)
+                    {
                         if (DateTime.Compare((DateTime)selfValue, (DateTime)toValue) != 0)
+                        {
                             return false;
+                        }
+                    }
+
                     if (selfType == typeof(TimeSpan))
+                    {
                         if (TimeSpan.Compare((TimeSpan)selfValue, (TimeSpan)toValue) != 0)
+                        {
                             return false;
+                        }
+                    }
 
                     if (selfValue != toValue && (selfValue == null || !selfValue.Equals(toValue)))
                     {
@@ -71,11 +80,21 @@ namespace HDF5CSharp.UnitTests.Core
                     Type selfType = selfValue.GetType();
                     TypeCode code = Type.GetTypeCode(selfType);
                     if (code == TypeCode.DateTime)
+                    {
                         if (DateTime.Compare((DateTime)selfValue, (DateTime)toValue) != 0)
+                        {
                             return false;
+                        }
+                    }
+
                     if (selfType == typeof(TimeSpan))
+                    {
                         if (TimeSpan.Compare((TimeSpan)selfValue, (TimeSpan)toValue) != 0)
+                        {
                             return false;
+                        }
+                    }
+
                     if (selfValue != toValue && (!selfValue.Equals(toValue)))
                     {
                         return false;

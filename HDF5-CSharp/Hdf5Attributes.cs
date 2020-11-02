@@ -153,7 +153,10 @@ namespace HDF5CSharp
 
             var attributeId = H5A.open(groupId, Hdf5Utils.NormalizedName(name));
             if (attributeId <= 0)
+            {
                 attributeId = H5A.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
+            }
+
             if (attributeId <= 0)
             {
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
@@ -170,7 +173,9 @@ namespace HDF5CSharp
             var typeId = H5A.get_type(attributeId);
             var mem_type = H5T.copy(datatype);
             if (datatype == H5T.C_S1)
+            {
                 H5T.set_size(datatype, new IntPtr(2));
+            }
 
             var propId = H5A.get_create_plist(attributeId);
 
@@ -196,7 +201,9 @@ namespace HDF5CSharp
             {
                 long datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(groupOrDatasetName));
                 if (datasetId > 0)
+                {
                     groupId = datasetId;
+                }
             }
             else
             {

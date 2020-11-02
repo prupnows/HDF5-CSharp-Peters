@@ -143,7 +143,10 @@ namespace HDF5_CSharp.Example.UnitTest
             string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test2.h5");
             Console.WriteLine(filename);
             if (File.Exists(filename))
+            {
                 File.Delete(filename);
+            }
+
             kama = new KamaAcquisitionFile(filename, Logger);
             ProcedureInfo info = new ProcedureInfo
             {
@@ -199,7 +202,10 @@ namespace HDF5_CSharp.Example.UnitTest
             string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestCalibrationsData.h5");
             Console.WriteLine(filename);
             if (File.Exists(filename))
+            {
                 File.Delete(filename);
+            }
+
             kama = new KamaAcquisitionFile(filename, Logger);
             ProcedureInfo info = new ProcedureInfo
             {
@@ -228,7 +234,10 @@ namespace HDF5_CSharp.Example.UnitTest
             string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestsSystemInformation.h5");
             Console.WriteLine(filename);
             if (File.Exists(filename))
+            {
                 File.Delete(filename);
+            }
+
             kama = new KamaAcquisitionFile(filename, Logger);
             ProcedureInfo info = new ProcedureInfo
             {

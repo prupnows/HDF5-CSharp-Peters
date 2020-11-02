@@ -82,7 +82,10 @@ namespace HDF5CSharp
 
                 case TypeCode.String:
                     if (collection.Rank > 1 && collection.GetLength(1) > 1)
+                    {
                         throw new Hdf5Exception("Only 1 dimensional string arrays allowed: " + name);
+                    }
+
                     result = rw.WriteStrings(groupId, name, (string[])collection);
                     break;
 

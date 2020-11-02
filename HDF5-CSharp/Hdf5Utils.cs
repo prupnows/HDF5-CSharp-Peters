@@ -54,7 +54,11 @@ namespace HDF5CSharp
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void LogMessage(string msg, Hdf5LogLevel level)
         {
-            if (!Hdf5.Settings.ErrorLoggingEnable) return;
+            if (!Hdf5.Settings.ErrorLoggingEnable)
+            {
+                return;
+            }
+
             switch (level)
             {
                 case Hdf5LogLevel.Debug:
@@ -107,7 +111,10 @@ namespace HDF5CSharp
                 if (!Hdf5.Settings.OverrideExistingData)
                 {
                     if (Hdf5.Settings.ThrowOnError)
+                    {
                         throw new Hdf5Exception($"{normalizedName} already exists");
+                    }
+
                     return -1;
                 }
             }
@@ -143,7 +150,9 @@ namespace HDF5CSharp
                 string error = $"Unable to create dataset for {normalizedName}";
                 LogMessage($"{normalizedName} already exists", Hdf5LogLevel.Error);
                 if (Hdf5.Settings.ThrowOnError)
+                {
                     throw new Hdf5Exception(error);
+                }
             }
             return datasetId;
         }
@@ -151,13 +160,17 @@ namespace HDF5CSharp
         public static Type GetEnumerableType(Type type)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            {
                 return type.GetGenericArguments()[0];
+            }
 
             var iface = (type.GetInterfaces()
                 .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))).FirstOrDefault();
 
             if (iface == null)
+            {
                 throw new ArgumentException($"{type} Does not represent an enumerable type.", type.Name);
+            }
 
             return GetEnumerableType(iface);
         }
@@ -202,7 +215,9 @@ namespace HDF5CSharp
             finally
             {
                 if (fileId > 0)
+                {
                     H5F.close(fileId);
+                }
             }
         }
         public static bool WriteAttributeByPath(string fileName, string xpath, string attributeName, string value)

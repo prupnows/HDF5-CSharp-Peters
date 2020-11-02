@@ -55,7 +55,10 @@ namespace HDF5CSharp
                 var ms = new MemoryStream();
                 BinaryWriter writer = new BinaryWriter(ms);
                 foreach (var strct in list)
+                {
                     writer.Write(getBytes(strct));
+                }
+
                 var bytes = ms.ToArray();
 
                 GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
@@ -83,7 +86,9 @@ namespace HDF5CSharp
         private static byte[] ObjectToByteArray<T>(T obj)
         {
             if (obj == null)
+            {
                 return null;
+            }
 
             BinaryFormatter bf = new BinaryFormatter();
             MemoryStream ms = new MemoryStream();
@@ -136,12 +141,15 @@ namespace HDF5CSharp
         private static IEnumerable<T> ChangeStrings<T>(IEnumerable<T> array, FieldInfo[] fields) where T : struct
         {
             foreach (var info in fields)
+            {
                 if (info.FieldType == typeof(string))
                 {
                     var attr = info.GetCustomAttributes(typeof(MarshalAsAttribute), false);
                     MarshalAsAttribute maa = (MarshalAsAttribute)attr[0];
                     object value = info.GetValue(array);
                 }
+            }
+
             return array;
         }
 
@@ -158,7 +166,10 @@ namespace HDF5CSharp
             //Create the compound datatype for memory.
             id = H5T.create(H5T.class_t.COMPOUND, new IntPtr(compoundSize));
             foreach (var cmp in compoundInfo)
+            {
                 H5T.insert(id, cmp.name, new IntPtr(cmp.offset), cmp.datatype);
+            }
+
             return compoundSize;
         }
 
@@ -213,7 +224,10 @@ namespace HDF5CSharp
                     //  H5T.close(strtype);
                 }
                 if (oi.datatype == H5T.STD_I64BE)
+                {
                     oi.size = oi.size * 2;
+                }
+
                 curSize = curSize + oi.size;
 
                 offsets.Add(oi);

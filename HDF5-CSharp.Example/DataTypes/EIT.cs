@@ -122,15 +122,26 @@ namespace HDF5CSharp.Example.DataTypes
 
         public void Enqueue(ElectrodeFrame sample)
         {
-            if (completed) return;
+            if (completed)
+            {
+                return;
+            }
+
             if (!StartDateTime.HasValue)
+            {
                 StartDateTime = sample.timestamp;
+            }
+
             ElectrodeSamplesData.Enqueue(sample);
         }
 
         public void CompleteAdding()
         {
-            if (completed) return;
+            if (completed)
+            {
+                return;
+            }
+
             completed = true;
             ElectrodeSamplesData.CompleteAdding();
         }

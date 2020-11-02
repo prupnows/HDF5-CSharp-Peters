@@ -28,7 +28,9 @@ namespace HDF5CSharp
             Recording.PropertyChanged += (sender, eventArgs) =>
             {
                 if (eventArgs.PropertyName == nameof(Hdf5Recording.NrOfChannels))
+                {
                     Channels = new Hdf5Channel[Recording.NrOfChannels];
+                }
             };
 
         }

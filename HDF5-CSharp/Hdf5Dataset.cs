@@ -75,12 +75,16 @@ namespace HDF5CSharp
                 //var typeId = H5D.get_type(datasetId);
                 //var mem_type = H5T.copy(datatype);
                 if (datatype == H5T.C_S1)
+                {
                     H5T.set_size(datatype, new IntPtr(2));
+                }
 
                 var propId = H5D.get_create_plist(datasetId);
 
                 if (H5D.layout_t.CHUNKED == H5P.get_layout(propId))
+                {
                     rankChunk = H5P.get_chunk(propId, rank, chunkDims);
+                }
 
                 memId = H5S.create_simple(rank, dims, maxDims);
                 GCHandle hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
@@ -89,7 +93,10 @@ namespace HDF5CSharp
                 hnd.Free();
             }
             else
+            {
                 dset = Array.CreateInstance(type, new long[1] { 0 });
+            }
+
             H5D.close(datasetId);
             H5S.close(spaceId);
             return (true, dset);
@@ -180,7 +187,10 @@ namespace HDF5CSharp
         {
             if (typeof(T) == typeof(string))
                 //WriteStrings(groupId, name, new string[] { dset.ToString() });
+            {
                 return dsetRW.WriteArray(groupId, name, new T[1] { dset }, attributes);
+            }
+
             Array oneVal = new T[1, 1] { { dset } };
             return dsetRW.WriteArray(groupId, name, oneVal, attributes);
         }

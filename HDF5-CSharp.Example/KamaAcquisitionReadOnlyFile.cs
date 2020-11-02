@@ -46,7 +46,9 @@ namespace HDF5CSharp.Example
             }
             groupName = rootNameOld + system_informationName;
             if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
+            {
                 SystemInformation = Hdf5.ReadObject<SystemInformation>(fileId, groupName);
+            }
         }
         public void ReadProcedureInformation()
         {
@@ -58,7 +60,9 @@ namespace HDF5CSharp.Example
             }
             groupName = rootNameOld + procedure_informationName;
             if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
+            {
                 ProcedureInformation = Hdf5.ReadObject<ProcedureInformation>(fileId, groupName);
+            }
         }
         public void ReadPatientInformation()
         {
@@ -70,7 +74,9 @@ namespace HDF5CSharp.Example
             }
             groupName = rootNameOld + patient_informationName;
             if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
+            {
                 PatientInformation = Hdf5.ReadObject<Patient>(fileId, groupName);
+            }
         }
 
         public void ReadECGData()
@@ -83,7 +89,9 @@ namespace HDF5CSharp.Example
             }
             groupName = rootNameOld + ecgName;
             if (Hdf5Utils.ItemExists(fileId, groupName, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
+            {
                 ECG = Hdf5.ReadObject<ECGData>(fileId, groupName);
+            }
         }
         public void ReadEITData()
         {
@@ -91,7 +99,10 @@ namespace HDF5CSharp.Example
             int index = 1;
             string rootGroup = rootName + eitName;
             if (!Hdf5Utils.ItemExists(fileId, rootGroup, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
+            {
                 rootGroup = rootNameOld + eitName;
+            }
+
             while (Hdf5Utils.ItemExists(fileId, rootGroup + "/d" + index, HDF5CSharp.DataTypes.Hdf5ElementType.Group))
             {
                 var entry = Hdf5.ReadObject<EITEntry>(fileId, rootGroup + "/d" + index);

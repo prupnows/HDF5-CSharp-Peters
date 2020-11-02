@@ -35,13 +35,18 @@ namespace HDF5CSharp
             //}
             bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (isGroupName)
+            {
                 groupId = H5G.open(groupId, Hdf5Utils.NormalizedName(groupName));
+            }
 
             ReadFields(tyObject, readValue, groupId);
             ReadProperties(tyObject, readValue, groupId);
 
             if (isGroupName)
+            {
                 CloseGroup(groupId);
+            }
+
             return readValue;
         }
 
@@ -74,10 +79,15 @@ namespace HDF5CSharp
                         nextInfo = (kind == Hdf5Save.DoNotSave);
                     }
                     else
+                    {
                         nextInfo = false;
+                    }
                 }
 
-                if (nextInfo) continue;
+                if (nextInfo)
+                {
+                    continue;
+                }
 
                 Type ty = info.FieldType;
                 TypeCode code = Type.GetTypeCode(ty);
@@ -103,7 +113,9 @@ namespace HDF5CSharp
                     }
 
                     if (success)
+                    {
                         info.SetValue(readValue, values);
+                    }
                 }
 
                 else if (ty.IsGenericType && ty.GetGenericTypeDefinition() == typeof(List<>))
@@ -146,13 +158,17 @@ namespace HDF5CSharp
                     // get first value depending on rank of the matrix
                     int[] first = new int[values.Rank].Select(f => 0).ToArray();
                     if (success)
+                    {
                         info.SetValue(readValue, values.GetValue(first));
+                    }
                 }
                 else
                 {
                     object value = info.GetValue(readValue);
                     if (value != null)
+                    {
                         ReadObject(groupId, value, name);
+                    }
                 }
             }
         }
@@ -180,7 +196,11 @@ namespace HDF5CSharp
                     }
                 }
 
-                if (nextInfo) continue;
+                if (nextInfo)
+                {
+                    continue;
+                }
+
                 Type ty = info.PropertyType;
                 TypeCode code = Type.GetTypeCode(ty);
                 string name = info.Name;
@@ -196,7 +216,9 @@ namespace HDF5CSharp
                     {
                         (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
                         if (success)
+                        {
                             info.SetValue(readValue, values);
+                        }
                     }
                     else
                     {
@@ -251,7 +273,9 @@ namespace HDF5CSharp
                     {
                         int[] first = new int[values.Rank].Select(f => 0).ToArray();
                         if (info.CanWrite)
+                        {
                             info.SetValue(readValue, values.GetValue(first));
+                        }
                         else
                         {
                             Hdf5Utils.LogMessage($"property {info.Name} is read only. cannot set value", Hdf5LogLevel.Warning);
@@ -315,7 +339,9 @@ namespace HDF5CSharp
             finally
             {
                 if (fileId > 0)
+                {
                     H5F.close(fileId);
+                }
             }
          
             int Callback(long elementId, IntPtr intPtrName, ref H5L.info_t info, IntPtr intPtrUserData)

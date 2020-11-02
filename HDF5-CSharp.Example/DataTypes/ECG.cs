@@ -101,13 +101,20 @@ namespace HDF5CSharp.Example.DataTypes
             if (!completed)
             {
                 if (!StartDateTime.HasValue)
+                {
                     StartDateTime = ecgFrame.FrameData.First().Timestamp;
+                }
+
                 EcgSamplesData.Enqueue(ecgFrame);
             }
         }
         public void CompleteAdding()
         {
-            if (completed) return;
+            if (completed)
+            {
+                return;
+            }
+
             completed = true;
             EcgSamplesData.CompleteAdding();
         }

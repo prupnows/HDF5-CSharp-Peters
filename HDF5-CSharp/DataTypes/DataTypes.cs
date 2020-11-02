@@ -85,7 +85,10 @@ namespace HDF5CSharp.DataTypes
         {
             var child = Children.FirstOrDefault(c => c.Name == childName);
             if (child != null)
+            {
                 return child;
+            }
+
             var subChildren = Children.Where(c => c.HasChildren).Select(c => c.GetChildWithName(childName));
             return subChildren.FirstOrDefault();
         }

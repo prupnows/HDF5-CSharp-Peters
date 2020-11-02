@@ -53,8 +53,16 @@ namespace HDF5CSharp.Example.DataTypes
 
         public bool Equals(Patient other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return FirstName == other.FirstName && LastName == other.LastName && Id == other.Id &&
                    Gender == other.Gender && Age.Equals(other.Age) && Height.Equals(other.Height) &&
                    Weight.Equals(other.Weight) && ExamDate.EqualsUpToMilliseconds(other.ExamDate);
@@ -62,9 +70,21 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((Patient)obj);
         }
 

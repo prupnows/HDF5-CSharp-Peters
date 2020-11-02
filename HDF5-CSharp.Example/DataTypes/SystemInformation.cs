@@ -83,8 +83,16 @@ namespace HDF5CSharp.Example.DataTypes
 
         public bool Equals(SystemInformation other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
             return SystemId == other.SystemId && BoardIds.SequenceEqual(other.BoardIds) &&
                    DataFormatVersion == other.DataFormatVersion && SoftwareVersion == other.SoftwareVersion &&
                    MachineName == other.MachineName && MacAddress == other.MacAddress && IPAddress == other.IPAddress;
@@ -92,9 +100,21 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             return Equals((SystemInformation)obj);
         }
 

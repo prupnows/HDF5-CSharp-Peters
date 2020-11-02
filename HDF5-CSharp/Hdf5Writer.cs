@@ -25,7 +25,9 @@ namespace HDF5CSharp
             }
             bool createGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (createGroupName)
+            {
                 groupId = CreateOrOpenGroup(groupId, groupName);
+            }
 
 
             foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
@@ -34,7 +36,9 @@ namespace HDF5CSharp
                 {
                     Hdf5Save kind = legAt.SaveKind;
                     if (kind == Hdf5Save.DoNotSave)
+                    {
                         return writeValue;
+                    }
                 }
             }
 
@@ -42,7 +46,10 @@ namespace HDF5CSharp
             WriteFields(tyObject, writeValue, groupId);
             WriteHdf5Attributes(tyObject, groupId, groupName);
             if (createGroupName)
+            {
                 CloseGroup(groupId);
+            }
+
             return (writeValue);
         }
 
@@ -72,10 +79,17 @@ namespace HDF5CSharp
 
             foreach (FieldInfo info in miMembers)
             {
-                if (NoSavePresent(Attribute.GetCustomAttributes(info))) continue;
+                if (NoSavePresent(Attribute.GetCustomAttributes(info)))
+                {
+                    continue;
+                }
+
                 object infoVal = info.GetValue(writeValue);
                 if (infoVal == null)
+                {
                     continue;
+                }
+
                 Dictionary<string, List<string>> attributes = Attributes(info);
                 string name = info.Name;
                 foreach (Attribute attr in Attribute.GetCustomAttributes(info))
@@ -95,10 +109,17 @@ namespace HDF5CSharp
 
             foreach (PropertyInfo info in miMembers)
             {
-                if (NoSavePresent(Attribute.GetCustomAttributes(info))) continue;
+                if (NoSavePresent(Attribute.GetCustomAttributes(info)))
+                {
+                    continue;
+                }
+
                 object infoVal = info.GetValue(writeValue, null);
                 if (infoVal == null)
+                {
                     continue;
+                }
+
                 Dictionary<string, List<string>> attributes = Attributes(info);
                 string name = info.Name;
                 foreach (Attribute attr in Attribute.GetCustomAttributes(info))
@@ -137,7 +158,9 @@ namespace HDF5CSharp
             foreach (var attribute in Attributes(ty))
             {
                 if (!attributes.ContainsKey(attribute.Key))
+                {
                     attributes.Add(attribute.Key, attribute.Value);
+                }
             }
 
             if (ty.IsArray)
@@ -145,7 +168,9 @@ namespace HDF5CSharp
                 var elType = ty.GetElementType();
                 TypeCode elCode = Type.GetTypeCode(elType);
                 if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
+                {
                     dsetRW.WriteArray(groupId, name, (Array)infoVal, attributes);
+                }
                 else
                 {
                     CallByReflection<(int, long)>(nameof(WriteCompounds), elType, new[] { groupId, name, infoVal, attributes });
@@ -197,7 +222,9 @@ namespace HDF5CSharp
                 //}
             }
             else
+            {
                 WriteObject(groupId, infoVal, name);
+            }
         }
 
         static T CallByReflection<T>(string name, Type typeArg, object[] values)

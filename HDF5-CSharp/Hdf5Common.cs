@@ -228,7 +228,11 @@ namespace HDF5CSharp
                 for (int i = index.Length - 1; i >= 0; --i)
                 {
                     index[i]++;
-                    if (index[i] <= array.GetUpperBound(i)) return index;
+                    if (index[i] <= array.GetUpperBound(i))
+                    {
+                        return index;
+                    }
+
                     index[i] = array.GetLowerBound(i);
                 }
 
@@ -238,11 +242,13 @@ namespace HDF5CSharp
             Type type = typeof(T2);
             Array ar = Array.CreateInstance(type, lengths, lowerBounds);
             if (lowerBounds[0] != 0 || lengths[0] != 0)
+            {
                 for (var index = FirstIndex(array); index != null; index = NextIndex(array, index))
                 {
                     var v = (T1)array.GetValue(index);
                     ar.SetValue(convertFunc(v), index);
                 }
+            }
 
             return ar;
         }

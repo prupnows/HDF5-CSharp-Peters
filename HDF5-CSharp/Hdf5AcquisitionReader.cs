@@ -32,11 +32,19 @@ namespace HDF5CSharp
 
             _usedChannels = new Dictionary<string, short>();
             for (short i = 0; i < _header.Recording.NrOfChannels; i++)
+            {
                 _usedChannels.Add(_header.Channels[i].Label, i);
+            }
+
             if (labels == null)
+            {
                 _labels = _header.Channels.Select(c => c.Label).ToList();
+            }
             else
+            {
                 _labels = labels;
+            }
+
             _readChannelCnt = _labels.Count;
             _signals = new List<short[]>(_readChannelCnt);
         }
@@ -149,7 +157,9 @@ namespace HDF5CSharp
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 fileId = Hdf5.CloseFile(fileId);
+            }
         }
 
         public Hdf5AcquisitionFile Header => _header;
