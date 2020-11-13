@@ -192,20 +192,26 @@ namespace HDF5CSharp
                 //    offset = 0 + curSize
                 //};
                 var fldType = x.FieldType;
-                var marshallAsAttribute = type.GetMember(x.Name).Select(m => m.GetCustomAttribute<MarshalAsAttribute>()).FirstOrDefault();
+                var marshallAsAttribute = x.GetCustomAttribute<MarshalAsAttribute>();
 
                 long datatype;
                 int size;
                 if (fldType.IsArray)
                 {
-                    datatype = H5T.array_create(
-                        ieee ? GetDatatypeIEEE(fldType.GetElementType()) : GetDatatype(fldType.GetElementType()),
-                        (uint)fldType.GetArrayRank(),
-                        Enumerable.Range(0, fldType.GetArrayRank()).Select(i => (ulong)marshallAsAttribute.SizeConst)
-                            .ToArray());
+                    var dataType = ieee
+                        ? GetDatatypeIEEE(fldType.GetElementType())
+                        : GetDatatype(fldType.GetElementType());
+                    size = marshallAsAttribute.SizeConst>0 ?marshallAsAttribute.SizeConst :Marshal.SizeOf(dataType);
+                    var rank = (uint) fldType.GetArrayRank();
+                    var arrayRank = fldType.GetArrayRank();
+                    var dimensions = Enumerable.Range(0, arrayRank)
+                        .Select(i => (ulong)size)
+                        .ToArray();
+                    datatype = H5T.array_create(dataType,rank,dimensions);
                 }
                 else
                 {
+                     size = marshallAsAttribute?.SizeConst > 0 ? marshallAsAttribute.SizeConst : Marshal.SizeOf(fldType);
                     datatype = ieee ? GetDatatypeIEEE(fldType) : GetDatatype(fldType);
                 }
                 OffsetInfo oi = new OffsetInfo
@@ -213,7 +219,7 @@ namespace HDF5CSharp
                     name = x.Name,
                     type = fldType,
                     datatype = datatype,
-                    size = fldType == typeof(string) ? StringLength(x) : !fldType.IsArray ? Marshal.SizeOf(fldType) : Marshal.SizeOf(fldType.GetElementType()) * marshallAsAttribute.SizeConst,
+                    size = fldType == typeof(string) ? StringLength(x) : !fldType.IsArray ? Marshal.SizeOf(fldType) :size * Marshal.SizeOf(fldType.GetElementType()),
                     offset = 0 + curSize
                 };
                 if (oi.datatype == H5T.C_S1)
