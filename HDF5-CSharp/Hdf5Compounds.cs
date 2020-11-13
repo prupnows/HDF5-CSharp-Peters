@@ -134,7 +134,7 @@ namespace HDF5CSharp
                 // Lines below don't produce an error message but hdfview can't read compounds properly
                 //var typeLong = GetDatatype(cmp.type);
                 //H5T.insert(typeId, cmp.name, Marshal.OffsetOf(t, cmp.name), typeLong);
-                H5T.insert(typeId, cmp.name, Marshal.OffsetOf(t, cmp.name), cmp.datatype);
+                H5T.insert(typeId, cmp.displayName, Marshal.OffsetOf(t, cmp.name), cmp.datatype);
             }
             return typeId;
         }
@@ -182,15 +182,6 @@ namespace HDF5CSharp
             List<OffsetInfo> offsets = new List<OffsetInfo>();
             foreach (var x in type.GetFields())
             {
-                //var fldType = x.FieldType;
-                //OffsetInfo oi = new OffsetInfo()
-                //{
-                //    name = x.Name,
-                //    type = fldType,
-                //    datatype = ieee ? GetDatatypeIEEE(fldType) : GetDatatype(fldType),
-                //    size = fldType == typeof(string) ? StringLength(x) : Marshal.SizeOf(fldType),
-                //    offset = 0 + curSize
-                //};
                 var fldType = x.FieldType;
                 var marshallAsAttribute = x.GetCustomAttribute<MarshalAsAttribute>();
 
@@ -201,25 +192,31 @@ namespace HDF5CSharp
                     var dataType = ieee
                         ? GetDatatypeIEEE(fldType.GetElementType())
                         : GetDatatype(fldType.GetElementType());
-                    size = marshallAsAttribute.SizeConst>0 ?marshallAsAttribute.SizeConst :Marshal.SizeOf(dataType);
-                    var rank = (uint) fldType.GetArrayRank();
+                    size = marshallAsAttribute.SizeConst > 0 ? marshallAsAttribute.SizeConst : Marshal.SizeOf(dataType);
+                    var rank = (uint)fldType.GetArrayRank();
                     var arrayRank = fldType.GetArrayRank();
                     var dimensions = Enumerable.Range(0, arrayRank)
                         .Select(i => (ulong)size)
                         .ToArray();
-                    datatype = H5T.array_create(dataType,rank,dimensions);
+                    datatype = H5T.array_create(dataType, rank, dimensions);
                 }
                 else
                 {
-                     size = marshallAsAttribute?.SizeConst > 0 ? marshallAsAttribute.SizeConst : Marshal.SizeOf(fldType);
+                    size = marshallAsAttribute?.SizeConst > 0 ? marshallAsAttribute.SizeConst : Marshal.SizeOf(fldType);
                     datatype = ieee ? GetDatatypeIEEE(fldType) : GetDatatype(fldType);
                 }
+
+                string displayName = Attribute.GetCustomAttribute(x, typeof(Hdf5EntryNameAttribute)) is Hdf5EntryNameAttribute
+                        nameAttribute
+                        ? nameAttribute.Name
+                        : x.Name;
                 OffsetInfo oi = new OffsetInfo
                 {
                     name = x.Name,
+                    displayName = displayName,
                     type = fldType,
                     datatype = datatype,
-                    size = fldType == typeof(string) ? StringLength(x) : !fldType.IsArray ? Marshal.SizeOf(fldType) :size * Marshal.SizeOf(fldType.GetElementType()),
+                    size = fldType == typeof(string) ? StringLength(x) : !fldType.IsArray ? Marshal.SizeOf(fldType) : size * Marshal.SizeOf(fldType.GetElementType()),
                     offset = 0 + curSize
                 };
                 if (oi.datatype == H5T.C_S1)
@@ -304,7 +301,7 @@ namespace HDF5CSharp
                 var nameToUse = Hdf5Utils.ItemExists(groupId, name, Hdf5ElementType.Dataset) ? name : alternativeName;
                 if (!Hdf5Utils.ItemExists(groupId, nameToUse, Hdf5ElementType.Dataset))
                 {
-                    Hdf5Utils.LogMessage($"Item {nameToUse} does not exist.",Hdf5LogLevel.Warning);
+                    Hdf5Utils.LogMessage($"Item {nameToUse} does not exist.", Hdf5LogLevel.Warning);
                     return Enumerable.Empty<T>();
                 }
                 var datasetId = H5D.open(groupId, nameToUse);

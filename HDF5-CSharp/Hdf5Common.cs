@@ -15,6 +15,7 @@ namespace HDF5CSharp
         public int size;
         public Type type;
         public long datatype;
+        public string displayName;
     }
 
 
