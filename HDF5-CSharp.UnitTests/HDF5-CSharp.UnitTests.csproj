@@ -35,6 +35,9 @@
     <None Update="FileStructure.h5">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="testFile.H5">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
