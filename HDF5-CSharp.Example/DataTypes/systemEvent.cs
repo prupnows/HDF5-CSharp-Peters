@@ -94,9 +94,12 @@ namespace HDF5CSharp.Example.DataTypes
     public struct SystemEvent
     {
         [Hdf5EntryName("timestamp")] public long timestamp;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 50)]
         [Hdf5EntryName("type")] public string type;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 50)]
         [Hdf5EntryName("description")] public string description;
-        public string data;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 50)]
+        [Hdf5EntryName("data")] public string data;
         public SystemEvent(long timestamp, string type, string description, string data)
         {
             this.timestamp = timestamp;

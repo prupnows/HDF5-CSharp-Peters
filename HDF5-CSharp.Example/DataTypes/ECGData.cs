@@ -13,26 +13,22 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5EntryName("Signals_unfiltered")] public double[,] UnfilteredSignal { get; set; }
         [Hdf5EntryName("Signals_filtered")] public double[,] FilteredSignal { get; set; }
         [Hdf5EntryName("timestamps")] public long[,] Timestamps { get; set; }
+        [Hdf5EntryName("packetids")] public long[,] PacketIds { get; set; }
+        [Hdf5EntryName("kalpaclocks")] public long[,] KalpaClocks { get; set; }
 
         public ECGData()
         {
             Timestamps = new long[0, 0];
             FilteredSignal = new double[0, 0];
             UnfilteredSignal = new double[0, 0];
+            PacketIds = new long[0, 0];
+            KalpaClocks = new long[0, 0];
         }
 
         public bool Equals(ECGData other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
             return StartDateTime.EqualsUpToMilliseconds(other.StartDateTime) &&
                    EndDateTime.EqualsUpToMilliseconds(other.EndDateTime) &&
                    SamplingRate == other.SamplingRate &&
@@ -55,21 +51,9 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
             return Equals((ECGData)obj);
         }
 

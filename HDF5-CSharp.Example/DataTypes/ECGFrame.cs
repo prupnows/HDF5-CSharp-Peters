@@ -1,32 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace HDF5CSharp.Example.DataTypes
 {
     [Serializable]
+    [MessagePackObject(keyAsPropertyName: false)]
+
     public class ECGFrame
     {
-        // The sample rate of the ECG frames 
-        public const int AcqSampleRate = 640;
-        // by default size of a reading is 30
-        public int NumberOfFrameWithinReading = 3;
 
-        public List<(double LA_RA, double LL_RA, long Timestamp)> FrameData;
-        public List<(double LA_RA, double LL_RA, long Timestamp)> FilteredFrameData;
+        [Key("packetId")] public UInt64 PacketId { get; set; }
+        [Key("timestamp")] public long Timestamp { get; set; }
+        [Key("KalpaClock")] public UInt64 KalpaClock { get; set; }
+        [Key("Data")] public List<List<float>> FrameData { get; set; }
+        [Key("DataFiltered")] public List<List<float>> FilteredFrameData { get; set; }
 
 
-        /// <summary>
-        /// Prior the stabilization (normalization need to be done), the frame will be raised as invalid
-        /// </summary>
-        public bool IsValid;
-
-        public bool IsTriggerToInjection;
+        [IgnoreMember] public bool IsValid;// Prior the stabilization (normalization need to be done), the frame will be raised as invalid
+        [IgnoreMember] public bool IsTriggerToInjection;
 
         public ECGFrame()
         {
-            FrameData = new List<(double LA_RA, double LL_RA, long Timestamp)>();
-            FilteredFrameData = new List<(double LA_RA, double LL_RA, long Timestamp)>();
-            IsTriggerToInjection = false;
+            FrameData = new List<List<float>>();
+            FilteredFrameData = new List<List<float>>();
+            IsValid = true;
         }
+        public ECGFrame(List<List<float>> filteredData, List<List<float>> unFilteredData, long timestamp, UInt64 packetId)
+        {
+            PacketId = packetId;
+            FilteredFrameData = filteredData;
+            FrameData = unFilteredData;
+            IsTriggerToInjection = false;
+            Timestamp = timestamp;
+
+
+        }
+
     }
 }

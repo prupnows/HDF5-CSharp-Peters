@@ -19,16 +19,21 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<double> UnFiltered { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<double> Filtered { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<long> Timestamps { get; set; }
-        //[Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<long> Detections { get; set; }
+        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> PacketIds { get; set; }
+        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> KalpaClocks { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private BlockingCollectionQueue<ECGFrame> EcgSamplesData { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private Task EcgTaskWriter { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private int ChunkSize;
         [Hdf5Save(Hdf5Save.DoNotSave)] private bool completed;
-        public ECG(long fileId, long groupRoot, int chunkSize, ILogger logger) : base(fileId, groupRoot, "ecg", logger)
+        public ECG(long fileId, long groupRoot, int chunkSize, int sampleRate, ILogger logger) : base(fileId, groupRoot, "ecg", logger)
         {
             ChunkSize = chunkSize;
-            SamplingRate = ECGFrame.AcqSampleRate;
             var pool = ArrayPool<ECGFrame>.Shared;
+            SamplingRate = sampleRate;
+            if (sampleRate == 0)
+            {
+                logger.LogCritical("No sample rate was supplied");
+            }
             EcgSamplesData = new BlockingCollectionQueue<ECGFrame>();
             Parameters = new Dictionary<string, string>();
             Header = new Dictionary<string, string>();
@@ -36,7 +41,8 @@ namespace HDF5CSharp.Example.DataTypes
             Filtered = new ChunkedDataset<double>("Signals_filtered", GroupId);
             Filtered = new ChunkedDataset<double>("Signals_filtered", GroupId);
             Timestamps = new ChunkedDataset<long>("timestamps", GroupId);
-            //Detections = new ChunkedDataset<long>("detections", GroupId);
+            PacketIds = new ChunkedDataset<ulong>("packetids", GroupId);
+            KalpaClocks = new ChunkedDataset<ulong>("kalpaclocks", GroupId);
             EcgTaskWriter = Task.Factory.StartNew(() =>
             {
                 var buffer = pool.Rent(ChunkSize);
@@ -62,37 +68,58 @@ namespace HDF5CSharp.Example.DataTypes
 
         private void AppendSample(ECGFrame[] samples, int length)
         {
+            var sampleForSize = samples.First();
 
-            double[,] unFilteredData = new double[length * samples.First().FrameData.Count, 2];
-            double[,] filteredData = new double[length * samples.First().FilteredFrameData.Count, 2];
-            long[,] timestampData = new long[length * samples.First().FrameData.Count, 1];
+            double[,] unFilteredData = new double[length * sampleForSize.FrameData.First().Count, sampleForSize.FrameData.Count];
+            double[,] filteredData = new double[length * sampleForSize.FilteredFrameData.First().Count, sampleForSize.FilteredFrameData.Count];
+            long[,] timestampData = new long[length * sampleForSize.FilteredFrameData.First().Count, 1];
+            ulong[,] packetIdData = samples[0].PacketId == UInt64.MaxValue ? null : new ulong[length, 1];
+            ulong[,] kalpaClockData = samples[0].KalpaClock == UInt64.MaxValue ? null : new ulong[length, 1];
+
             for (var i = 0; i < length; i++)
             {
-                var data = samples[i];
-                var frameLength = data.FrameData.Count;
-                for (var j = 0; j < frameLength; j++)
+                var dataSample = samples[i];
+                var rows = dataSample.FrameData.First().Count;
+                var columns = dataSample.FrameData.Count;
+                for (int rowIndex = 0; rowIndex < rows; rowIndex++)
                 {
-                    var sample = data.FrameData[j];
-                    unFilteredData[i * frameLength + j, 0] = sample.LA_RA;
-                    unFilteredData[i * frameLength + j, 1] = sample.LL_RA;
-                    EndDateTime = sample.Timestamp;
+                    for (var columnIndex = 0; columnIndex < columns; columnIndex++)
+                        unFilteredData[i * rows + rowIndex, columnIndex] = dataSample.FrameData[columnIndex][rowIndex];
                 }
 
-
-
-                frameLength = data.FilteredFrameData.Count;
-                for (var j = 0; j < frameLength; j++)
+                rows = dataSample.FilteredFrameData.First().Count;
+                columns = dataSample.FilteredFrameData.Count;
+                for (int rowIndex = 0; rowIndex < rows; rowIndex++)
                 {
-                    var sample = data.FilteredFrameData[j];
-                    filteredData[i * frameLength + j, 0] = sample.LA_RA;
-                    filteredData[i * frameLength + j, 1] = sample.LL_RA;
-                    timestampData[i * frameLength + j, 0] = sample.Timestamp;
-
+                    for (var columnIndex = 0; columnIndex < columns; columnIndex++)
+                        filteredData[i * rows + rowIndex, columnIndex] = dataSample.FilteredFrameData[columnIndex][rowIndex];
                 }
+
+                int rowsTimestamps = dataSample.FilteredFrameData.First().Count;
+
+                for (int k = 0; k < rowsTimestamps; k++)
+                {
+                    var date = dataSample.Timestamp;
+                    if (SamplingRate > 0)
+                    {
+                        date = (long)(dataSample.Timestamp + k * 1000.0 / SamplingRate);
+                    }
+                    timestampData[i * rowsTimestamps + k, 0] = date;
+                    EndDateTime = date;
+                }
+                if (packetIdData != null)
+                    packetIdData[i, 0] = dataSample.PacketId;
+                if (kalpaClockData != null)
+                    kalpaClockData[i, 0] = dataSample.KalpaClock;
+
             }
             UnFiltered.AppendOrCreateDataset(unFilteredData);
             Filtered.AppendOrCreateDataset(filteredData);
             Timestamps.AppendOrCreateDataset(timestampData);
+            if (packetIdData != null)
+                PacketIds.AppendOrCreateDataset(packetIdData);
+            if (kalpaClockData != null)
+                KalpaClocks.AppendOrCreateDataset(kalpaClockData);
         }
 
 
@@ -101,20 +128,13 @@ namespace HDF5CSharp.Example.DataTypes
             if (!completed)
             {
                 if (!StartDateTime.HasValue)
-                {
-                    StartDateTime = ecgFrame.FrameData.First().Timestamp;
-                }
-
+                    StartDateTime = ecgFrame.Timestamp;
                 EcgSamplesData.Enqueue(ecgFrame);
             }
         }
         public void CompleteAdding()
         {
-            if (completed)
-            {
-                return;
-            }
-
+            if (completed) return;
             completed = true;
             EcgSamplesData.CompleteAdding();
         }
@@ -134,16 +154,17 @@ namespace HDF5CSharp.Example.DataTypes
                     UnFiltered.Dispose();
                     Filtered.Dispose();
                     Timestamps.Dispose();
-                    //Detections.Dispose();
+                    PacketIds?.Dispose();
+                    KalpaClocks?.Dispose();
                     EcgSamplesData.Dispose();
                     EcgTaskWriter.Dispose();
                     Hdf5.CloseGroup(GroupId);
                     Disposed = true;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //nothing
+                Logger.LogError($"Error during dispose of ECG: {e.Message}");
             }
         }
 

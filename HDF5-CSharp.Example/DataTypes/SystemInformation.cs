@@ -16,19 +16,26 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5EntryName("boards_id")] public string[] BoardIds { get; set; }
         [Hdf5EntryName("data_format_version")] public string DataFormatVersion { get; set; }
         [Hdf5EntryName("software_version")] public string SoftwareVersion { get; set; }
+        [Hdf5EntryName("hdf5_version")] public string H5Version { get; set; }
         [Hdf5EntryName("hostname")] public string MachineName { get; set; }
         [Hdf5EntryName("mac_address")] public string MacAddress { get; set; }
         [Hdf5EntryName("ip_address")] public string IPAddress { get; set; }
+        [Hdf5EntryName("assemblies_information")] public AssemblyInformationRecord[] Assemblies { get; set; }
+        [Hdf5EntryName("system_type")] public string SystemType { get; set; }
         public SystemInformation(long fileId, long groupRoot, ILogger logger) : base(fileId, groupRoot, "system_information", logger)
         {
+            Assemblies = new AssemblyInformationRecord[0];
             SystemId = "N/A";
             BoardIds = new[] { "N/A", "N/A" };
-            DataFormatVersion = "2.0";
+            DataFormatVersion = "3.0"; //v3 - ecg format changes
+            H5Version = "4.1"; //v4 - ecg format changes, V4.1: add System type
             SoftwareVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             MachineName = Environment.MachineName;
             MacAddress = GetMacAddress();
             IPAddress = GetLocalIPAddress();
+            SystemType = string.Empty;
         }
+
 
         public SystemInformation()
         {
@@ -83,38 +90,20 @@ namespace HDF5CSharp.Example.DataTypes
 
         public bool Equals(SystemInformation other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
             return SystemId == other.SystemId && BoardIds.SequenceEqual(other.BoardIds) &&
                    DataFormatVersion == other.DataFormatVersion && SoftwareVersion == other.SoftwareVersion &&
-                   MachineName == other.MachineName && MacAddress == other.MacAddress && IPAddress == other.IPAddress;
+                   MachineName == other.MachineName && MacAddress == other.MacAddress && IPAddress == other.IPAddress &&
+                   SystemType == other.SystemType;
+
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != this.GetType())
-            {
-                return false;
-            }
-
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
             return Equals((SystemInformation)obj);
         }
 
@@ -125,5 +114,7 @@ namespace HDF5CSharp.Example.DataTypes
                    (SoftwareVersion.GetHashCode() * 397) ^ (MachineName.GetHashCode() * 397) ^
                    (MacAddress.GetHashCode() * 397) ^ (IPAddress.GetHashCode() * 397);
         }
+
+        public override string ToString() => $"{nameof(SystemId)}: {SystemId}, {nameof(DataFormatVersion)}: {DataFormatVersion}, {nameof(SoftwareVersion)}: {SoftwareVersion}, {nameof(MachineName)}: {MachineName}, {nameof(MacAddress)}: {MacAddress}, {nameof(IPAddress)}: {IPAddress}. {nameof(SystemType)}: {SystemType}";
     }
 }

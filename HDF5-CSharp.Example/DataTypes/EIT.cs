@@ -18,6 +18,8 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<float> CurrentsIm { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> Saturation { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<long> Timestamps { get; set; }
+        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> PacketIds { get; set; }
+        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> KalpaClocks { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private BlockingCollectionQueue<ElectrodeFrame> ElectrodeSamplesData { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private Task ElectrodeTaskWriter { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private bool completed;
@@ -35,6 +37,8 @@ namespace HDF5CSharp.Example.DataTypes
             CurrentsIm = new ChunkedDataset<float>("currents.im", GroupId);
             Saturation = new ChunkedDataset<ulong>("saturations", GroupId);
             Timestamps = new ChunkedDataset<long>("timestamps", GroupId);
+            PacketIds = new ChunkedDataset<ulong>("packetids", GroupId);
+            KalpaClocks = new ChunkedDataset<ulong>("kalpaclocks", GroupId);
             ElectrodeTaskWriter = Task.Factory.StartNew(() =>
             {
                 var buffer = pool.Rent(ChunkSize);
@@ -70,6 +74,10 @@ namespace HDF5CSharp.Example.DataTypes
             float[,] cImData = new float[length, samples[0].ComplexCurrentMatrix.Length];
             ulong[,] saturationData = new ulong[length, 1];
             long[,] timestampData = new long[length, 1];
+            // Write packet id, kalpa clock only if exist => value != Uint64.MaxValue (default value)
+            ulong[,] packetIdData = samples[0].PacketId == UInt64.MaxValue ? null : new ulong[length, 1];
+            ulong[,] kalpaClockData = samples[0].KalpaClock == UInt64.MaxValue ? null : new ulong[length, 1];
+
             for (var i = 0; i < length; i++)
             {
                 ElectrodeFrame electrodeFrame = samples[i];
@@ -87,6 +95,10 @@ namespace HDF5CSharp.Example.DataTypes
 
                 saturationData[i, 0] = electrodeFrame.SaturationMask;
                 timestampData[i, 0] = electrodeFrame.timestamp;
+                if (packetIdData != null)
+                    packetIdData[i, 0] = electrodeFrame.PacketId;
+                if (kalpaClockData != null)
+                    kalpaClockData[i, 0] = electrodeFrame.KalpaClock;
             }
             VoltagesReal.AppendOrCreateDataset(vReData);
             VoltagesIm.AppendOrCreateDataset(vImData);
@@ -94,6 +106,10 @@ namespace HDF5CSharp.Example.DataTypes
             CurrentsIm.AppendOrCreateDataset(cImData);
             Saturation.AppendOrCreateDataset(saturationData);
             Timestamps.AppendOrCreateDataset(timestampData);
+            if (packetIdData != null)
+                PacketIds.AppendOrCreateDataset(packetIdData);
+            if (kalpaClockData != null)
+                KalpaClocks.AppendOrCreateDataset(kalpaClockData);
         }
 
         public void Dispose()
@@ -108,6 +124,8 @@ namespace HDF5CSharp.Example.DataTypes
                     CurrentsIm.Dispose();
                     Saturation.Dispose();
                     Timestamps.Dispose();
+                    PacketIds?.Dispose();
+                    KalpaClocks?.Dispose();
                     ElectrodeTaskWriter.Dispose();
                     Hdf5.CloseGroup(GroupId);
                     Disposed = true;
@@ -115,33 +133,22 @@ namespace HDF5CSharp.Example.DataTypes
             }
             catch (Exception e)
             {
-                //do nothing
+                Logger.LogError($"Error during dispose of EIT: {e.Message}");
             }
 
         }
 
         public void Enqueue(ElectrodeFrame sample)
         {
-            if (completed)
-            {
-                return;
-            }
-
+            if (completed) return;
             if (!StartDateTime.HasValue)
-            {
                 StartDateTime = sample.timestamp;
-            }
-
             ElectrodeSamplesData.Enqueue(sample);
         }
 
         public void CompleteAdding()
         {
-            if (completed)
-            {
-                return;
-            }
-
+            if (completed) return;
             completed = true;
             ElectrodeSamplesData.CompleteAdding();
         }

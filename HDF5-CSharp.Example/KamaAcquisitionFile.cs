@@ -2,6 +2,7 @@
 using HDF5CSharp.Example.DataTypes;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -20,10 +21,12 @@ namespace HDF5CSharp.Example
         public InjectionGroup InjectionGroup { get; set; }
         public CalibrationGroup CalibrationGroup { get; set; }
         public Patient PatientInfo { get; set; }
-        public EventGroup Events { get; set; }
+        public SystemEventGroup SystemEvents { get; set; }
+        public RPositionGroup RPosition { get; set; }
         public TagsGroup Tags { get; set; }
+        private UserEventsGroup UserEventsGroup { get; set; }
         //end h5 data
-        private ILogger Logger { get; }
+        private static ILogger Logger { get; set; }
 
         private int RecordNumber { get; set; }
         private bool RecordingInProgress { get; set; }
@@ -31,14 +34,24 @@ namespace HDF5CSharp.Example
         public string FileName { get; private set; }
         private int EITDefaultChunkSize { get; set; }
         private int ECGDefaultChunkSize { get; set; }
-        public KamaAcquisitionFile(string filename, ILogger logger, int eitDefaultChunkSize = 24000, int ecgDefaultChunkSize = 10)
+        static KamaAcquisitionFile()
+        {
+            Hdf5.Settings.LowerCaseNaming = true;
+            Hdf5.Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
+            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogError = s => Logger.LogError($"HDF5 Error: {s}");
+            Hdf5Utils.LogWarning = s => Logger.LogWarning($"HDF5 Warning: {s}");
+            Hdf5Utils.LogDebug = s => Logger.LogDebug($"HDF5 Debug: {s}");
+            Hdf5Utils.LogInfo = s => Logger.LogInformation($"HDF5 Info: {s}");
+        }
+        public KamaAcquisitionFile(string filename, AcquisitionInterface acquisitionInterface, ILogger logger,
+            int eitDefaultChunkSize = 24000, int ecgDefaultChunkSize = 10)
         {
             FileName = filename;
             Logger = logger;
             EITDefaultChunkSize = eitDefaultChunkSize;
             ECGDefaultChunkSize = ecgDefaultChunkSize;
-            Hdf5.Settings.LowerCaseNaming = true;
-            Hdf5.Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
+
             RecordNumber = 1;
             H5E.set_auto(H5E.DEFAULT, null, IntPtr.Zero);
             fileId = Hdf5.CreateFile(filename);
@@ -52,10 +65,13 @@ namespace HDF5CSharp.Example
             };
 
             SystemInformation = new SystemInformation(fileId, groupRoot, logger);
+            SystemInformation.SystemType = acquisitionInterface.ToString();
             //  InjectionGroup = new InjectionGroup(fileId, groupRoot);
             CalibrationGroup = new CalibrationGroup(fileId, groupRoot, logger);
-            Events = new EventGroup(fileId, groupRoot, logger);
+            SystemEvents = new SystemEventGroup(fileId, groupRoot, logger);
+            RPosition = new RPositionGroup(fileId, groupRoot, logger);
             Tags = new TagsGroup(fileId, groupRoot, logger);
+            UserEventsGroup = new UserEventsGroup(fileId, groupRoot, logger);
         }
 
         #region public
@@ -73,7 +89,8 @@ namespace HDF5CSharp.Example
         {
             EIT?.CompleteAdding();
             ECG?.CompleteAdding();
-            Events?.StopRecording();
+            SystemEvents?.StopRecording();
+            RPosition?.StopRecording();
             Tags?.StopRecording();
             RecordingInProgress = false;
         }
@@ -83,8 +100,9 @@ namespace HDF5CSharp.Example
             EIT = new EIT(RecordNumber++, EITDefaultChunkSize, acquisitionProtocol.AsJson(), fileId, groupEIT, Logger);
             //var acquisitionInformation = new AcquisitionInformation(acquisitionProtocol, fileId, groupEIT, Logger);
             //acquisitionInformation.FlushDataAndCloseObject();
-            ECG = new ECG(fileId, groupRoot, ECGDefaultChunkSize, Logger);
-            Events.StartLogging();
+            ECG = new ECG(fileId, groupRoot, ECGDefaultChunkSize, (int)acquisitionProtocol.ScanDescription.EcgParams.SampleRate, Logger);
+            SystemEvents.StartLogging();
+            RPosition.StartLogging();
             Tags.StartLogging();
             return Task.CompletedTask;
         }
@@ -107,15 +125,26 @@ namespace HDF5CSharp.Example
                 await ECG.WaitForDataWritten();
                 ECG.Dispose();
             }
-            if (Events != null)
+            if (SystemEvents != null)
             {
-                await Events.WaitForDataWritten();
-                Events.Dispose();
+                await SystemEvents.WaitForDataWritten();
+                SystemEvents.Dispose();
+            }
+
+            if (RPosition != null)
+            {
+                await RPosition.WaitForDataWritten();
+                RPosition.Dispose();
             }
             if (Tags != null)
             {
                 await Tags.WaitForDataWritten();
                 Tags.Dispose();
+            }
+            if (UserEventsGroup != null)
+            {
+                await UserEventsGroup.WaitForDataWritten();
+                UserEventsGroup.Dispose();
             }
             await Task.CompletedTask;
         }
@@ -124,11 +153,13 @@ namespace HDF5CSharp.Example
 
         public async Task<(bool, string)> StopProcedure()
         {
-            if (FileClosed)
+            if (!File.Exists(FileName))
             {
-                return GeneralUtils.CheckFileSize(FileName);
+                string msg = $"File {FileName} does not exist";
+                Logger?.LogWarning(msg);
+                return (false, msg);
             }
-
+            if (FileClosed) return GeneralUtils.CheckFileSize(FileName);
             FileClosed = true;
             Logger?.LogInformation("Stop Procedure called");
             ProcedureInformation.EndDateTime = DateTime.Now;
@@ -143,9 +174,7 @@ namespace HDF5CSharp.Example
             Hdf5.CloseGroup(groupRoot);
             long result = Hdf5.CloseFile(fileId);
             if (result >= 0)
-            {
                 Logger?.LogInformation("Stop Procedure H5 File closed");
-            }
             else
             {
                 Logger?.LogError("Cannot close H5 File: " + result);
@@ -180,7 +209,7 @@ namespace HDF5CSharp.Example
 
         public void AppendEcgCycleDescriptionSample(ECGCycleDescription e) => ECG.AppendEcgCycleDescriptionSample(e);
 
-        public void AppendSystemEvent(SystemEventModel systemEvent) => Events.Enqueue(systemEvent);
+        public void AppendSystemEvent(SystemEventModel systemEvent) => SystemEvents.Enqueue(systemEvent);
 
 
         public void AddCalibrationsData(CalibrationsSystemInformation calibrationsSystemInformation)
@@ -194,5 +223,15 @@ namespace HDF5CSharp.Example
             Tags.Enqueue(tag);
             Logger?.LogInformation("logTag: " + tag);
         }
+
+        public void AppendUserEvent(UserEventRecord record) => UserEventsGroup.Enqueue(record);
+
+        public void SaveSystemAssemblies(List<AssemblyInformationRecord> assembliesInformationRecord)
+        {
+            SystemInformation.Assemblies = assembliesInformationRecord.ToArray();
+        }
+
+        public void AppendRPosition(RPositionsMessagePack rPositions) => RPosition.Enqueue(rPositions);
+
     }
 }
