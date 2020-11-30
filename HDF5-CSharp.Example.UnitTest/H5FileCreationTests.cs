@@ -564,7 +564,8 @@ namespace HDF5_CSharp.Example.UnitTest
 
                 readFile.ReadEITData();
                 Assert.IsTrue(readFile.EITs.SequenceEqual(eitsTestData));
-                readFile.ReadSystemEvents();
+                readFile.ReadSystemEvents(); 
+                Assert.IsTrue(readFile.Events.Count == 100);
             }
 
             File.Delete(filename);
