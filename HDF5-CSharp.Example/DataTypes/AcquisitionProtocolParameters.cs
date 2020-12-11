@@ -61,21 +61,35 @@ namespace HDF5CSharp.Example.DataTypes
 
             if (ScanDescription.ElectrodeParams.GroundChannels == null ||
                 ScanDescription.ElectrodeParams.GroundChannels.Count == 0)
+            {
                 throw new ArgumentNullException("Missing ground channel!");
+            }
+
             if (ScanDescription.ElectrodeParams.GroundChannels.Count > 1)
+            {
                 throw new ArgumentOutOfRangeException("Number of ground channels in kx should be 1!");
+            }
+
             ElectrodeParams.GroundChannel = ScanDescription.ElectrodeParams.GroundChannels[0];
 
             if (ScanDescription.ElectrodeParams.DebugChannels.Count > 1)
+            {
                 throw new ArgumentOutOfRangeException("Number of debug channels in kx should be 1!");
+            }
+
             if (ScanDescription.ElectrodeParams.DebugChannels.Count == 1)
+            {
                 ElectrodeParams.DebugChannel = ScanDescription.ElectrodeParams.DebugChannels[0];
+            }
 
             ElectrodeParams.UseBodySurfacePadCalibration = ScanDescription.ElectrodeParams.UseBodySurfacePadCalibration;
             // Added button ignore - button channels if exist shouldn't be check, always in saturation (hack for now) ///////////
             var buttonDevice = ScanDescription.DevicesDescription.Find(dd => dd.Subtype.ToLower() == "button");
             if (buttonDevice != null)
+            {
                 ElectrodeParams.IgnoreSaturationChannels = buttonDevice.Channels.ToArray();
+            }
+
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
             var signals = ScanDescription.Signals.GroupBy(s => s.Channel[0]);
             foreach (IGrouping<char, (string Channel, double Amplitude, double Frequency, double Phase)> group in
@@ -145,7 +159,9 @@ namespace HDF5CSharp.Example.DataTypes
         {
             if (ScanDescription.ElectrodeParams.GroundChannels == null ||
                 ScanDescription.ElectrodeParams.GroundChannels.Count == 0)
+            {
                 throw new ArgumentNullException("Missing ground channels!");
+            }
 
             var electrodeParams = new EITProtocolParameters
             {
@@ -176,7 +192,10 @@ namespace HDF5CSharp.Example.DataTypes
             // Added button ignore - button channels if exist shouldn't be check, always in saturation (hack for now) ///////////
             var buttonDevice = ScanDescription.DevicesDescription.Find(dd => dd.Subtype.ToLower() == "button");
             if (buttonDevice != null)
+            {
                 electrodeParams.IgnoreSaturationChannels = buttonDevice.Channels.ToArray();
+            }
+
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // Take first in order the BS signals
             var bsSignals = ScanDescription.BodySensorDescription.Signals.GroupBy(
@@ -264,7 +283,9 @@ namespace HDF5CSharp.Example.DataTypes
             // Conversion from current in uA to Voltage in DAC
             var dacVoltage = currentValue /*/ 1000000.0 /* uA to A (Amper)*/ / 25.0;
             if (chName.Contains("BS"))
+            {
                 dacVoltage *= registorGainBF;
+            }
             else
             {
                 dacVoltage *= registorGainCF;
@@ -487,9 +508,21 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals((ScanDescription)obj);
         }
 
@@ -563,9 +596,21 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals((ElectrodeParams)obj);
         }
 
@@ -619,9 +664,21 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals((EcgParams)obj);
         }
 
@@ -710,9 +767,21 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals((BodySensorDescription)obj);
         }
 
@@ -804,9 +873,21 @@ namespace HDF5CSharp.Example.DataTypes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals((DeviceDescription)obj);
         }
 

@@ -50,7 +50,9 @@ namespace HDF5CSharp.Example
             }
             groupName = rootNameOld + system_informationName;
             if (Hdf5.GroupExists(fileId, groupName))
+            {
                 SystemInformation = Hdf5.ReadObject<SystemInformation>(fileId, groupName);
+            }
         }
         public void ReadProcedureInformation()
         {
@@ -62,7 +64,9 @@ namespace HDF5CSharp.Example
             }
             groupName = rootNameOld + procedure_informationName;
             if (Hdf5.GroupExists(fileId, groupName))
+            {
                 ProcedureInformation = Hdf5.ReadObject<ProcedureInformation>(fileId, groupName);
+            }
         }
         public void ReadPatientInformation()
         {
@@ -74,7 +78,9 @@ namespace HDF5CSharp.Example
             }
             groupName = rootNameOld + patient_informationName;
             if (Hdf5.GroupExists(fileId, groupName))
+            {
                 PatientInformation = Hdf5.ReadObject<Patient>(fileId, groupName);
+            }
         }
 
         public void ReadECGData()
@@ -87,7 +93,9 @@ namespace HDF5CSharp.Example
             }
             groupName = rootNameOld + ecgName;
             if (Hdf5.GroupExists(fileId, groupName))
+            {
                 ECG = Hdf5.ReadObject<ECGData>(fileId, groupName);
+            }
         }
         public void ReadEITData()
         {
@@ -95,7 +103,10 @@ namespace HDF5CSharp.Example
             int index = 1;
             string rootGroup = rootName + eitName;
             if (!Hdf5.GroupExists(fileId, rootGroup))
+            {
                 rootGroup = rootNameOld + eitName;
+            }
+
             while (Hdf5.GroupExists(fileId, rootGroup + "/d" + index))
             {
                 var entry = Hdf5.ReadObject<EITEntry>(fileId, rootGroup + "/d" + index);

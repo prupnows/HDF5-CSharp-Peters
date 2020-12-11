@@ -84,7 +84,9 @@ namespace HDF5CSharp.Example.DataTypes
                 for (int rowIndex = 0; rowIndex < rows; rowIndex++)
                 {
                     for (var columnIndex = 0; columnIndex < columns; columnIndex++)
+                    {
                         unFilteredData[i * rows + rowIndex, columnIndex] = dataSample.FrameData[columnIndex][rowIndex];
+                    }
                 }
 
                 rows = dataSample.FilteredFrameData.First().Count;
@@ -92,7 +94,9 @@ namespace HDF5CSharp.Example.DataTypes
                 for (int rowIndex = 0; rowIndex < rows; rowIndex++)
                 {
                     for (var columnIndex = 0; columnIndex < columns; columnIndex++)
+                    {
                         filteredData[i * rows + rowIndex, columnIndex] = dataSample.FilteredFrameData[columnIndex][rowIndex];
+                    }
                 }
 
                 int rowsTimestamps = dataSample.FilteredFrameData.First().Count;
@@ -108,18 +112,27 @@ namespace HDF5CSharp.Example.DataTypes
                     EndDateTime = date;
                 }
                 if (packetIdData != null)
+                {
                     packetIdData[i, 0] = dataSample.PacketId;
-                if (kalpaClockData != null)
-                    kalpaClockData[i, 0] = dataSample.KalpaClock;
+                }
 
+                if (kalpaClockData != null)
+                {
+                    kalpaClockData[i, 0] = dataSample.KalpaClock;
+                }
             }
             UnFiltered.AppendOrCreateDataset(unFilteredData);
             Filtered.AppendOrCreateDataset(filteredData);
             Timestamps.AppendOrCreateDataset(timestampData);
             if (packetIdData != null)
+            {
                 PacketIds.AppendOrCreateDataset(packetIdData);
+            }
+
             if (kalpaClockData != null)
+            {
                 KalpaClocks.AppendOrCreateDataset(kalpaClockData);
+            }
         }
 
 
@@ -128,13 +141,20 @@ namespace HDF5CSharp.Example.DataTypes
             if (!completed)
             {
                 if (!StartDateTime.HasValue)
+                {
                     StartDateTime = ecgFrame.Timestamp;
+                }
+
                 EcgSamplesData.Enqueue(ecgFrame);
             }
         }
         public void CompleteAdding()
         {
-            if (completed) return;
+            if (completed)
+            {
+                return;
+            }
+
             completed = true;
             EcgSamplesData.CompleteAdding();
         }

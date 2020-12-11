@@ -96,9 +96,14 @@ namespace HDF5CSharp.Example.DataTypes
                 saturationData[i, 0] = electrodeFrame.SaturationMask;
                 timestampData[i, 0] = electrodeFrame.timestamp;
                 if (packetIdData != null)
+                {
                     packetIdData[i, 0] = electrodeFrame.PacketId;
+                }
+
                 if (kalpaClockData != null)
+                {
                     kalpaClockData[i, 0] = electrodeFrame.KalpaClock;
+                }
             }
             VoltagesReal.AppendOrCreateDataset(vReData);
             VoltagesIm.AppendOrCreateDataset(vImData);
@@ -107,9 +112,14 @@ namespace HDF5CSharp.Example.DataTypes
             Saturation.AppendOrCreateDataset(saturationData);
             Timestamps.AppendOrCreateDataset(timestampData);
             if (packetIdData != null)
+            {
                 PacketIds.AppendOrCreateDataset(packetIdData);
+            }
+
             if (kalpaClockData != null)
+            {
                 KalpaClocks.AppendOrCreateDataset(kalpaClockData);
+            }
         }
 
         public void Dispose()
@@ -140,15 +150,26 @@ namespace HDF5CSharp.Example.DataTypes
 
         public void Enqueue(ElectrodeFrame sample)
         {
-            if (completed) return;
+            if (completed)
+            {
+                return;
+            }
+
             if (!StartDateTime.HasValue)
+            {
                 StartDateTime = sample.timestamp;
+            }
+
             ElectrodeSamplesData.Enqueue(sample);
         }
 
         public void CompleteAdding()
         {
-            if (completed) return;
+            if (completed)
+            {
+                return;
+            }
+
             completed = true;
             ElectrodeSamplesData.CompleteAdding();
         }

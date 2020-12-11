@@ -112,7 +112,9 @@ namespace HDF5CSharp.Example.DataTypes
                     yield return (key, innerItems);
                 }
                 else
+                {
                     yield return (key, val);
+                }
             }
 
             Dictionary<string, object> result = new Dictionary<string, object>();
