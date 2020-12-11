@@ -28,4 +28,13 @@
     <ProjectReference Include="..\HDF5-CSharp\HDF5-CSharp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AcquisitionScanProtocol.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CalibrationInfoTest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
