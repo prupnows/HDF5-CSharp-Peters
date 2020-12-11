@@ -181,7 +181,18 @@ namespace HDF5CSharp.UnitTests.Core
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 5)]
         public string label;
     }
-
+   
+    [StructLayout(LayoutKind.Sequential)]
+    public struct WData3
+    {
+        public int serial_no;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
+        public string location;
+        public double temperature;
+        public double pressure;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 5)]
+        public string label;
+    }
     [StructLayout(LayoutKind.Sequential)]
     public struct Responses
     {

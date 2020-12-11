@@ -207,7 +207,7 @@ namespace HDF5CSharp.UnitTests.Core
         [TestMethod]
         public void WriteAndReadStructs()
         {
-            string filename = Path.Combine(folder, "testCompounds.H5");
+            string filename = Path.Combine(folder, "testCompoundsWithDifferentDisplayName.H5");
             Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
             try
             {
@@ -237,7 +237,26 @@ namespace HDF5CSharp.UnitTests.Core
             }
 
         }
+        
+        [TestMethod]
+        public void ReadStructs()
+        {
+            string filename = Path.Combine(folder,"data", "testCompounds_WData2_WData3.H5");
+            try
+            {
+                var fileId = Hdf5.OpenFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var cmpList = Hdf5.ReadCompounds<WData3>(fileId, "/test", "").ToArray();
+                Hdf5.CloseFile(fileId);
+                CollectionAssert.AreEqual(wData2List, cmpList);
 
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+        }
         [TestMethod]
         public void WriteAndReadStructsWithDatetime()
         {
