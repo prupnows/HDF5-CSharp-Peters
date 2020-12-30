@@ -426,94 +426,9 @@ namespace HDF5_CSharp.Example.UnitTest
     [TestClass]
     public class H5FileCreationTests : BaseClass
     {
-        private string current = @"Electrode_Acq_Current.csv";
-        private string voltage = @"Electrode_Acq_Voltage.csv";
-        private string ecg = @"ECG.CSV";
+
         private string calibrationPath = "CalibrationInfoTest.json";
         long counter = 0;
-
-        [TestMethod]
-        public async Task CreatePatientInfoTest()
-        {
-            string data = File.ReadAllText(AcquisitionScanProtocolPath);
-            string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "h5test.h5");
-            kama = new KamaAcquisitionFile(filename, AcquisitionInterface.Simulator, Logger);
-            CreatePatientDetails(kama);
-            UpdateSystemInformation(kama);
-
-
-            AcquisitionProtocolParameters parameters = AcquisitionProtocolParameters.FromJson(data);
-            await kama.StartLogging(parameters);
-
-
-            string lineVoltage, lineCurrent, lineEcg;
-            string directory = AppDomain.CurrentDomain.BaseDirectory;
-            string voltagePath = Path.Combine(directory, voltage);
-            string currentPath = Path.Combine(directory, current);
-            using StreamReader srVoltage = new StreamReader(voltagePath);
-            using StreamReader srCurrent = new StreamReader(currentPath);
-            int i = 0;
-
-            while (!string.IsNullOrEmpty(lineVoltage = await srVoltage.ReadLineAsync()) &&
-                   !string.IsNullOrEmpty(lineCurrent = await srCurrent.ReadLineAsync()))
-            {
-                ElectrodeFrame sample = new ElectrodeFrame();
-                var itemsVoltage = lineVoltage.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                var itemsCurrent = lineCurrent.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                sample.timestamp = long.Parse(itemsCurrent.First());
-                sample.SaturationMask = Convert.ToUInt64(itemsCurrent.Skip(1).Take(1).Single().Trim(), 16);
-                var evenvals = itemsCurrent.Skip(2).Where((c, i) => i % 2 == 0).Select(float.Parse);
-                var oddvals = itemsCurrent.Skip(2).Where((c, i) => i % 2 != 0).Select(float.Parse);
-
-                sample.ComplexCurrentMatrix = evenvals.Zip(oddvals).Select(itm => (itm.First, itm.Second)).ToArray();
-
-                evenvals = itemsVoltage.Skip(2).Where((c, i) => i % 2 == 0).Select(float.Parse);
-                oddvals = itemsVoltage.Skip(2).Where((c, i) => i % 2 != 0).Select(float.Parse);
-
-                sample.ComplexVoltageMatrix = evenvals.Zip(oddvals).Select(itm => (itm.First, itm.Second)).ToArray();
-                kama.AppendElectrodeSample(sample);
-            }
-
-            using StreamReader srEcg = new StreamReader(ecg);
-
-            var filteredFrameData = new List<List<float>> { new List<float>(), new List<float>() };
-            var frameData = new List<List<float>> { new List<float>(), new List<float>() };
-            var timestamps = new List<long>();
-
-            while (!string.IsNullOrEmpty(lineEcg = await srEcg.ReadLineAsync()))
-            {
-                var items = lineEcg.Split(",", StringSplitOptions.RemoveEmptyEntries);
-                var c1 = float.Parse(items[0]);
-                var c2 = float.Parse(items[1]);
-                var time = long.Parse(items[2]);
-
-                var c1_filtered = float.Parse(items[4]);
-                var c2_filtered = float.Parse(items[5]);
-
-                frameData[0].Add(c1);
-                frameData[1].Add(c2);
-
-                filteredFrameData[0].Add(c1_filtered);
-                filteredFrameData[1].Add(c2_filtered);
-                timestamps.Add(time);
-
-            }
-
-            ECGFrame frame = new ECGFrame(filteredFrameData, frameData, timestamps[0], 0);
-            kama.AppendEcgSample(frame);
-            await kama.StopProcedure();
-            var fileId = Hdf5.OpenFile(filename);
-            Stopwatch st = Stopwatch.StartNew();
-            var readback = Hdf5.ReadDatasetToArray<float>(fileId, "/eit/d1/voltages.re");
-            st.Stop();
-            Console.WriteLine("read time: " + st.ElapsedMilliseconds);
-            Hdf5.CloseFile(fileId);
-            File.Delete(filename);
-
-
-
-        }
-
 
         [TestMethod]
         public async Task TestFullFileWriteRead()
@@ -567,7 +482,7 @@ namespace HDF5_CSharp.Example.UnitTest
 
                 readFile.ReadEITData();
                 Assert.IsTrue(readFile.EITs.SequenceEqual(eitsTestData));
-                readFile.ReadSystemEvents(); 
+                readFile.ReadSystemEvents();
                 Assert.IsTrue(readFile.Events.Count == 100);
             }
 
