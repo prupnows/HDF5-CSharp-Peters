@@ -107,24 +107,27 @@ namespace HDF5CSharp
 
         public static (bool success, IEnumerable<string>) ReadStringAttributes(long groupId, string name, string alternativeName)
         {
-
-            long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
-            H5T.set_cset(datatype, H5T.cset_t.UTF8);
-            H5T.set_strpad(datatype, H5T.str_t.NULLTERM);
             var nameToUse = Hdf5Utils.GetRealAttributeName(groupId, name, alternativeName);
             if (!nameToUse.valid)
             {
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
                 return (false, Array.Empty<string>());
             }
+
+            //long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+            //H5T.set_cset(datatype, H5T.cset_t.UTF8);
+            //H5T.set_strpad(datatype, H5T.str_t.NULLTERM);
+            
+
             var datasetId = H5A.open(groupId, nameToUse.name);
+            long typeId = H5A.get_type(datasetId);
             long spaceId = H5A.get_space(datasetId);
             long count = H5S.get_simple_extent_npoints(spaceId);
             H5S.close(spaceId);
 
             IntPtr[] rdata = new IntPtr[count];
             GCHandle hnd = GCHandle.Alloc(rdata, GCHandleType.Pinned);
-            H5A.read(datasetId, datatype, hnd.AddrOfPinnedObject());
+            H5A.read(datasetId, typeId, hnd.AddrOfPinnedObject());
 
             var strs = new List<string>();
             for (int i = 0; i < rdata.Length; ++i)
@@ -141,7 +144,7 @@ namespace HDF5CSharp
             }
 
             hnd.Free();
-            H5T.close(datatype);
+            H5T.close(typeId);
             H5A.close(datasetId);
             return (true, strs);
         }
@@ -171,15 +174,14 @@ namespace HDF5CSharp
             Array attributes = Array.CreateInstance(type, lengths);
 
             var typeId = H5A.get_type(attributeId);
-            var mem_type = H5T.copy(datatype);
+            //var mem_type = H5T.copy(datatype);
             if (datatype == H5T.C_S1)
             {
                 H5T.set_size(datatype, new IntPtr(2));
             }
 
-            var propId = H5A.get_create_plist(attributeId);
-
-            memId = H5S.create_simple(rank, dims, maxDims);
+            //var propId = H5A.get_create_plist(attributeId);
+            //memId = H5S.create_simple(rank, dims, maxDims);
             GCHandle hnd = GCHandle.Alloc(attributes, GCHandleType.Pinned);
             H5A.read(attributeId, datatype, hnd.AddrOfPinnedObject());
             hnd.Free();
