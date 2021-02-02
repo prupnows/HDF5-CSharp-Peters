@@ -23,20 +23,11 @@ namespace HDF5CSharp
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
                 return (false, Array.Empty<string>());
             }
-
-
-            //long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
-            //H5T.set_cset(datatype, H5T.cset_t.UTF8);
-            //H5T.set_strpad(datatype, H5T.str_t.NULLTERM);
-           
-            
             long typeId = H5D.get_type(datasetId);
             long spaceId = H5D.get_space(datasetId);
             long count = H5S.get_simple_extent_npoints(spaceId);
             H5S.close(spaceId);
-
-
-
+            
             var strs = new List<string>();
             if (count >= 0)
             {
@@ -71,8 +62,8 @@ namespace HDF5CSharp
             // create UTF-8 encoded test datasets
 
             long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
-            H5T.set_cset(datatype, H5T.cset_t.UTF8);
-            H5T.set_strpad(datatype, H5T.str_t.SPACEPAD);
+            H5T.set_cset(datatype, Hdf5Utils.GetCharacterSet(Settings.CharacterSetType));
+            H5T.set_strpad(datatype, Hdf5Utils.GetCharacterPadding(Settings.CharacterPaddingType));
 
             int strSz = strs.Count();
             long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
@@ -146,7 +137,6 @@ namespace HDF5CSharp
 
             var memId = H5T.copy(H5T.C_S1);
             H5T.set_size(memId, new IntPtr(2));
-            //H5T.set_strpad(memId, H5T.str_t.NULLTERM);
             GCHandle hnd = GCHandle.Alloc(wdata, GCHandleType.Pinned);
             int result = H5D.write(datasetId, memId, H5S.ALL,
                         H5S.ALL, H5P.DEFAULT, hnd.AddrOfPinnedObject());
@@ -175,7 +165,6 @@ namespace HDF5CSharp
 
             var memId = H5T.copy(H5T.C_S1);
             H5T.set_size(memId, new IntPtr(2));
-            //H5T.set_strpad(memId, H5T.str_t.NULLTERM);
             GCHandle hnd = GCHandle.Alloc(wdata, GCHandleType.Pinned);
             int resultId = H5D.read(datasetId, memId, H5S.ALL,
                         H5S.ALL, H5P.DEFAULT, hnd.AddrOfPinnedObject());
@@ -197,7 +186,7 @@ namespace HDF5CSharp
             long spaceId = H5S.create(H5S.class_t.SCALAR);
 
             long dtype = H5T.create(H5T.class_t.STRING, new IntPtr(wdata.Length));
-            H5T.set_cset(dtype, H5T.cset_t.UTF8);
+            H5T.set_cset(dtype, Hdf5Utils.GetCharacterSet(Settings.CharacterSetType));
             H5T.set_strpad(dtype, strPad);
 
             long datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), dtype, spaceId);

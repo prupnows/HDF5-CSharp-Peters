@@ -264,5 +264,39 @@ namespace HDF5CSharp
                 }
             }
         }
+
+        internal static H5T.cset_t GetCharacterSet(CharacterSetType characterSetType)
+        {
+            switch (characterSetType)
+            {
+                case CharacterSetType.ASCII:
+                    return H5T.cset_t.ASCII;
+                    break;
+                case CharacterSetType.UTF8:
+                    return H5T.cset_t.UTF8;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(characterSetType), characterSetType, null);
+            }
+        }
+
+        internal static H5T.str_t GetCharacterPadding(CharacterPaddingType characterPaddingType)
+        {
+            switch (characterPaddingType)
+            {
+                case CharacterPaddingType.NULLTERM:
+                    return H5T.str_t.NULLTERM;
+                    break;
+                case CharacterPaddingType.NULLPAD:
+                    return H5T.str_t.NULLPAD;
+                    break;
+                case CharacterPaddingType.SPACEPAD:
+                    return H5T.str_t.SPACEPAD;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(characterPaddingType), characterPaddingType, null);
+            }
+        }
     }
+
 }
