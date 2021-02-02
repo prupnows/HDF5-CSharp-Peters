@@ -209,8 +209,8 @@ namespace HDF5CSharp
 
             // create UTF-8 encoded attributes
             long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
-            H5T.set_cset(datatype, H5T.cset_t.UTF8);
-            H5T.set_strpad(datatype, H5T.str_t.SPACEPAD);
+            H5T.set_cset(datatype,Hdf5Utils.GetCharacterSet(Settings.CharacterSetType));
+            H5T.set_strpad(datatype, Hdf5Utils.GetCharacterPadding(Settings.CharacterPaddingType));
 
             int strSz = values.Count();
             long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);

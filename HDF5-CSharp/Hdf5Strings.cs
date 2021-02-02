@@ -62,8 +62,8 @@ namespace HDF5CSharp
             // create UTF-8 encoded test datasets
 
             long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
-            H5T.set_cset(datatype, H5T.cset_t.UTF8);
-            H5T.set_strpad(datatype, H5T.str_t.SPACEPAD);
+            H5T.set_cset(datatype, Hdf5Utils.GetCharacterSet(Settings.CharacterSetType));
+            H5T.set_strpad(datatype, Hdf5Utils.GetCharacterPadding(Settings.CharacterPaddingType));
 
             int strSz = strs.Count();
             long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
@@ -186,7 +186,7 @@ namespace HDF5CSharp
             long spaceId = H5S.create(H5S.class_t.SCALAR);
 
             long dtype = H5T.create(H5T.class_t.STRING, new IntPtr(wdata.Length));
-            H5T.set_cset(dtype, H5T.cset_t.UTF8);
+            H5T.set_cset(dtype, Hdf5Utils.GetCharacterSet(Settings.CharacterSetType));
             H5T.set_strpad(dtype, strPad);
 
             long datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), dtype, spaceId);
