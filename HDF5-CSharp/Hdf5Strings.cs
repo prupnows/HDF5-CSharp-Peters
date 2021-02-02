@@ -12,13 +12,6 @@ namespace HDF5CSharp
     {
         public static (bool success, IEnumerable<string> result) ReadStrings(long groupId, string name, string alternativeName)
         {
-
-            long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
-            H5T.set_cset(datatype, H5T.cset_t.UTF8);
-            H5T.set_strpad(datatype, H5T.str_t.NULLTERM);
-
-            //name = ToHdf5Name(name);
-
             var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
             if (datasetId < 0) //does not exist?
             {
@@ -30,17 +23,26 @@ namespace HDF5CSharp
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
                 return (false, Array.Empty<string>());
             }
-            long spaceId = H5D.get_space(datasetId);
 
+
+            //long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+            //H5T.set_cset(datatype, H5T.cset_t.UTF8);
+            //H5T.set_strpad(datatype, H5T.str_t.NULLTERM);
+           
+            
+            long typeId = H5D.get_type(datasetId);
+            long spaceId = H5D.get_space(datasetId);
             long count = H5S.get_simple_extent_npoints(spaceId);
             H5S.close(spaceId);
+
+
 
             var strs = new List<string>();
             if (count >= 0)
             {
                 IntPtr[] rdata = new IntPtr[count];
                 GCHandle hnd = GCHandle.Alloc(rdata, GCHandleType.Pinned);
-                H5D.read(datasetId, datatype, H5S.ALL, H5S.ALL,
+                H5D.read(datasetId, typeId, H5S.ALL, H5S.ALL,
                     H5P.DEFAULT, hnd.AddrOfPinnedObject());
 
                 for (int i = 0; i < rdata.Length; ++i)
@@ -57,7 +59,7 @@ namespace HDF5CSharp
                 }
                 hnd.Free();
             }
-            H5T.close(datatype);
+            H5T.close(typeId);
             H5D.close(datasetId);
             return (true,strs);
         }
