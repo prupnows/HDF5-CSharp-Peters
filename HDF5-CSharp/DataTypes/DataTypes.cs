@@ -11,6 +11,18 @@ namespace HDF5CSharp.DataTypes
         Dataset,
         Attribute
     }
+
+    public class Hdf5AttributeElement
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+
+        public Hdf5AttributeElement(string name, string value)
+        {
+            Name = name;
+            Value = value;
+        }
+    }
     public abstract class Hdf5ElementBase
     {
         public string Name { get; set; }
@@ -26,7 +38,7 @@ namespace HDF5CSharp.DataTypes
         protected abstract long GetId(long fileId);
         protected abstract void CloseId(long id);
 
-        public Hdf5ElementBase(string name, Hdf5ElementType type, Hdf5ElementBase parent,long id, bool isLazyLoading)
+        public Hdf5ElementBase(string name, Hdf5ElementType type, Hdf5ElementBase parent, long id, bool isLazyLoading)
         {
             Name = name;
             Type = type;
@@ -41,9 +53,11 @@ namespace HDF5CSharp.DataTypes
     public class Hdf5Element : Hdf5ElementBase
     {
         private List<Hdf5Element> Children { get; }
-        public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, long id, bool isLazyLoading) : base(name, type, parent,id, isLazyLoading)
+        private List<Hdf5AttributeElement> Attributes { get; }
+        public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, List<Hdf5AttributeElement> attributes, long id, bool isLazyLoading) : base(name, type, parent, id, isLazyLoading)
         {
             Children = new List<Hdf5Element>();
+            Attributes = attributes.ToList();
         }
 
         public bool HasChildren => Children.Any();
@@ -81,6 +95,7 @@ namespace HDF5CSharp.DataTypes
             Children.Add(child);
         }
 
+     
         public Hdf5Element GetChildWithName(string childName)
         {
             var child = Children.FirstOrDefault(c => c.Name == childName);

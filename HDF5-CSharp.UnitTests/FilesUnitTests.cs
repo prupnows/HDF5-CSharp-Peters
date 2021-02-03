@@ -22,7 +22,7 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
-            string fileName = @"testfile.h5";
+            string fileName = @"D:\Data\H5\data.h5";
             if (File.Exists(fileName))
             {
                 var tree = Hdf5.ReadTreeFileStructure(fileName);

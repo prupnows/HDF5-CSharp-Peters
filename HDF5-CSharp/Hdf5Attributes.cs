@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace HDF5CSharp
 {
@@ -105,7 +104,7 @@ namespace HDF5CSharp
             return result;
         }
 
-        public static (bool success, IEnumerable<string>) ReadStringAttributes(long groupId, string name, string alternativeName)
+        public static (bool success, IEnumerable<string> items) ReadStringAttributes(long groupId, string name, string alternativeName)
         {
             var nameToUse = Hdf5Utils.GetRealAttributeName(groupId, name, alternativeName);
             if (!nameToUse.valid)
@@ -113,7 +112,7 @@ namespace HDF5CSharp
                 Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
                 return (false, Array.Empty<string>());
             }
-            
+
             var datasetId = H5A.open(groupId, nameToUse.name);
             long typeId = H5A.get_type(datasetId);
             long spaceId = H5A.get_space(datasetId);
@@ -131,8 +130,7 @@ namespace HDF5CSharp
                 while (Marshal.ReadByte(rdata[i], len) != 0) { ++len; }
                 byte[] buffer = new byte[len];
                 Marshal.Copy(rdata[i], buffer, 0, buffer.Length);
-                string s = Encoding.UTF8.GetString(buffer);
-
+                string s = Hdf5Utils.ReadStringBuffer(buffer);
                 strs.Add(s);
 
                 H5.free_memory(rdata[i]);
@@ -143,6 +141,8 @@ namespace HDF5CSharp
             H5A.close(datasetId);
             return (true, strs);
         }
+
+
 
         public static (bool success, Array result) ReadPrimitiveAttributes<T>(long groupId, string name, string alternativeName) //where T : struct
         {
@@ -209,7 +209,7 @@ namespace HDF5CSharp
 
             // create UTF-8 encoded attributes
             long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
-            H5T.set_cset(datatype,Hdf5Utils.GetCharacterSet(Settings.CharacterSetType));
+            H5T.set_cset(datatype, Hdf5Utils.GetCharacterSet(Settings.CharacterSetType));
             H5T.set_strpad(datatype, Hdf5Utils.GetCharacterPadding(Settings.CharacterPaddingType));
 
             int strSz = values.Count();
@@ -224,7 +224,7 @@ namespace HDF5CSharp
             foreach (string str in values)
             {
                 hnds[cntr] = GCHandle.Alloc(
-                    Encoding.UTF8.GetBytes(str),
+                    Hdf5Utils.StringToByte(str),
                     GCHandleType.Pinned);
                 wdata[cntr] = hnds[cntr].AddrOfPinnedObject();
                 cntr++;
@@ -252,7 +252,7 @@ namespace HDF5CSharp
 
         public static (int success, long CreatedId) WriteAttribute<T>(long groupId, string name, T attribute) //where T : struct
         {
-           return WriteAttributes<T>(groupId, name, new T[1] { attribute });
+            return WriteAttributes<T>(groupId, name, new T[1] { attribute });
             /*if (typeof(T) == typeof(string))
                 attrRW.WriteArray(groupId, name, new T[1] { attribute });
             else
@@ -264,7 +264,7 @@ namespace HDF5CSharp
 
         public static (int success, long CreatedId) WriteAttributes<T>(long groupId, string name, Array attributes) //
         {
-         return   attrRW.WriteArray(groupId, name, attributes, new Dictionary<string, List<string>>());
+            return attrRW.WriteArray(groupId, name, attributes, new Dictionary<string, List<string>>());
             //if (attributes.GetType().GetElementType() == typeof(string))
             //     WriteStringAttributes(groupId, name, attributes.Cast<string>(), attributeName);
             //else

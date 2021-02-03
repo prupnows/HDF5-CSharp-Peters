@@ -304,6 +304,7 @@ namespace HDF5CSharp
         }
         internal static (List<Hdf5Element> tree, List<Hdf5Element> flat) ReadFileStructure(string fileName)
         {
+            var attributes = new List<Hdf5AttributeElement>();
             var elements = new List<Hdf5Element>();
             var structure = new List<Hdf5Element>();
             if (!File.Exists(fileName))
@@ -343,7 +344,7 @@ namespace HDF5CSharp
                     H5F.close(fileId);
                 }
             }
-         
+
             int Callback(long elementId, IntPtr intPtrName, ref H5L.info_t info, IntPtr intPtrUserData)
             {
                 ulong idx2 = 0;
@@ -360,11 +361,11 @@ namespace HDF5CSharp
                 groupId = (H5L.exists(elementId, name) >= 0) ? H5G.open(elementId, name) : -1L;
                 if (H5I.is_valid(groupId) > 0)
                 {
-                
+
                     objectType = H5O.type_t.GROUP;
                     elementType = Hdf5ElementType.Group;
                     ulong attId = 0;
-                    H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
+                    var index = H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
                 }
                 else
                 {
@@ -374,7 +375,7 @@ namespace HDF5CSharp
                         objectType = H5O.type_t.DATASET;
                         elementType = Hdf5ElementType.Dataset;
                         ulong attId = 0;
-                        H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
+                        var index = H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
                     }
                     else
                     {
@@ -394,13 +395,15 @@ namespace HDF5CSharp
 
                 if (parent == null)
                 {
-                    var element = new Hdf5Element(fullName, elementType, null, elementId, false);
+                    var element = new Hdf5Element(fullName, elementType, null, attributes, elementId, false);
+                    attributes.Clear();
                     structure.Add(element);
                     elements.Add(element);
                 }
                 else
                 {
-                    var element = new Hdf5Element(fullName, elementType, parent, elementId,false);
+                    var element = new Hdf5Element(fullName, elementType, parent, attributes, elementId, false);
+                    attributes.Clear();
                     parent.AddChild(element);
                     elements.Add(element);
                 }
@@ -424,20 +427,28 @@ namespace HDF5CSharp
 
                 return 0;
             }
+
+            int AttributeCallback(long location_id, IntPtr attr_name, ref H5A.info_t ainfo, IntPtr op_data)
+            {
+                var name = Marshal.PtrToStringAnsi(attr_name);
+
+                var att = ReadStringAttributes(location_id, name, String.Empty);
+                if (att.success)
+                {
+                    attributes.Add(new Hdf5AttributeElement(name, att.items.First()));
+                }
+
+
+                //var typeId = H5A.get_type(location_id);
+                //H5T.class_t classType = H5T.get_class(location_id);
+                //var cset = H5T.get_cset(location_id);
+                //var padd = H5T.get_strpad(location_id);
+                return 0;
+
+            }
             return (structure, elements);
         }
 
-        private static int AttributeCallback(long location_id, IntPtr attr_name, ref H5A.info_t ainfo, IntPtr op_data)
-        {
-            ulong idx2 = 0;
-            long groupId = -1;
-            long datasetId = -1;
-            H5O.type_t objectType;
-            var name = Marshal.PtrToStringAnsi(attr_name);
-            var userData = Marshal.PtrToStringAnsi(op_data);
-            var fullName = CombinePath(userData, name);
-            return 0;
-        }
 
         private static string CombinePath(string path1, string path2)
         {

@@ -1,10 +1,10 @@
+using HDF.PInvoke;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using HDF.PInvoke;
 
 namespace HDF5CSharp
 {
@@ -27,7 +27,7 @@ namespace HDF5CSharp
             long spaceId = H5D.get_space(datasetId);
             long count = H5S.get_simple_extent_npoints(spaceId);
             H5S.close(spaceId);
-            
+
             var strs = new List<string>();
             if (count >= 0)
             {
@@ -42,7 +42,7 @@ namespace HDF5CSharp
                     while (Marshal.ReadByte(rdata[i], len) != 0) { ++len; }
                     byte[] buffer = new byte[len];
                     Marshal.Copy(rdata[i], buffer, 0, buffer.Length);
-                    string s = Encoding.UTF8.GetString(buffer);
+                    string s = Hdf5Utils.ReadStringBuffer(buffer);
 
                     strs.Add(s);
 
@@ -52,7 +52,7 @@ namespace HDF5CSharp
             }
             H5T.close(typeId);
             H5D.close(datasetId);
-            return (true,strs);
+            return (true, strs);
         }
 
 
@@ -67,7 +67,7 @@ namespace HDF5CSharp
 
             int strSz = strs.Count();
             long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
-            
+
             string normalizedName = Hdf5Utils.NormalizedName(name);
             var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId);
             if (datasetId == -1L)
@@ -82,7 +82,7 @@ namespace HDF5CSharp
             foreach (string str in strs)
             {
                 hnds[cntr] = GCHandle.Alloc(
-                    Encoding.UTF8.GetBytes(str),
+                    Hdf5Utils.StringToByte(str),
                     GCHandleType.Pinned);
                 wdata[cntr] = hnds[cntr].AddrOfPinnedObject();
                 cntr++;
@@ -181,7 +181,7 @@ namespace HDF5CSharp
 
         public static int WriteUnicodeString(long groupId, string name, string str, H5T.str_t strPad = H5T.str_t.SPACEPAD)
         {
-            byte[] wdata = Encoding.UTF8.GetBytes(str);
+            byte[] wdata = Hdf5Utils.StringToByte(str);
 
             long spaceId = H5S.create(H5S.class_t.SCALAR);
 
@@ -230,7 +230,7 @@ namespace HDF5CSharp
                     byte[] buffer = new byte[attrLength];
                     Marshal.Copy(rdata[i], buffer, 0, buffer.Length);
 
-                    string stringPart = Encoding.UTF8.GetString(buffer);
+                    string stringPart = Hdf5Utils.ReadStringBuffer(buffer);
 
                     attrStrings.Add(stringPart);
 
@@ -261,7 +261,7 @@ namespace HDF5CSharp
 
             H5D.close(datasetId);
 
-            return Encoding.UTF8.GetString(strDest).TrimEnd((char)0);
+            return Hdf5Utils.ReadStringBuffer(strDest).TrimEnd((char)0);
         }
     }
 

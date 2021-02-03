@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace HDF5CSharp
 {
@@ -297,6 +298,34 @@ namespace HDF5CSharp
                     throw new ArgumentOutOfRangeException(nameof(characterPaddingType), characterPaddingType, null);
             }
         }
+
+        public static string ReadStringBuffer(byte[] buffer)
+        {
+            switch (Hdf5.Settings.CharacterSetType)
+            {
+                case CharacterSetType.ASCII:
+                    return Encoding.ASCII.GetString(buffer);
+                case CharacterSetType.UTF8:
+                    return Encoding.UTF8.GetString(buffer);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static byte[] StringToByte(string str)
+        {
+            switch (Hdf5.Settings.CharacterSetType)
+            {
+                case CharacterSetType.ASCII:
+                    return  Encoding.ASCII.GetBytes(str);
+                case CharacterSetType.UTF8:
+                    return Encoding.UTF8.GetBytes(str);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+
     }
 
 }

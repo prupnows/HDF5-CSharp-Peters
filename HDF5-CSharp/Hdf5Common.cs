@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace HDF5CSharp
 {
@@ -22,24 +20,6 @@ namespace HDF5CSharp
     public static partial class Hdf5
     {
         private static readonly IEnumerable<TypeCode> primitiveTypes = Enum.GetValues(typeof(TypeCode)).Cast<TypeCode>().Except(new[] { TypeCode.Empty, TypeCode.DBNull, TypeCode.Object });
-
-        public static int sizeofType<T>(T obj, FieldInfo info)
-        {
-            Type type = info.FieldType;
-            if (type.IsEnum)
-            {
-                return Marshal.SizeOf(Enum.GetUnderlyingType(type));
-            }
-            if (type.IsValueType)
-            {
-                return Marshal.SizeOf(type);
-            }
-            if (type == typeof(string))
-            {
-                return Encoding.Default.GetByteCount((char[])info.GetValue(obj));
-            }
-            return 0;
-        }
 
         public static T fromBytes<T>(byte[] arr)
         {
