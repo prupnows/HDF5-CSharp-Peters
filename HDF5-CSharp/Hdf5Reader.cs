@@ -433,7 +433,7 @@ namespace HDF5CSharp
                 var name = Marshal.PtrToStringAnsi(attr_name);
 
                 var att = ReadStringAttributes(location_id, name, String.Empty);
-                if (att.success)
+                if (att.success && att.items.Any())
                 {
                     attributes.Add(new Hdf5AttributeElement(name, att.items.First()));
                 }

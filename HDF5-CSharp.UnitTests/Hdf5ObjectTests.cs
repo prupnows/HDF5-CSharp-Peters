@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using HDF5CSharp.DataTypes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 
@@ -88,6 +89,36 @@ namespace HDF5CSharp.UnitTests.Core
             catch (Exception ex)
             {
                 CreateExceptionAssert(ex);
+            }
+        }
+
+        public class Coordinate
+        {
+            [Hdf5EntryName("COORDINATES")] public double[,] COORDINATES { get; set; }
+
+        }
+        //[TestMethod]
+        public void ReadObject()
+        {
+            Hdf5.Settings.LowerCaseNaming = false;
+            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
+            Hdf5Utils.LogError = (s) => Errors.Add(s);
+            string filename = @"D:\h5\recorder.hdf5";
+            long fileId = -1;
+            try
+            {
+                fileId = Hdf5.OpenFile(filename, true);
+                Assert.IsTrue(fileId > 0);
+                var result = Hdf5.ReadObject<Coordinate>(fileId, "/MODEL_STAGE[1]/MODEL/NODES");
+
+            }
+            finally
+            {
+                if (fileId > 0)
+                {
+                    Hdf5.CloseFile(fileId);
+                }
             }
         }
     }

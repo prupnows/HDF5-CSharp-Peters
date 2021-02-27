@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HDF5CSharp.UnitTests.Core
 {
@@ -14,15 +13,15 @@ namespace HDF5CSharp.UnitTests.Core
 
         public FilesUnitTests()
         {
-            Errors=new List<string>();
+            Errors = new List<string>();
         }
-        [TestMethod]
+        //[TestMethod]
         public void TestReadStructure()
         {
             Hdf5.Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
-            string fileName = @"D:\Data\H5\data.h5";
+            string fileName = @"recorder.hdf5";
             if (File.Exists(fileName))
             {
                 var tree = Hdf5.ReadTreeFileStructure(fileName);
@@ -36,7 +35,7 @@ namespace HDF5CSharp.UnitTests.Core
                     }
                 }
                 Assert.IsFalse(File.Exists(fileName));
-                Assert.IsTrue(tree!=null);
+                Assert.IsTrue(tree != null);
                 Assert.IsTrue(flat != null);
             }
         }

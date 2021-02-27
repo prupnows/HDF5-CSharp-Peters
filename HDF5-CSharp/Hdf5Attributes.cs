@@ -126,6 +126,10 @@ namespace HDF5CSharp
             var strs = new List<string>();
             for (int i = 0; i < rdata.Length; ++i)
             {
+                if (rdata[i] == IntPtr.Zero)
+                {
+                    continue;
+                }
                 int len = 0;
                 while (Marshal.ReadByte(rdata[i], len) != 0) { ++len; }
                 byte[] buffer = new byte[len];

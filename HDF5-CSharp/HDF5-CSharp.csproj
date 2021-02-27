@@ -20,9 +20,9 @@
 		<PackageIconUrl />
 		<RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>- Add Support for older objects for ReadObject method (#73).</PackageReleaseNotes>
+		<PackageReleaseNotes>- Add support for different string encoding (ASCII / UTF8) #103</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.11.2</Version>
+		<Version>1.12.0</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
