@@ -257,13 +257,6 @@ namespace HDF5CSharp
         public static (int success, long CreatedId) WriteAttribute<T>(long groupId, string name, T attribute) //where T : struct
         {
             return WriteAttributes<T>(groupId, name, new T[1] { attribute });
-            /*if (typeof(T) == typeof(string))
-                attrRW.WriteArray(groupId, name, new T[1] { attribute });
-            else
-            {
-                Array oneVal = new T[1, 1] { { attribute } };
-                attrRW.WriteArray(groupId, name, oneVal);
-            }*/
         }
 
         public static (int success, long CreatedId) WriteAttributes<T>(long groupId, string name, Array attributes) //
@@ -284,7 +277,9 @@ namespace HDF5CSharp
             var spaceId = H5S.create_simple(rank, dims, maxDims);
             var datatype = GetDatatype(typeof(T));
             var typeId = H5T.copy(datatype);
-            var attributeId = H5A.create(groupId, Hdf5Utils.NormalizedName(name), datatype, spaceId);
+            string nameToUse = Hdf5Utils.NormalizedName(name);
+            //var attributeId = H5A.create(groupId, nameToUse, datatype, spaceId);
+            var attributeId = Hdf5Utils.GetAttributeId(groupId, nameToUse, datatype, spaceId);
             GCHandle hnd = GCHandle.Alloc(attributes, GCHandleType.Pinned);
             var result = H5A.write(attributeId, datatype, hnd.AddrOfPinnedObject());
             hnd.Free();

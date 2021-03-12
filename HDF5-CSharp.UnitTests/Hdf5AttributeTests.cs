@@ -1,4 +1,4 @@
-﻿        using HDF.PInvoke;
+﻿using HDF.PInvoke;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace HDF5CSharp.UnitTests.Core
             Assert.IsTrue(result);
             var write = Hdf5Utils.ReadAttributeByPath(filename, path, "VALID");
             Assert.IsTrue(write.success);
-            Assert.IsTrue(write.value== attributeValue); 
+            Assert.IsTrue(write.value == attributeValue);
             Assert.IsTrue(H5G.close(groupId) == 0);
             Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
         }
@@ -42,6 +42,42 @@ namespace HDF5CSharp.UnitTests.Core
                 DateTime readTime = Hdf5.ReadAttribute<DateTime>(groupId, "time");
                 Assert.IsTrue(readTime == nowTime);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+        }
+
+        [TestMethod]
+        public void WriteReadAndEditAttribute()
+        {
+            string filename = Path.Combine(folder, "WriteReadAndEditAttribute.H5");
+            try
+            {
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, "test");
+                DateTime nowTime = DateTime.Now;
+                Hdf5.WriteAttribute(groupId, "time", nowTime);
+                DateTime readTime = Hdf5.ReadAttribute<DateTime>(groupId, "time");
+                Assert.IsTrue(readTime == nowTime);
+                Hdf5.CloseFile(fileId);
+                fileId = Hdf5.OpenFile(filename, false);
+                readTime = Hdf5.ReadAttribute<DateTime>(groupId, "time");
+                Assert.IsTrue(readTime == nowTime);
+
+                nowTime = DateTime.Now;
+                Hdf5.WriteAttribute(groupId, "time", nowTime);
+                readTime = Hdf5.ReadAttribute<DateTime>(groupId, "time");
+                Assert.IsTrue(readTime == nowTime);
+                Hdf5.CloseFile(fileId);
+
+                fileId = Hdf5.OpenFile(filename, false);
+                readTime = Hdf5.ReadAttribute<DateTime>(groupId, "time");
+                Assert.IsTrue(readTime == nowTime);
+                Hdf5.CloseFile(fileId);
+
             }
             catch (Exception ex)
             {

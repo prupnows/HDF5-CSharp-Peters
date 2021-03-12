@@ -22,7 +22,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageReleaseNotes>- Add support for different string encoding (ASCII / UTF8) #103</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.12.0</Version>
+		<Version>1.12.1</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>

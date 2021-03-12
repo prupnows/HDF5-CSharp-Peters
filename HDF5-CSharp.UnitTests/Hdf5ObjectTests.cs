@@ -97,7 +97,15 @@ namespace HDF5CSharp.UnitTests.Core
             [Hdf5EntryName("COORDINATES")] public double[,] COORDINATES { get; set; }
 
         }
-        //[TestMethod]
+
+
+        public class Steps
+        {
+            [Hdf5EntryName("STEP_0")] public double[,] STEP0 { get; set; }
+            [Hdf5EntryName("STEP_1")] public double[,] STEP1 { get; set; }
+
+        }
+        [TestMethod]
         public void ReadObject()
         {
             Hdf5.Settings.LowerCaseNaming = false;
@@ -110,8 +118,9 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 fileId = Hdf5.OpenFile(filename, true);
                 Assert.IsTrue(fileId > 0);
-                var result = Hdf5.ReadObject<Coordinate>(fileId, "/MODEL_STAGE[1]/MODEL/NODES");
-
+                //var result = Hdf5.ReadObject<Coordinate>(fileId, "/MODEL_STAGE[1]/MODEL/NODES");
+                var step = "/MODEL_STAGE[1]/RESULTS/ON_NODES/DISPLACEMENT/DATA";
+                var result2 = Hdf5.ReadObject<Steps>(fileId, step);
             }
             finally
             {
