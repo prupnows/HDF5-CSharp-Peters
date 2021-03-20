@@ -143,12 +143,9 @@ namespace HDF5CSharp.UnitTests.Core
             try
             {
                 fileId = Hdf5.OpenFile(filename, true);
-                Assert.IsTrue(fileId > 0);
-                //var result = Hdf5.ReadObject<Coordinate>(fileId, "/MODEL_STAGE[1]/MODEL/NODES");
-      
-                var step = "/MODEL_STAGE[1]/RESULTS/ON_NODES/DISPLACEMENT/DATA";
-                var groupId = Hdf5.CreateOrOpenGroup(fileId, step);
-                var result2 = Hdf5.Read2DTable<double>(groupId, "STEP_0");
+                var groupName = "/MODEL_STAGE[1]/RESULTS/ON_NODES/DISPLACEMENT/DATA";
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, groupName);
+                TabularData<double> tableOfData = Hdf5.Read2DTable<double>(groupId, "STEP_0");
             }
             finally
             {
