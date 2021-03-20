@@ -105,7 +105,7 @@ namespace HDF5CSharp.UnitTests.Core
             [Hdf5EntryName("STEP_1")] public double[,] STEP1 { get; set; }
 
         }
-        [TestMethod]
+        //[TestMethod]
         public void ReadObject()
         {
             Hdf5.Settings.LowerCaseNaming = false;
@@ -131,7 +131,7 @@ namespace HDF5CSharp.UnitTests.Core
             }
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void ReadTable()
         {
             Hdf5.Settings.LowerCaseNaming = false;
