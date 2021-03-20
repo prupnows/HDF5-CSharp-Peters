@@ -108,7 +108,8 @@ namespace HDF5CSharp
                     }
                     else
                     {
-                        values = CallByReflection<Array>(nameof(ReadCompounds), elType, new object[] { groupId, name, alternativeName });
+                        values = CallByReflection<Array>(nameof(ReadCompounds), elType,
+                            new object[] {groupId, name, alternativeName});
                         success = true;
                     }
 
@@ -131,7 +132,7 @@ namespace HDF5CSharp
                             // MakeGenericType is badly named
                             Type constructedClass = genericClass.MakeGenericType(elType);
 
-                            IList created = (IList)Activator.CreateInstance(constructedClass);
+                            IList created = (IList) Activator.CreateInstance(constructedClass);
                             foreach (var o in values)
                             {
                                 created.Add(o);
@@ -143,7 +144,8 @@ namespace HDF5CSharp
                     }
                     else
                     {
-                        var result = CallByReflection<object>(nameof(ReadCompounds), elType, new object[] { groupId, name, alternativeName });
+                        var result = CallByReflection<object>(nameof(ReadCompounds), elType,
+                            new object[] {groupId, name, alternativeName});
                         info.SetValue(readValue, result);
 
                     }
@@ -223,7 +225,7 @@ namespace HDF5CSharp
                     else
                     {
                         var obj = CallByReflection<IEnumerable>(nameof(ReadCompounds), elType,
-                            new object[] { groupId, name, alternativeName });
+                            new object[] {groupId, name, alternativeName});
                         var objArr = (obj).Cast<object>().ToArray();
                         values = Array.CreateInstance(elType, objArr.Length);
                         Array.Copy(objArr, values, objArr.Length);
@@ -244,7 +246,7 @@ namespace HDF5CSharp
                             // MakeGenericType is badly named
                             Type constructedClass = genericClass.MakeGenericType(elType);
 
-                            IList created = (IList)Activator.CreateInstance(constructedClass);
+                            IList created = (IList) Activator.CreateInstance(constructedClass);
                             foreach (var o in values)
                             {
                                 created.Add(o);
@@ -257,7 +259,8 @@ namespace HDF5CSharp
                     }
                     else
                     {
-                        var result = CallByReflection<object>(nameof(ReadCompounds), elType, new object[] { groupId, name, alternativeName });
+                        var result = CallByReflection<object>(nameof(ReadCompounds), elType,
+                            new object[] {groupId, name, alternativeName});
                         info.SetValue(readValue, result);
                     }
                 }
@@ -278,7 +281,8 @@ namespace HDF5CSharp
                         }
                         else
                         {
-                            Hdf5Utils.LogMessage($"property {info.Name} is read only. cannot set value", Hdf5LogLevel.Warning);
+                            Hdf5Utils.LogMessage($"property {info.Name} is read only. cannot set value",
+                                Hdf5LogLevel.Warning);
                         }
                     }
                 }
@@ -298,10 +302,12 @@ namespace HDF5CSharp
         {
             return ReadFileStructure(fileName).tree;
         }
+
         public static List<Hdf5Element> ReadFlatFileStructure(string fileName)
         {
             return ReadFileStructure(fileName).flat;
         }
+
         internal static (List<Hdf5Element> tree, List<Hdf5Element> flat) ReadFileStructure(string fileName)
         {
             var attributes = new List<Hdf5AttributeElement>();
@@ -328,7 +334,8 @@ namespace HDF5CSharp
                 bool reEnableErrors = Settings.ErrorLoggingEnable;
 
                 Settings.EnableErrorReporting(false);
-                H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback, Marshal.StringToHGlobalAnsi("/"));
+                H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,
+                    Marshal.StringToHGlobalAnsi("/"));
                 Settings.EnableErrorReporting(reEnableErrors);
 
 
@@ -365,7 +372,8 @@ namespace HDF5CSharp
                     objectType = H5O.type_t.GROUP;
                     elementType = Hdf5ElementType.Group;
                     ulong attId = 0;
-                    var index = H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
+                    var index = H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback,
+                        Marshal.StringToHGlobalAnsi("/"));
                 }
                 else
                 {
@@ -375,7 +383,8 @@ namespace HDF5CSharp
                         objectType = H5O.type_t.DATASET;
                         elementType = Hdf5ElementType.Dataset;
                         ulong attId = 0;
-                        var index = H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
+                        var index = H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId,
+                            AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
                     }
                     else
                     {
@@ -446,13 +455,49 @@ namespace HDF5CSharp
                 return 0;
 
             }
+
             return (structure, elements);
         }
 
 
         private static string CombinePath(string path1, string path2)
         {
-            return $"{ path1 }/{ path2 }".Replace("///", "/").Replace("//", "/");
+            return $"{path1}/{path2}".Replace("///", "/").Replace("//", "/");
+        }
+
+        public static TabularData<T> Read2DTable<T>(long groupId, string datasetName) where T : new()
+        {
+            TabularData<T> table = new TabularData<T>();
+
+            Type ty = typeof(T[,]);
+            bool success;
+            Array values;
+            if (ty.IsArray)
+            {
+                var elType = ty.GetElementType();
+                TypeCode elCode = Type.GetTypeCode(elType);
+
+                if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
+                {
+                    (success, values) = dsetRW.ReadArray(elType, groupId, datasetName, "");
+                    if (success)
+                    {
+                        table.Data = (T[,]) values;
+                    }
+                }
+                else
+                {
+                    var obj = CallByReflection<IEnumerable>(nameof(ReadCompounds), elType,
+                        new object[] {groupId, datasetName, ""});
+                    var objArr = (obj).Cast<object>().ToArray();
+                    values = Array.CreateInstance(elType, objArr.Length);
+                    Array.Copy(objArr, values, objArr.Length);
+                    table.Data = (T[,]) values;
+                }
+
+            }
+
+            return table;
         }
     }
 }

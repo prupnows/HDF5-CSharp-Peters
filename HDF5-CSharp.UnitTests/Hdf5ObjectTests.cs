@@ -112,7 +112,7 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
-            string filename = @"D:\h5\recorder.hdf5";
+            string filename = @"D:\h5\d.hdf5";
             long fileId = -1;
             try
             {
@@ -121,6 +121,34 @@ namespace HDF5CSharp.UnitTests.Core
                 //var result = Hdf5.ReadObject<Coordinate>(fileId, "/MODEL_STAGE[1]/MODEL/NODES");
                 var step = "/MODEL_STAGE[1]/RESULTS/ON_NODES/DISPLACEMENT/DATA";
                 var result2 = Hdf5.ReadObject<Steps>(fileId, step);
+            }
+            finally
+            {
+                if (fileId > 0)
+                {
+                    Hdf5.CloseFile(fileId);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void ReadTable()
+        {
+            Hdf5.Settings.LowerCaseNaming = false;
+            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
+            Hdf5Utils.LogError = (s) => Errors.Add(s);
+            string filename = @"D:\h5\d.hdf5";
+            long fileId = -1;
+            try
+            {
+                fileId = Hdf5.OpenFile(filename, true);
+                Assert.IsTrue(fileId > 0);
+                //var result = Hdf5.ReadObject<Coordinate>(fileId, "/MODEL_STAGE[1]/MODEL/NODES");
+      
+                var step = "/MODEL_STAGE[1]/RESULTS/ON_NODES/DISPLACEMENT/DATA";
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, step);
+                var result2 = Hdf5.Read2DTable<double>(groupId, "STEP_0");
             }
             finally
             {

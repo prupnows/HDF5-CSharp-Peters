@@ -13,12 +13,12 @@ namespace HDF5CSharp
             return H5G.close(groupId);
         }
 
-        public static long CreateOrOpenGroup(long groupId, string groupName)
+        public static long CreateOrOpenGroup(long fileOrGroupId, string groupName)
         {
 
-            return (Hdf5Utils.ItemExists(groupId, groupName, Hdf5ElementType.Group))
-                ? H5G.open(groupId, Hdf5Utils.NormalizedName(groupName))
-                : H5G.create(groupId, Hdf5Utils.NormalizedName(groupName));
+            return (Hdf5Utils.ItemExists(fileOrGroupId, groupName, Hdf5ElementType.Group))
+                ? H5G.open(fileOrGroupId, Hdf5Utils.NormalizedName(groupName))
+                : H5G.create(fileOrGroupId, Hdf5Utils.NormalizedName(groupName));
         }
 
 
