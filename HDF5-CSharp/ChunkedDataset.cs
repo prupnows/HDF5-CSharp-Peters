@@ -99,6 +99,23 @@ namespace HDF5CSharp
         {
             if (_chunkDims == null)
             {
+                if (dataset.Rank < 1)
+                {
+                    string msg = "Empty array was passed. Ignoring.";
+                    Hdf5Utils.LogError?.Invoke(msg);
+                    return;
+                }
+
+                for (int dimension = 1; dimension <= dataset.Rank; dimension++)
+                {
+                    var size = dataset.GetUpperBound(dimension - 1) + 1;
+                    if (size == 0)
+                    {
+                        string msg = $"Empty array was passed for dimension {dimension}. Ignoring.";
+                        Hdf5Utils.LogError?.Invoke(msg);
+                        return;
+                    }
+                }
                 _chunkDims = new[]
                     {Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1))};
 
