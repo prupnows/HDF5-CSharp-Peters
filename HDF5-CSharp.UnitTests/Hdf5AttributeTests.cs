@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp.UnitTests.Core
 {
@@ -234,6 +235,17 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.CloseFile(openFileId);
             Assert.IsTrue(data.Equals(attObject));
             File.Delete(filename);
+        }
+
+        [TestMethod]
+        public void ReadStringAttributes()
+        {
+            string filename = Path.Combine(folder, "files", "attestex.H5");
+            var openFileId = Hdf5.OpenFile(filename);
+            Hdf5.Settings.CharacterPaddingType = CharacterPaddingType.NULLTERM;
+            Hdf5.Settings.CharacterSetType = CharacterSetType.ASCII;
+            var data = Hdf5.ReadStringAttributes(openFileId, "test","");
+           Hdf5.CloseFile(openFileId);
         }
     }
 }
