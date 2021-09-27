@@ -20,9 +20,9 @@
 		<PackageIconUrl />
 		<RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>- Add support for different string encoding (ASCII / UTF8) #103</PackageReleaseNotes>
+		<PackageReleaseNotes>V1.12.4: Update HDF.PInvoke.1.10 nuget Version to use 1.10.612</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.12.3</Version>
+		<Version>1.12.4</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -56,7 +56,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="HDF.PInvoke.1.10" Version="1.10.611" />
+		<PackageReference Include="HDF.PInvoke.1.10" Version="1.10.612" />
 		<PackageReference Include="Microsoft.Build.Tasks.Git" Version="1.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
