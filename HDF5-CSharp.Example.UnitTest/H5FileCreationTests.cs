@@ -50,7 +50,6 @@ namespace HDF5_CSharp.Example.UnitTest
     {
 
         private string calibrationPath = "CalibrationInfoTest.json";
-        long counter = 0;
 
         [TestMethod]
         public async Task TestFullFileWriteRead()
@@ -246,7 +245,7 @@ namespace HDF5_CSharp.Example.UnitTest
                     frame.timestamp = timestamp.ToUnixTimeMilliseconds();
                     ulong saturationMask = (ulong)random.Next();
                     saturationMask = (saturationMask << 32);
-                    saturationMask = saturationMask | (ulong)random.Next();
+                    saturationMask = saturationMask | (uint)random.Next();
                     frame.SaturationMask = saturationMask;
                     Thread.Sleep(sleepsBetweenWritesMilliseconds);
                     file.AppendElectrodeSample(frame);
@@ -332,8 +331,6 @@ namespace HDF5_CSharp.Example.UnitTest
 
         public async Task TestEventsWrite()
         {
-            int testDurationSeconds = 10;
-            int sleepsBetweenWritesMilliseconds = 100;
             string filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testEvents.h5");
             Console.WriteLine(filename);
             if (File.Exists(filename))
