@@ -148,7 +148,7 @@ namespace HDF5CSharp
 
             if (datasetId == -1L)
             {
-                string error = $"Unable to create dataset for {normalizedName}";
+                string error = $"Unable to create data set for {normalizedName}";
                 LogMessage($"{normalizedName} already exists", Hdf5LogLevel.Error);
                 if (Hdf5.Settings.ThrowOnError)
                 {
@@ -201,7 +201,7 @@ namespace HDF5CSharp
                 var groupAccessId = H5G.open(fileId, group.Name);
                 if (groupAccessId <= 0)
                 {
-                    LogMessage($"unable to open group", Hdf5LogLevel.Error);
+                    LogMessage($"unable to open group: {group.Name}", Hdf5LogLevel.Error);
                     return (string.Empty, false);
                 }
 
@@ -245,7 +245,7 @@ namespace HDF5CSharp
                 var groupAccessId = H5G.open(fileId, group.Name);
                 if (groupAccessId <= 0)
                 {
-                    LogMessage($"unable to open group", Hdf5LogLevel.Error);
+                    LogMessage($"unable to open group: {group.Name}", Hdf5LogLevel.Error);
                     return false;
                 }
 
@@ -272,10 +272,8 @@ namespace HDF5CSharp
             {
                 case CharacterSetType.ASCII:
                     return H5T.cset_t.ASCII;
-                    break;
                 case CharacterSetType.UTF8:
                     return H5T.cset_t.UTF8;
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(characterSetType), characterSetType, null);
             }
@@ -287,13 +285,10 @@ namespace HDF5CSharp
             {
                 case CharacterPaddingType.NULLTERM:
                     return H5T.str_t.NULLTERM;
-                    break;
                 case CharacterPaddingType.NULLPAD:
                     return H5T.str_t.NULLPAD;
-                    break;
                 case CharacterPaddingType.SPACEPAD:
                     return H5T.str_t.SPACEPAD;
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(characterPaddingType), characterPaddingType, null);
             }
