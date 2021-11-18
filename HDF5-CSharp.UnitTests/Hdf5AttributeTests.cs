@@ -40,7 +40,11 @@ namespace HDF5CSharp.UnitTests.Core
                 var groupId = Hdf5.CreateOrOpenGroup(fileId, "test");
                 DateTime nowTime = DateTime.Now;
                 Hdf5.WriteAttribute(groupId, "time", nowTime);
+                Hdf5.WriteAttributes<DateTime>(groupId, "times", new List<DateTime> { nowTime, nowTime.AddDays(1) }.ToArray());
+
                 DateTime readTime = Hdf5.ReadAttribute<DateTime>(groupId, "time");
+                var allTimes = Hdf5.ReadAttributes<DateTime>(groupId, "times");
+
                 Assert.IsTrue(readTime == nowTime);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
             }
@@ -244,8 +248,8 @@ namespace HDF5CSharp.UnitTests.Core
             var openFileId = Hdf5.OpenFile(filename);
             Hdf5.Settings.CharacterPaddingType = CharacterPaddingType.NULLTERM;
             Hdf5.Settings.CharacterSetType = CharacterSetType.ASCII;
-            var data = Hdf5.ReadStringAttributes(openFileId, "test","");
-           Hdf5.CloseFile(openFileId);
+            var data = Hdf5.ReadStringAttributes(openFileId, "test", "");
+            Hdf5.CloseFile(openFileId);
         }
     }
 }
