@@ -20,7 +20,6 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<double> Filtered { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<long> Timestamps { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> PacketIds { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> KalpaClocks { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private BlockingCollectionQueue<ECGFrame> EcgSamplesData { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private Task EcgTaskWriter { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private int ChunkSize;
@@ -42,7 +41,6 @@ namespace HDF5CSharp.Example.DataTypes
             Filtered = new ChunkedDataset<double>("Signals_filtered", GroupId);
             Timestamps = new ChunkedDataset<long>("timestamps", GroupId);
             PacketIds = new ChunkedDataset<ulong>("packetids", GroupId);
-            KalpaClocks = new ChunkedDataset<ulong>("kalpaclocks", GroupId);
             EcgTaskWriter = Task.Factory.StartNew(() =>
             {
                 var buffer = pool.Rent(ChunkSize);
@@ -128,11 +126,6 @@ namespace HDF5CSharp.Example.DataTypes
             {
                 PacketIds.AppendOrCreateDataset(packetIdData);
             }
-
-            if (kalpaClockData != null)
-            {
-                KalpaClocks.AppendOrCreateDataset(kalpaClockData);
-            }
         }
 
 
@@ -175,7 +168,6 @@ namespace HDF5CSharp.Example.DataTypes
                     Filtered.Dispose();
                     Timestamps.Dispose();
                     PacketIds?.Dispose();
-                    KalpaClocks?.Dispose();
                     EcgSamplesData.Dispose();
                     EcgTaskWriter.Dispose();
                     Hdf5.CloseGroup(GroupId);

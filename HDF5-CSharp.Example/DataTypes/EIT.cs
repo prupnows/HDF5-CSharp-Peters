@@ -19,7 +19,6 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> Saturation { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<long> Timestamps { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> PacketIds { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> KalpaClocks { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private BlockingCollectionQueue<ElectrodeFrame> ElectrodeSamplesData { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private Task ElectrodeTaskWriter { get; set; }
         [Hdf5Save(Hdf5Save.DoNotSave)] private bool completed;
@@ -38,7 +37,6 @@ namespace HDF5CSharp.Example.DataTypes
             Saturation = new ChunkedDataset<ulong>("saturations", GroupId);
             Timestamps = new ChunkedDataset<long>("timestamps", GroupId);
             PacketIds = new ChunkedDataset<ulong>("packetids", GroupId);
-            KalpaClocks = new ChunkedDataset<ulong>("kalpaclocks", GroupId);
             ElectrodeTaskWriter = Task.Factory.StartNew(() =>
             {
                 var buffer = pool.Rent(ChunkSize);
@@ -76,7 +74,6 @@ namespace HDF5CSharp.Example.DataTypes
             long[,] timestampData = new long[length, 1];
             // Write packet id, kalpa clock only if exist => value != Uint64.MaxValue (default value)
             ulong[,] packetIdData = samples[0].PacketId == UInt64.MaxValue ? null : new ulong[length, 1];
-            ulong[,] kalpaClockData = samples[0].KalpaClock == UInt64.MaxValue ? null : new ulong[length, 1];
 
             for (var i = 0; i < length; i++)
             {
@@ -100,10 +97,6 @@ namespace HDF5CSharp.Example.DataTypes
                     packetIdData[i, 0] = electrodeFrame.PacketId;
                 }
 
-                if (kalpaClockData != null)
-                {
-                    kalpaClockData[i, 0] = electrodeFrame.KalpaClock;
-                }
             }
             VoltagesReal.AppendOrCreateDataset(vReData);
             VoltagesIm.AppendOrCreateDataset(vImData);
@@ -116,10 +109,7 @@ namespace HDF5CSharp.Example.DataTypes
                 PacketIds.AppendOrCreateDataset(packetIdData);
             }
 
-            if (kalpaClockData != null)
-            {
-                KalpaClocks.AppendOrCreateDataset(kalpaClockData);
-            }
+          
         }
 
         public void Dispose()
@@ -135,7 +125,6 @@ namespace HDF5CSharp.Example.DataTypes
                     Saturation.Dispose();
                     Timestamps.Dispose();
                     PacketIds?.Dispose();
-                    KalpaClocks?.Dispose();
                     ElectrodeTaskWriter.Dispose();
                     Hdf5.CloseGroup(GroupId);
                     Disposed = true;

@@ -18,7 +18,6 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5EntryName("saturations")] public ulong[,] Saturation { get; set; }
         [Hdf5EntryName("timestamps")] public long[,] Timestamps { get; set; }
         [Hdf5EntryName("packetids")] public ulong[,] PacketIds { get; set; }
-        [Hdf5EntryName("kalpaclocks")] public ulong[,] KalpaClocks { get; set; }
 
         public EITEntry()
         {
@@ -79,14 +78,6 @@ namespace HDF5CSharp.Example.DataTypes
                         Enumerable.Range(0, PacketIds.Rank).All(dimension =>
                             PacketIds.GetLength(dimension) == other.PacketIds.GetLength(dimension)) &&
                         PacketIds.Cast<ulong>().SequenceEqual(other.PacketIds.Cast<ulong>());
-            }
-            if (KalpaClocks != null && other.KalpaClocks != null)
-            {
-                equal = equal && KalpaClocks.Rank == other.KalpaClocks.Rank &&
-                        Enumerable.Range(0, KalpaClocks.Rank).All(dimension =>
-                            KalpaClocks.GetLength(dimension) == other.KalpaClocks.GetLength(dimension)) &&
-                        KalpaClocks.Cast<ulong>().SequenceEqual(other.KalpaClocks.Cast<ulong>());
-
             }
             return equal;
         }

@@ -14,7 +14,6 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5EntryName("Signals_filtered")] public double[,] FilteredSignal { get; set; }
         [Hdf5EntryName("timestamps")] public long[,] Timestamps { get; set; }
         [Hdf5EntryName("packetids")] public long[,] PacketIds { get; set; }
-        [Hdf5EntryName("kalpaclocks")] public long[,] KalpaClocks { get; set; }
 
         public ECGData()
         {
@@ -22,7 +21,6 @@ namespace HDF5CSharp.Example.DataTypes
             FilteredSignal = new double[0, 0];
             UnfilteredSignal = new double[0, 0];
             PacketIds = new long[0, 0];
-            KalpaClocks = new long[0, 0];
         }
 
         public bool Equals(ECGData other)

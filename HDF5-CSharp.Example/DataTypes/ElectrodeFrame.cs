@@ -15,8 +15,6 @@ namespace HDF5CSharp.Example.DataTypes
 
         public UInt64 PacketId = UInt64.MaxValue; // serial number of packet
 
-        public UInt64 KalpaClock = UInt64.MaxValue;   // Kalpa timestamp in msec? (the most accurate)
-
         public UInt64 SaturationMask;
 
         public void GenerateDummyData(int electrodeNum)
@@ -35,7 +33,6 @@ namespace HDF5CSharp.Example.DataTypes
             }
 
             PacketId = 5;
-            KalpaClock = 1600;
             SaturationMask = 0;
         }
 
