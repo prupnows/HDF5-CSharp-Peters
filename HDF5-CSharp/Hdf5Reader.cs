@@ -371,9 +371,6 @@ namespace HDF5CSharp
 
                     objectType = H5O.type_t.GROUP;
                     elementType = Hdf5ElementType.Group;
-                    ulong attId = 0;
-                    var index = H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId, AttributeCallback,
-                        Marshal.StringToHGlobalAnsi("/"));
                 }
                 else
                 {
@@ -382,9 +379,6 @@ namespace HDF5CSharp
                     {
                         objectType = H5O.type_t.DATASET;
                         elementType = Hdf5ElementType.Dataset;
-                        ulong attId = 0;
-                        var index = H5A.iterate(groupId, H5.index_t.NAME, H5.iter_order_t.INC, ref attId,
-                            AttributeCallback, Marshal.StringToHGlobalAnsi("/"));
                     }
                     else
                     {
