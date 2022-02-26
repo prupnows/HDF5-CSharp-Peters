@@ -13,16 +13,16 @@
 		<Company>LiorBanai</Company>
 		<Product>HDF5-CSharp</Product>
 		<Description>C# Wrapper for HDF.PInvoke Library</Description>
-		<Copyright>Lior Banai @ 2020-2021</Copyright>
+		<Copyright>Lior Banai @ 2020-2022</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/LiorBanai/HDF5-CSharp</PackageProjectUrl>
 		<PackageIcon>hdf5Wrapper.png</PackageIcon>
 		<PackageIconUrl />
 		<RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>fix #168: ReadFlatFileStructure / ReadTreeFileStructurefails when non string attributes exists in files</PackageReleaseNotes>
+		<PackageReleaseNotes>#175: Fix attribute encoding.</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.12.5</Version>
+		<Version>1.12.6</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
