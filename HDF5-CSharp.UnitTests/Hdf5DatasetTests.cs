@@ -227,7 +227,7 @@ namespace HDF5CSharp.UnitTests.Core
             }
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void WriteAppendFlushAndReadChunckedDataset()
         {
             string filename = Path.Combine(folder, "testChunks.H5");
