@@ -228,6 +228,61 @@ namespace HDF5CSharp.UnitTests.Core
         }
 
         [TestMethod]
+        public void WriteAppendFlushAndReadChunckedDataset()
+        {
+            string filename = Path.Combine(folder, "testChunks.H5");
+            string groupName = "/test";
+            string datasetName = "Data";
+
+            try
+            {
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                var groupId = Hdf5.CreateOrOpenGroup(fileId, groupName);
+                Assert.IsTrue(groupId >= 0);
+                //var chunkSize = new ulong[] { 5, 5 };
+                using (var chunkedDset = new ChunkedDataset<double>(datasetName, groupId, dsets.First()))
+                {
+                    foreach (var ds in dsets)
+                    {
+                        chunkedDset.AppendDataset(ds);
+                        chunkedDset.Flush();
+                        var dsetRead= Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName, "/", datasetName));
+
+                    };
+
+                }
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+
+            try
+            {
+                var fileId = Hdf5.OpenFile(filename);
+                //var groupId = H5G.open(fileId, groupName);
+                //var dset = Hdf5.ReadDatasetToArray<double>(groupId, datasetName);
+                var dset = Hdf5.ReadDatasetToArray<double>(fileId, string.Concat(groupName, "/", datasetName));
+
+                Assert.IsTrue(dset.result.Rank == dsets.First().Rank);
+                var xSum = dsets.Select(d => d.GetLength(0)).Sum();
+                Assert.IsTrue(xSum == dset.result.GetLength(0));
+                var testRange = Enumerable.Range(0, 30).Select(t => (double)t);
+
+                // get every 5th element in the matrix
+                var x0Range = dset.result.Cast<double>().Where((d, i) => i % 5 == 0);
+                Assert.IsTrue(testRange.SequenceEqual(x0Range));
+
+                Hdf5.CloseFile(fileId);
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+        }
+        [TestMethod]
         public void WriteAndOverrideChunkedDataset()
         {
             var data = CreateDataset();

@@ -183,6 +183,18 @@ namespace HDF5CSharp
             H5S.close(filespaceId);
         }
 
+        public void Flush()
+        {
+            try
+            {
+                H5D.flush(_datasetId);
+            }
+            catch (Exception e)
+            {
+                Hdf5Utils.LogError($"Unable to flash dataset: {e}");
+            }
+
+        }
         /// <summary>
         /// Finalizer of object
         /// </summary>
