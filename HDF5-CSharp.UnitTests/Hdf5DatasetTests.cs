@@ -243,7 +243,7 @@ namespace HDF5CSharp.UnitTests.Core
                 //var chunkSize = new ulong[] { 5, 5 };
                 using (var chunkedDset = new ChunkedDataset<double>(datasetName, groupId, dsets.First()))
                 {
-                    foreach (var ds in dsets)
+                    foreach (var ds in dsets.Skip(1))
                     {
                         chunkedDset.AppendDataset(ds);
                         chunkedDset.Flush();
