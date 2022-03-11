@@ -17,8 +17,7 @@
  <a href="https://github.com/LiorBanai/HDF5-CSharp/compare/V1.11.0...master">
     <img src="https://img.shields.io/github/commits-since/LiorBanai/HDF5-CSharp/latest"  alt="Commits Since Latest Release"/>
 </a>
-[![Nuget](https://img.shields.io/nuget/dt/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/)
-
+[![Nuget](https://img.shields.io/nuget/dt/HDF5-CSharp)](https://www.nuget.org/packages/HDF5-CSharp/) [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/donate/?business=MCP57TBRAAVXA&no_recurring=0&item_name=Support+Open+source+Projects+%28Analogy+Log+Viewer%2C+HDF5-CSHARP%2C+etc%29&currency_code=USD)
 
 
 Hdf5 Wrapper: Set of tools that help in reading and writing hdf5 files for .net environments
