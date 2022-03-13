@@ -289,7 +289,8 @@ namespace HDF5CSharp
             return constSize;
         }
 
-        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name, string alternativeName)
+        public static ulong MaxMemoryAllocationOnRead { get; set; } = 1000000000;
+        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name, string alternativeName) where T : struct
         {
             Type type = typeof(T);
             if (type.IsValueType)
@@ -316,27 +317,58 @@ namespace HDF5CSharp
                 int rank = H5S.get_simple_extent_ndims(spaceId);
                 ulong[] dims = new ulong[rank];
                 var ndims = H5S.get_simple_extent_dims(spaceId, dims, null);
-                int rows = Convert.ToInt32(dims[0]);
+                IEnumerable<T> strcts;
 
-                byte[] bytes = new byte[rows * compoundSize];
-                // Read the data.
-                GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-                IntPtr hndAddr = hnd.AddrOfPinnedObject();
-                H5D.read(datasetId, typeId, spaceId, H5S.ALL, H5P.DEFAULT, hndAddr);
-                int counter = 0;
-                IEnumerable<T> strcts = Enumerable.Range(1, rows).Select(i =>
+                
+                ulong rows = dims[0];
+                ulong datasetStorageSize = (ulong) rows * (ulong) compoundSize;
+                // if more than 100 MB
+                if (datasetStorageSize < Hdf5.MaxMemoryAllocationOnRead)
                 {
-                    byte[] select = new byte[compoundSize];
-                    Array.Copy(bytes, counter, select, 0, compoundSize);
-                    T s = fromBytes<T>(select);
-                    counter = counter + compoundSize;
-                    return s;
-                });
-                /*
-                 * Close and release resources.
-                 */
-                H5D.vlen_reclaim(typeId, spaceId, H5P.DEFAULT, hndAddr);
-                hnd.Free();
+
+                    byte[] bytes = new byte[(int)rows * compoundSize];
+                    // Read the data.
+                    GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                    IntPtr hndAddr = hnd.AddrOfPinnedObject();
+                    H5D.read(datasetId, typeId, spaceId, H5S.ALL, H5P.DEFAULT, hndAddr);
+                    int counter = 0;
+                    strcts = Enumerable.Range(1, (int)rows).Select(i =>
+                    {
+                        byte[] select = new byte[compoundSize];
+                        Array.Copy(bytes, counter, select, 0, compoundSize);
+                        T s = fromBytes<T>(select);
+                        counter = counter + compoundSize;
+                        return s;
+                    });
+
+                    /*
+                    * Close and release resources.
+                     */
+                    H5D.vlen_reclaim(typeId, spaceId, H5P.DEFAULT, hndAddr);
+                    hnd.Free();
+
+                }
+                else // data is overflow and need to read the data in chunks 
+                {
+                    ulong batch = Hdf5.MaxMemoryAllocationOnRead / (ulong)compoundSize;
+
+                    ulong startindex = 0;
+                    // read chunk of 100 line
+                    var strcts2 = new List<T>();
+                    while (startindex < (ulong) rows)
+                    {
+                        ulong endIndex = startindex + batch -1 > rows ? rows-1 : startindex + batch - 1;
+                        T[] res  = Hdf5.ReadRowsFromDataset<T>(groupId, name, startindex, endIndex);
+                        strcts2.AddRange(res);
+                        startindex += batch;
+                    }
+
+                    strcts = strcts2;
+                      
+                }
+
+                
+              
                 H5D.close(datasetId);
                 H5S.close(spaceId);
                 H5T.close(typeId);
@@ -347,6 +379,8 @@ namespace HDF5CSharp
             var result = ReadCompounds<byte>(groupId, name, alternativeName);
             return (IEnumerable<T>)ByteArrayToObject(result.ToArray());
         }
+
+
 
     }
 }
