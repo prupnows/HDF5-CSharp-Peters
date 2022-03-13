@@ -163,7 +163,7 @@ namespace HDF5CSharp
         /// <param name="beginIndex">The index of the first row to be read</param>
         /// <param name="endIndex">The index of the last row to be read</param>
         /// <returns>The two dimensional dataset</returns>
-        public static T[] ReadRowsFromDataset<T>(long groupId, string name, ulong beginIndex, ulong endIndex) where T : struct
+        public static T[] ReadRowsFromDataset<T>(long groupId, string name, ulong beginIndex, ulong endIndex)
         {
             ulong[] start = { 0, 0 }, stride = null, count = { 0 },
             block = null, offsetOut = { 0, 0 };

@@ -290,7 +290,7 @@ namespace HDF5CSharp
         }
 
         public static ulong MaxMemoryAllocationOnRead { get; set; } = 1000000000;
-        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name, string alternativeName) where T : struct
+        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name, string alternativeName)
         {
             Type type = typeof(T);
             if (type.IsValueType)
