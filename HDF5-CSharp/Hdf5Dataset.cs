@@ -155,6 +155,62 @@ namespace HDF5CSharp
         }
 
         /// <summary>
+        /// Reads part of a two dimensional dataset.
+        /// </summary>
+        /// <typeparam name="T">Generic parameter strings or primitive type</typeparam>
+        /// <param name="groupId">id of the group. Can also be a file Id</param>
+        /// <param name="name">name of the dataset</param>
+        /// <param name="beginIndex">The index of the first row to be read</param>
+        /// <param name="endIndex">The index of the last row to be read</param>
+        /// <returns>The two dimensional dataset</returns>
+        public static T[] ReadRowsFromDataset<T>(long groupId, string name, ulong beginIndex, ulong endIndex) where T : struct
+        {
+            ulong[] start = { 0, 0 }, stride = null, count = { 0 },
+            block = null, offsetOut = { 0, 0 };
+            Type type = typeof(T);
+            var typeId = CreateType(type);
+            string normalizedName = Hdf5Utils.NormalizedName(name);
+            var datasetId = H5D.open(groupId, normalizedName);
+            var spaceId = H5D.get_space(datasetId);
+            int rank = H5S.get_simple_extent_ndims(spaceId);
+            ulong[] maxDims = new ulong[rank];
+            ulong[] dims = new ulong[rank];
+            ulong[] chunkDims = new ulong[rank];
+            var memId_n = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
+
+            start[0] = beginIndex;
+            start[1] = 0;
+            count[0] = endIndex - beginIndex + 1;
+
+            var status = H5S.select_hyperslab(spaceId, H5S.seloper_t.SET, start, stride, count, block);
+            var memId = H5S.create_simple(rank, count, null);
+
+
+            // Define memory hyperslab.
+            status = H5S.select_hyperslab(memId, H5S.seloper_t.SET, offsetOut, null,
+            count, null);
+
+            // Define the memory dataspace.
+            int msgSize = Marshal.SizeOf(type) * (int)count[0];
+            IntPtr ptr = Marshal.AllocHGlobal(msgSize);
+
+            // Read data from hyperslab in the file into the hyperslab in
+            // memory and display.
+            H5D.read(datasetId, typeId, memId, spaceId,
+            H5P.DEFAULT, ptr);
+            T[] msg = new T[count[0]];
+            for (int i = 0; i < (int)count[0]; i++)
+            {
+                IntPtr ins = new IntPtr(ptr.ToInt64() + i * Marshal.SizeOf(type));
+                msg[i] = Marshal.PtrToStructure<T>(ins);
+            }
+            H5D.close(datasetId);
+            H5S.close(spaceId);
+            H5S.close(memId);
+            return msg;
+        }
+
+        /// <summary>
         /// Reads a dataset or string array with one value in it
         /// </summary>
         /// <typeparam name="T">Generic parameter strings or primitive type</typeparam>
