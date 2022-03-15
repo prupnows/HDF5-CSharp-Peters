@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HDF5CSharp.DataTypes;
+using HDF5CSharp.Example.DataTypes;
 using Microsoft.Extensions.Logging;
 
-namespace HDF5CSharp.Example.DataTypes
+namespace HDF5CSharp.UnitTests.Core
 {
     public class Hdf5SystemEvents
     {
@@ -79,10 +79,10 @@ namespace HDF5CSharp.Example.DataTypes
 
                 var dataToWrite = SystemEventSamplesData;
                 SystemEventSamplesData = new List<SystemEvent>();
-                Logger?.LogInformation("Start write of system events");
+                Logger.LogInformation("Start write of system events");
                 Hdf5SystemEvents events = new Hdf5SystemEvents(dataToWrite);
                 var status = Hdf5.WriteObject(GroupRoot, events, Constants.EventGroupName);
-                Logger?.LogInformation("End write of system events with status " + status);
+                Logger.LogInformation("End write of system events with status " + status);
                 return Task.CompletedTask;
             }
             finally

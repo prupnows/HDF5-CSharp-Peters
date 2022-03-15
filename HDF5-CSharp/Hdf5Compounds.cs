@@ -20,10 +20,25 @@ namespace HDF5CSharp
             Type type = typeof(T);
             if (type.IsValueType)
             {
-                var size = Marshal.SizeOf(type);
+                var ms = new MemoryStream();
+                byte[] bytes = null;
+                try
+                {
+                    BinaryWriter writer = new BinaryWriter(ms);
+                    foreach (var strct in list)
+                    {
+                        writer.Write(getBytes(strct));
+                    }
+                    bytes = ms.ToArray();
+
+                }
+                catch (Exception e)
+                {
+                    Hdf5Utils.LogError(e.Message);
+                    return WriteLargeCompounds<T>(groupId, name, list.ToList(), attributes);
+                }
 
                 var cnt = list.Count();
-
                 var typeId = CreateType(type);
 
                 var log10 = (int)Math.Log10(cnt);
@@ -50,11 +65,68 @@ namespace HDF5CSharp
 
                 var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT, dcpl);
 
-                IntPtr p = Marshal.AllocHGlobal(size * (int)dims[0]);
+                //IntPtr p = Marshal.AllocHGlobal(size * (int)dims[0]);
+
+
+                GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                var statusId = H5D.write(datasetId, typeId, spaceId, H5S.ALL,
+                    H5P.DEFAULT, hnd.AddrOfPinnedObject());
+
+                hnd.Free();
+                /*
+                 * Close and release resources.
+                 */
+                H5D.close(datasetId);
+                H5S.close(spaceId);
+                H5T.close(typeId);
+                H5P.close(dcpl);
+                //Marshal.FreeHGlobal(p);
+                return (statusId, datasetId);
+            }
+            else
+            {
+                byte[] rawdata = ObjectToByteArray(list);
+                return WriteCompounds(groupId, name, rawdata, attributes);
+            }
+        }
+        public static (int success, long CreatedgroupId) WriteLargeCompounds<T>(long groupId, string name, List<T> list, Dictionary<string, List<string>> attributes) //where T : struct
+        {
+            int current = 0;
+            int count = list.Count / 10;
+            Type type = typeof(T);
+            if (type.IsValueType)
+            {
+                var typeId = CreateType(type);
+                var log10 = (int)Math.Log10(count);
+                ulong pow = (ulong)Math.Pow(10, log10);
+                ulong c_s = Math.Min(1000, pow);
+                ulong[] chunk_size = { c_s };
+
+                ulong[] dims = { (ulong)count };
+                ulong[] maxDims = { (ulong)list.Count };
+                long dcpl = 0;
+                if (!list.Any() || log10 == 0)
+                {
+                }
+                else
+                {
+                    dcpl = CreateProperty(chunk_size);
+                }
+
+                // Create dataspace.  Setting maximum size to NULL sets the maximum
+                // size to be the current size.
+                var spaceId = H5S.create_simple(dims.Length, dims, maxDims);
+
+                // Create the dataset and write the compound data to it.
+
+                var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT, dcpl);
+
+                //IntPtr p = Marshal.AllocHGlobal(size * (int)dims[0]);
 
                 var ms = new MemoryStream();
                 BinaryWriter writer = new BinaryWriter(ms);
-                foreach (var strct in list)
+                var chunks = list.Chunk(count).ToList();
+                foreach (var strct in chunks.First())
                 {
                     writer.Write(getBytes(strct));
                 }
@@ -69,11 +141,17 @@ namespace HDF5CSharp
                 /*
                  * Close and release resources.
                  */
+
+                foreach (var cu in chunks.Skip(1))
+                {
+                    current += cu.Count();
+                    AppendCompound(cu, current, datasetId);
+
+                }
                 H5D.close(datasetId);
                 H5S.close(spaceId);
                 H5T.close(typeId);
                 H5P.close(dcpl);
-                Marshal.FreeHGlobal(p);
                 return (statusId, datasetId);
             }
             else
@@ -82,7 +160,41 @@ namespace HDF5CSharp
                 return WriteCompounds(groupId, name, rawdata, attributes);
             }
         }
+        public static void AppendCompound<T>(IEnumerable<T> list, int oldCount, long datasetId)
+        {
+            var _datatype = Hdf5.CreateType(typeof(T));
+            var _oldDims = new ulong[] { (ulong)oldCount, 1 };
+            var _currentDims = new ulong[] { (ulong)list.Count(), 1 };
+            ulong[] zeros = Enumerable.Range(0, 2).Select(z => (ulong)0).ToArray();
 
+            /* Extend the dataset. Dataset becomes 10 x 3  */
+            var size = new ulong[] { (ulong)(_oldDims[0] + _currentDims[0]),1 };
+
+            var _status = H5D.set_extent(datasetId, size);
+            ulong[] offset = new[] { _oldDims[0] }.Concat(zeros.Skip(1)).ToArray();
+
+            /* Select a hyperslab in extended portion of dataset  */
+            var filespaceId = H5D.get_space(datasetId);
+            _status = H5S.select_hyperslab(filespaceId, H5S.seloper_t.SET, offset, null, _currentDims, null);
+
+            /* Define memory space */
+            var memId = H5S.create_simple(2, _currentDims, null);
+            var ms = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(ms);
+            foreach (var strct in list)
+            {
+                writer.Write(getBytes(strct));
+            }
+            var bytes = ms.ToArray();
+
+            /* Write the data to the extended portion of dataset  */
+            GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+            _status = H5D.write(datasetId, _datatype, memId, filespaceId,
+                H5P.DEFAULT, hnd.AddrOfPinnedObject());
+            hnd.Free();
+            H5S.close(memId);
+            H5S.close(filespaceId);
+        }
         private static byte[] ObjectToByteArray<T>(T obj)
         {
             if (obj == null)
@@ -319,9 +431,9 @@ namespace HDF5CSharp
                 var ndims = H5S.get_simple_extent_dims(spaceId, dims, null);
                 IEnumerable<T> strcts;
 
-                
+
                 ulong rows = dims[0];
-                ulong datasetStorageSize = (ulong) rows * (ulong) compoundSize;
+                ulong datasetStorageSize = (ulong)rows * (ulong)compoundSize;
                 // if more than 100 MB
                 if (datasetStorageSize < Hdf5.MaxMemoryAllocationOnRead)
                 {
@@ -355,20 +467,20 @@ namespace HDF5CSharp
                     ulong startindex = 0;
                     // read chunk of 100 line
                     var strcts2 = new List<T>();
-                    while (startindex < (ulong) rows)
+                    while (startindex < (ulong)rows)
                     {
-                        ulong endIndex = startindex + batch -1 > rows ? rows-1 : startindex + batch - 1;
-                        T[] res  = Hdf5.ReadRowsFromDataset<T>(groupId, name, startindex, endIndex);
+                        ulong endIndex = startindex + batch - 1 > rows ? rows - 1 : startindex + batch - 1;
+                        T[] res = Hdf5.ReadRowsFromDataset<T>(groupId, name, startindex, endIndex);
                         strcts2.AddRange(res);
                         startindex += batch;
                     }
 
                     strcts = strcts2;
-                      
+
                 }
 
-                
-              
+
+
                 H5D.close(datasetId);
                 H5S.close(spaceId);
                 H5T.close(typeId);

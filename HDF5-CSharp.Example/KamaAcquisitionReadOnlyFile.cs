@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HDF5CSharp.Example.DataTypes.HDF5Store.DataTypes;
 
 namespace HDF5CSharp.Example
 {
@@ -14,6 +15,7 @@ namespace HDF5CSharp.Example
         public ECGData ECG { get; set; }
         public List<EITEntry> EITs { get; set; }
         public List<SystemEvent> Events { get; set; }
+        public List<MeansFullECGEvent> Means { get; set; }
         public bool HasEIT => EITs.Any();
         private long fileId;
         private string rootName = "/";
@@ -24,6 +26,7 @@ namespace HDF5CSharp.Example
         private string ecgName = "/ecg";
         private string eitName = "/eit";
         private string eventsName = "/events/system_events";
+        private string meansName = "/means/ecg_means_events";
         private bool fileClosed;
 
         public KamaAcquisitionReadOnlyFile(string filename)
@@ -68,6 +71,7 @@ namespace HDF5CSharp.Example
                 ProcedureInformation = Hdf5.ReadObject<ProcedureInformation>(fileId, groupName);
             }
         }
+
         public void ReadPatientInformation()
         {
             string groupName = rootName + patient_informationName;
@@ -114,17 +118,61 @@ namespace HDF5CSharp.Example
                 index++;
             }
         }
-
-        public void ReadSystemEvents()
+        public List<MeansFullECGEvent> ReadMeansEvents()
         {
+            if (Means.Any())
+            {
+                return Means;
+            }
+            if (fileClosed)
+            {
+                fileId = Hdf5.OpenFile(FileName);
+                fileClosed = false;
+            }
+            string groupName = rootName + meansName;
+            if (Hdf5.GroupExists(fileId, groupName))
+            {
+                try
+                {
+                    var e = Hdf5.ReadCompounds<MeansFullECGEvent>(fileId, groupName, "");
+                    Means.AddRange(e);
+                    return Means;
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("Error reading means events: " + exception);
+                }
+            }
+
+            return new List<MeansFullECGEvent>(0);
+        }
+        
+        public List<SystemEvent> ReadSystemEvents()
+        {
+            if (Events.Any())
+            {
+                return Events;
+            }
+            if (fileClosed)
+            {
+                fileId = Hdf5.OpenFile(FileName);
+                fileClosed = false;
+            }
             string groupName = rootName + eventsName;
             if (Hdf5.GroupExists(fileId, groupName))
             {
-                var e = Hdf5.ReadCompounds<SystemEvent>(fileId, groupName, "");
-                Events.AddRange(e);
+                try
+                {
+                    var e = Hdf5.ReadCompounds<SystemEvent>(fileId, groupName, "");
+                    Events.AddRange(e);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("Error reading events: " + exception);
+                }
+
             }
-
-
+            return Events;
         }
 
         public void Dispose()

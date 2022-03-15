@@ -1,16 +1,10 @@
-﻿using HDF5CSharp.DataTypes;
-using HDF5CSharp.Example.DataTypes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
+using HDF5CSharp.DataTypes;
 
-namespace HDF5_CSharp.Example.UnitTest
+namespace HDF5CSharp.UnitTests.Core
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct SystemEvent2
+    public struct SystemEvent
     {
         [Hdf5EntryName("timestamp")] public long timestamp;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 100)][Hdf5EntryName("type")] public string type;
@@ -19,7 +13,7 @@ namespace HDF5_CSharp.Example.UnitTest
         [Hdf5EntryName("error")] public int isError;
 
   
-        public SystemEvent2(long timestamp, string type, string description, string data, bool isError)
+        public SystemEvent(long timestamp, string type, string description, string data, bool isError)
         {
             this.timestamp = timestamp;
             this.type = type;
@@ -31,14 +25,14 @@ namespace HDF5_CSharp.Example.UnitTest
         public bool GetErrorAsBoolean() => isError == 1;
 
 
-        public bool Equals(SystemEvent2 other)
+        public bool Equals(SystemEvent other)
         {
             return timestamp == other.timestamp && type == other.type && description == other.description && data == other.data && isError == other.isError;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is SystemEvent2 other && Equals(other);
+            return obj is SystemEvent other && Equals(other);
         }
 
         public override int GetHashCode()

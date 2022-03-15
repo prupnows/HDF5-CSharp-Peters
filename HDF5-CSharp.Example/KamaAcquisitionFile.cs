@@ -39,10 +39,10 @@ namespace HDF5CSharp.Example
             Hdf5.Settings.LowerCaseNaming = true;
             Hdf5.Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
             Hdf5.Settings.EnableErrorReporting(true);
-            Hdf5Utils.LogError = s => Logger.LogError($"HDF5 Error: {s}");
-            Hdf5Utils.LogWarning = s => Logger.LogWarning($"HDF5 Warning: {s}");
-            Hdf5Utils.LogDebug = s => Logger.LogDebug($"HDF5 Debug: {s}");
-            Hdf5Utils.LogInfo = s => Logger.LogInformation($"HDF5 Info: {s}");
+            Hdf5Utils.LogError = s => Logger?.LogError($"HDF5 Error: {s}");
+            Hdf5Utils.LogWarning = s => Logger?.LogWarning($"HDF5 Warning: {s}");
+            Hdf5Utils.LogDebug = s => Logger?.LogDebug($"HDF5 Debug: {s}");
+            Hdf5Utils.LogInfo = s => Logger?.LogInformation($"HDF5 Info: {s}");
         }
         public KamaAcquisitionFile(string filename, AcquisitionInterface acquisitionInterface, ILogger logger,
             int eitDefaultChunkSize = 24000, int ecgDefaultChunkSize = 10)

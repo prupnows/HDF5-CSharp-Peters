@@ -54,7 +54,7 @@ namespace HDF5CSharp.Example.DataTypes
 
             if (record)
             {
-                SystemEvent hdf5SystemEvent = new SystemEvent(systemEvent.TimeStamp, systemEvent.SystemEventType.ToString(), "", systemEvent.EventData);
+                SystemEvent hdf5SystemEvent = new SystemEvent(systemEvent.TimeStamp, systemEvent.SystemEventType.ToString(), "", systemEvent.EventData,false);
                 SystemEventSamplesData.Add(hdf5SystemEvent);
             }
         }

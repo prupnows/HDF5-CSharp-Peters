@@ -40,15 +40,15 @@ namespace HDF5CSharp.Example.DataTypes
         {
             if (!userEventsData.Any())
             {
-                Logger.LogWarning("No user event to write to H5 file");
+                Logger?.LogWarning("No user event to write to H5 file");
                 return Task.CompletedTask;
             }
             var dataToWrite = userEventsData;
             userEventsData = new List<UserEventRecord>();
             Hdf5UserEvents eventsToH5 = new Hdf5UserEvents(dataToWrite);
-            Logger.LogInformation("Start write of User Events");
+            Logger?.LogInformation("Start write of User Events");
             var status = Hdf5.WriteObject(GroupRoot, eventsToH5, Constants.EventGroupName);
-            Logger.LogInformation("End write of User Events with status " + status);
+            Logger?.LogInformation("End write of User Events with status " + status);
             return Task.CompletedTask;
         }
         public void Dispose()

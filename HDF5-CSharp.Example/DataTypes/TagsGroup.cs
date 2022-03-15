@@ -33,9 +33,9 @@ namespace HDF5CSharp.Example.DataTypes
         public Task WaitForDataWritten()
         {
             record = false;
-            Logger.LogInformation("Start write of Tags");
+            Logger?.LogInformation("Start write of Tags");
             var status = Hdf5.WriteObject(GroupId, TagsData.ToArray());
-            Logger.LogInformation("End write of Tags with status " + status);
+            Logger?.LogInformation("End write of Tags with status " + status);
             return Task.CompletedTask;
         }
 

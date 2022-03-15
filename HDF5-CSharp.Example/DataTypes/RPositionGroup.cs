@@ -84,19 +84,19 @@ namespace HDF5CSharp.Example.DataTypes
                 LockSlim.EnterWriteLock();
                 if (!RPositionSamplesData.Any())
                 {
-                    Logger.LogWarning("No R Position events to write to H5 file");
+                    Logger?.LogWarning("No R Position events to write to H5 file");
                     return Task.CompletedTask;
                 }
                 var dataToWrite = RPositionSamplesData;
                 RPositionSamplesData = new List<RPositionEvent>();
-                Logger.LogInformation("Start write of RPosition events");
+                Logger?.LogInformation("Start write of RPosition events");
                 Hdf5RPositionEvents events = new Hdf5RPositionEvents(dataToWrite);
                 var status = Hdf5.WriteObject(GroupRoot, events, Constants.EventGroupName);
-                Logger.LogInformation("End write of RPosition with status " + status);
+                Logger?.LogInformation("End write of RPosition with status " + status);
             }
             catch (Exception e)
             {
-                Logger.LogError(e, $"Error writing RPosition Events: {e.Message}");
+                Logger?.LogError(e, $"Error writing RPosition Events: {e.Message}");
             }
             finally
             {

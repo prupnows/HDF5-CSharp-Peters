@@ -31,7 +31,7 @@ namespace HDF5CSharp.Example.DataTypes
             SamplingRate = sampleRate;
             if (sampleRate == 0)
             {
-                logger.LogCritical("No sample rate was supplied");
+                logger?.LogCritical("No sample rate was supplied");
             }
             EcgSamplesData = new BlockingCollectionQueue<ECGFrame>();
             Parameters = new Dictionary<string, string>();
@@ -176,7 +176,7 @@ namespace HDF5CSharp.Example.DataTypes
             }
             catch (Exception e)
             {
-                Logger.LogError($"Error during dispose of ECG: {e.Message}");
+                Logger?.LogError($"Error during dispose of ECG: {e.Message}");
             }
         }
 
