@@ -13,7 +13,7 @@ namespace HDF5_CSharp.Example.UnitTest
     [TestClass]
     public class Hdf5UnitTests 
     {
-        [TestMethod]
+        //[TestMethod]
         public async Task TestFullFileWriteReadWithManyMeansResults()
         {
             string meanContent = File.ReadAllText("SingleMeanResult.txt", Encoding.UTF8);
@@ -74,7 +74,7 @@ namespace HDF5_CSharp.Example.UnitTest
                     // Assert.IsTrue(events[i].data == i);
                 }
             }
-            //File.Delete(filename);
+            File.Delete(filename);
 
         }
     }
