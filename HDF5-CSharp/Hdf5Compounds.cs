@@ -27,7 +27,7 @@ namespace HDF5CSharp
                     BinaryWriter writer = new BinaryWriter(ms);
                     foreach (var strct in list)
                     {
-                        writer.Write(getBytes(strct));
+                        writer.Write(GetBytes(strct));
                     }
                     bytes = ms.ToArray();
 
@@ -121,14 +121,12 @@ namespace HDF5CSharp
 
                 var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT, dcpl);
 
-                //IntPtr p = Marshal.AllocHGlobal(size * (int)dims[0]);
-
                 var ms = new MemoryStream();
                 BinaryWriter writer = new BinaryWriter(ms);
                 var chunks = list.Chunk(count).ToList();
                 foreach (var strct in chunks.First())
                 {
-                    writer.Write(getBytes(strct));
+                    writer.Write(GetBytes(strct));
                 }
 
                 var bytes = ms.ToArray();
@@ -183,7 +181,7 @@ namespace HDF5CSharp
             BinaryWriter writer = new BinaryWriter(ms);
             foreach (var strct in list)
             {
-                writer.Write(getBytes(strct));
+                writer.Write(GetBytes(strct));
             }
             var bytes = ms.ToArray();
 
@@ -195,7 +193,7 @@ namespace HDF5CSharp
             H5S.close(memId);
             H5S.close(filespaceId);
         }
-        private static byte[] ObjectToByteArray<T>(T obj)
+        public static byte[] ObjectToByteArray<T>(T obj)
         {
             if (obj == null)
             {
@@ -219,7 +217,7 @@ namespace HDF5CSharp
             object obj = binForm.Deserialize(memStream);
             return obj;
         }
-        private static long CreateProperty(ulong[] chunk_size)
+        public static long CreateProperty(ulong[] chunk_size)
         {
             var dcpl = H5P.create(H5P.DATASET_CREATE);
             H5P.set_layout(dcpl, H5D.layout_t.CHUNKED);
@@ -228,7 +226,7 @@ namespace HDF5CSharp
             return dcpl;
         }
 
-        private static long CreateType(Type t)
+        public static long CreateType(Type t)
         {
             var size = Marshal.SizeOf(t);
             var float_size = Marshal.SizeOf(typeof(float));

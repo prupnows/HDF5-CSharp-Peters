@@ -36,7 +36,7 @@ namespace HDF5CSharp
             return objectData;
         }
 
-        public static byte[] getBytes<T>(T strct)
+        public static byte[] GetBytes<T>(T strct)
         {
             int size = Marshal.SizeOf(strct);
             byte[] arr = new byte[size];
