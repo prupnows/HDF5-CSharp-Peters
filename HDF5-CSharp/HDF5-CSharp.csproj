@@ -20,9 +20,9 @@
 		<PackageIconUrl />
 		<RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>#180: Support large compound lists [WIP]</PackageReleaseNotes>
+		<PackageReleaseNotes>#181: Create ChunkedCompound writer/reader [WIP]</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.12.9-rc</Version>
+		<Version>1.13.0-rc</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
