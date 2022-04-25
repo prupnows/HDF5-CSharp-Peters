@@ -69,7 +69,7 @@ namespace HDF5CSharp
             long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
 
             string normalizedName = Hdf5Utils.NormalizedName(name);
-            var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId);
+            var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId, H5P.DEFAULT);
             if (datasetId == -1L)
             {
                 return (-1, -1L);

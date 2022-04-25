@@ -93,16 +93,16 @@ namespace HDF5CSharp
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
-        internal static long GetDatasetId(long parentId, string name, long dataType, long spaceId)
+        internal static long GetDatasetId(long parentId, string name, long dataType, long spaceId, long propId)
         {
-            return GetId(parentId, name, dataType, spaceId, Hdf5ElementType.Dataset);
+            return GetId(parentId, name, dataType, spaceId, propId,Hdf5ElementType.Dataset );
         }
         internal static long GetAttributeId(long parentId, string name, long dataType, long spaceId)
         {
-            return GetId(parentId, name, dataType, spaceId, Hdf5ElementType.Attribute);
+            return GetId(parentId, name, dataType, spaceId, -1,Hdf5ElementType.Attribute);
         }
 
-        private static long GetId(long parentId, string name, long dataType, long spaceId, Hdf5ElementType type)
+        private static long GetId(long parentId, string name, long dataType, long spaceId,long propId, Hdf5ElementType type)
         {
             string normalizedName = NormalizedName(name);
             bool exists = ItemExists(parentId, normalizedName, type);
@@ -130,9 +130,9 @@ namespace HDF5CSharp
                     if (exists)
                     {
                         H5L.delete(parentId, normalizedName);
-                        // datasetId = H5D.open(parentId, normalizedName);
                     }
-                    datasetId = H5D.create(parentId, normalizedName, dataType, spaceId);
+                    datasetId = H5D.create(parentId, normalizedName, dataType, spaceId, H5P.DEFAULT, propId);
+
                     break;
                 case Hdf5ElementType.Attribute:
                     if (exists)

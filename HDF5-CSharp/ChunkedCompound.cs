@@ -74,11 +74,10 @@ namespace HDF5CSharp
             // Create dataspace.  Setting maximum size to NULL sets the maximum
             // size to be the current size.
             _spaceId = H5S.create_simple(dims.Length, dims, _maxDims);
-
+            
             // Create the dataset and write the compound data to it.
+            _datasetId = Hdf5Utils.GetDatasetId(GroupId, Hdf5Utils.NormalizedName(GroupName), typeId, _spaceId, dcpl);
 
-            _datasetId = H5D.create(GroupId, Hdf5Utils.NormalizedName(GroupName), typeId, _spaceId, H5P.DEFAULT,
-                dcpl);
 
             var ms = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(ms);
