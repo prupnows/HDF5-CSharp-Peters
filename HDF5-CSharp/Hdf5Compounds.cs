@@ -63,7 +63,7 @@ namespace HDF5CSharp
 
 
                 // Create the dataset if it doesn't exist + remove and create otherwise
-                var datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId);
+                var datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT);
                 
                 GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
                 var statusId = H5D.write(datasetId, typeId, spaceId, H5S.ALL,
@@ -116,7 +116,7 @@ namespace HDF5CSharp
 
                 // Create the dataset and write the compound data to it.
 
-                var datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId);
+                var datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT);
 
                 var ms = new MemoryStream();
                 BinaryWriter writer = new BinaryWriter(ms);

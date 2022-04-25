@@ -272,7 +272,7 @@ namespace HDF5CSharp
             }
 
             string normalizedName = Hdf5Utils.NormalizedName(name);
-            var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId);
+            var datasetId = Hdf5Utils.GetDatasetId(groupId, normalizedName, datatype, spaceId, H5P.DEFAULT);
             if (datasetId == -1L)
             {
                 return (-1, -1L);
@@ -318,7 +318,7 @@ namespace HDF5CSharp
             {
 
                 spaceId = H5S.create_simple(dset.Rank, dimsExtend, maxDimsExtend);
-                datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId);
+                datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT);
 
                 var propId = H5P.create(H5P.DATASET_CREATE);
                 status = H5P.set_chunk(propId, rank, dimsChunk);

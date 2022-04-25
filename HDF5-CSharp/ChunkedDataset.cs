@@ -79,7 +79,7 @@ namespace HDF5CSharp
             _status = H5P.set_chunk(_propId, Rank, _chunkDims);
 
             /* Create a new dataset within the file using chunk creation properties.  */
-            _datasetId = Hdf5Utils.GetDatasetId(GroupId, Hdf5Utils.NormalizedName(Datasetname), _datatype, _spaceId);
+            _datasetId = Hdf5Utils.GetDatasetId(GroupId, Hdf5Utils.NormalizedName(Datasetname), _datatype, _spaceId,_propId);
 
             /* Write data to dataset */
             GCHandle hnd = GCHandle.Alloc(dataset, GCHandleType.Pinned);
@@ -130,7 +130,7 @@ namespace HDF5CSharp
                 _status = H5P.set_chunk(_propId, Rank, _chunkDims);
 
                 /* Create a new dataset within the file using chunk creation properties.  */
-                _datasetId = Hdf5Utils.GetDatasetId(GroupId, Hdf5Utils.NormalizedName(Datasetname), _datatype, _spaceId);
+                _datasetId = Hdf5Utils.GetDatasetId(GroupId, Hdf5Utils.NormalizedName(Datasetname), _datatype, _spaceId,_propId);
 
                 /* Write data to dataset */
                 GCHandle hnd = GCHandle.Alloc(dataset, GCHandleType.Pinned);
