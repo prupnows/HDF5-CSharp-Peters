@@ -61,13 +61,10 @@ namespace HDF5CSharp
                 // size to be the current size.
                 var spaceId = H5S.create_simple(dims.Length, dims, null);
 
-                // Create the dataset and write the compound data to it.
 
-                var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT, dcpl);
-
-                //IntPtr p = Marshal.AllocHGlobal(size * (int)dims[0]);
-
-
+                // Create the dataset if it doesn't exist + remove and create otherwise
+                var datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId);
+                
                 GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
                 var statusId = H5D.write(datasetId, typeId, spaceId, H5S.ALL,
                     H5P.DEFAULT, hnd.AddrOfPinnedObject());
@@ -119,7 +116,7 @@ namespace HDF5CSharp
 
                 // Create the dataset and write the compound data to it.
 
-                var datasetId = H5D.create(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT, dcpl);
+                var datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId);
 
                 var ms = new MemoryStream();
                 BinaryWriter writer = new BinaryWriter(ms);
