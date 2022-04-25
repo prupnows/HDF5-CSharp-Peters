@@ -99,7 +99,7 @@ namespace HDF5CSharp
         }
         internal static long GetAttributeId(long parentId, string name, long dataType, long spaceId)
         {
-            return GetId(parentId, name, dataType, spaceId, -1,Hdf5ElementType.Attribute);
+            return GetId(parentId, name, dataType, spaceId, H5P.DEFAULT,Hdf5ElementType.Attribute);
         }
 
         private static long GetId(long parentId, string name, long dataType, long spaceId,long propId, Hdf5ElementType type)
