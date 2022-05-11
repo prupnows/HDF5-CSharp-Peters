@@ -38,6 +38,7 @@ namespace HDF5CSharp.Example
             ECG = new ECGData();
             EITs = new List<EITEntry>();
             Events = new List<SystemEvent>();
+            Means = new List<MeansFullECGEvent>();
             Hdf5.Settings.LowerCaseNaming = true;
             Hdf5.Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
             fileId = Hdf5.OpenFile(filename);

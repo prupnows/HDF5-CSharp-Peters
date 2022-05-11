@@ -34,6 +34,8 @@ namespace HDF5CSharp.Example
         public string FileName { get; private set; }
         private int EITDefaultChunkSize { get; set; }
         private int ECGDefaultChunkSize { get; set; }
+        public MeansGroup MeansData { get; set; }
+
         static KamaAcquisitionFile()
         {
             Hdf5.Settings.LowerCaseNaming = true;
@@ -51,11 +53,12 @@ namespace HDF5CSharp.Example
             Logger = logger;
             EITDefaultChunkSize = eitDefaultChunkSize;
             ECGDefaultChunkSize = ecgDefaultChunkSize;
-
             RecordNumber = 1;
             H5E.set_auto(H5E.DEFAULT, null, IntPtr.Zero);
             fileId = Hdf5.CreateFile(filename);
-            groupRoot = fileId;
+            groupRoot = fileId; 
+            MeansData = new MeansGroup(fileId, groupRoot, logger);
+
             groupEIT = Hdf5.CreateOrOpenGroup(groupRoot, "eit");
             ProcedureInformation = new ProcedureInformation(fileId, groupRoot, logger)
             {
@@ -92,6 +95,7 @@ namespace HDF5CSharp.Example
             SystemEvents?.StopRecording();
             RPosition?.StopRecording();
             Tags?.StopRecording();
+            MeansData?.StopRecording();
             RecordingInProgress = false;
         }
 
@@ -104,6 +108,8 @@ namespace HDF5CSharp.Example
             SystemEvents.StartLogging();
             RPosition.StartLogging();
             Tags.StartLogging();
+            MeansData.StartLogging();
+
             return Task.CompletedTask;
         }
 
@@ -145,6 +151,11 @@ namespace HDF5CSharp.Example
             {
                 await UserEventsGroup.WaitForDataWritten();
                 UserEventsGroup.Dispose();
+            }
+            if (MeansData != null)
+            {
+                await MeansData.WaitForDataWritten();
+                MeansData.Dispose();
             }
             await Task.CompletedTask;
         }
@@ -238,6 +249,9 @@ namespace HDF5CSharp.Example
         }
 
         public void AppendRPosition(RPositionsMessagePack rPositions) => RPosition.Enqueue(rPositions);
+        public void AppendMean(long timestamp, string data) => MeansData.Enqueue(timestamp, data);
+        public void AppendMeans(List<(long timestamp, string data)> data) => MeansData.EnqueueRange(data);
 
     }
+
 }

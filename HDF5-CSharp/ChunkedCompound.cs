@@ -108,6 +108,11 @@ namespace HDF5CSharp
 
         public void AppendOrCreateCompound(IEnumerable<T> items)
         {
+            if (items == null || !items.Any())
+            {
+                Hdf5Utils.LogWarning($"Empty list in {nameof(AppendOrCreateCompound)}");
+                return;
+            }
             if (_currentDims == null)
             {
                 if (items.LongCount() < 1)
