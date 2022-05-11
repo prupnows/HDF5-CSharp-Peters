@@ -157,6 +157,11 @@ namespace HDF5CSharp
         }
         public static void AppendCompound<T>(IEnumerable<T> list, int oldCount, long datasetId)
         {
+            if (list == null || !list.Any())
+            {
+                Hdf5Utils.LogWarning($"Empty list in {nameof(AppendCompound)}");
+                return;
+            }
             var _datatype = Hdf5.CreateType(typeof(T));
             var _oldDims = new ulong[] { (ulong)oldCount, 1 };
             var _currentDims = new ulong[] { (ulong)list.Count(), 1 };

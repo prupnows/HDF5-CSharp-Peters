@@ -55,23 +55,28 @@ namespace HDF5CSharp.Example.DataTypes
         private void AppendSamples()
         {
 
-            try
+            if (MeansSamplesData.Any())
             {
-                LockSlim.EnterWriteLock();
-                if (MeansSamplesData.Any())
+                try
                 {
+                    LockSlim.EnterWriteLock();
                     ChunkedMeansSystemEvents.AppendOrCreateCompound(MeansSamplesData);
                     MeansSamplesData.Clear();
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, $"Error appending means events: {e.Message}");
+                catch (Exception e)
+                {
+                    Logger.LogError(e, $"Error appending means events: {e.Message}");
+
+                }
+                finally
+                {
+                    LockSlim.ExitWriteLock();
+                }
 
             }
-            finally
+            else
             {
-                LockSlim.ExitWriteLock();
+                Logger.LogWarning("No means system events to write to H5 file");
             }
         }
 

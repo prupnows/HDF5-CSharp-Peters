@@ -88,9 +88,11 @@ namespace HDF5_CSharp.Example.UnitTest
                 kama.AppendMean(d.timestamp, d.data);
             }
 
-            await Task.Delay(15000);
+            await Task.Delay(5000);
             var d2 = data.Skip(10).ToList();
             kama.AppendMeans(d2);
+            await Task.Delay(5000);
+
             return data;
         }
     }

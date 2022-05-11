@@ -130,6 +130,11 @@ namespace HDF5CSharp
         }
         public void AppendCompound(IEnumerable<T> list)
         {
+            if (list == null || !list.Any())
+            {
+                Hdf5Utils.LogWarning($"Empty list in {nameof(AppendCompound)}");
+                return;
+            }
             if (!Hdf5Utils.GetRealName(GroupId, GroupName, string.Empty).valid)
             {
                 string msg = $"call constructor or {nameof(FirstCompound)} first before appending.";
