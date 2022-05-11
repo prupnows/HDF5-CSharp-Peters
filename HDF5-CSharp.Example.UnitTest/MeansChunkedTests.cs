@@ -44,10 +44,10 @@ namespace HDF5_CSharp.Example.UnitTest
             string data = File.ReadAllText(AcquisitionScanProtocolPath);
             AcquisitionProtocolParameters parameters = AcquisitionProtocolParameters.FromJson(data);
             await kama.StartLogging(parameters);
-            await GenerateMeans(kama);
+            var meansData = await GenerateMeans();
             kama.StopRecording();
             await kama.StopProcedure();
-            
+
 
             using (KamaAcquisitionReadOnlyFile readFile = new KamaAcquisitionReadOnlyFile(filename))
             {
@@ -58,13 +58,26 @@ namespace HDF5_CSharp.Example.UnitTest
                 Assert.IsTrue(readFile.ProcedureInformation.Equals(kama.ProcedureInformation));
                 Assert.IsTrue(readFile.SystemInformation.Equals(kama.SystemInformation));
 
-                readFile.ReadMeansEvents();
+                var means = readFile.ReadMeansEvents();
+                CheckMeans(meansData, means);
             }
 
             File.Delete(filename);
         }
 
-        private async Task GenerateMeans(KamaAcquisitionFile kamaAcquisitionFile)
+        private void CheckMeans(List<(long timestamp, string data)> meansData, List<MeansFullECGEvent> means)
+        {
+            Assert.IsTrue(meansData.Count == means.Count);
+            for (var i = 0; i < means.Count; i++)
+            {
+                MeansFullECGEvent mean = means[i];
+                Assert.IsTrue(meansData[i].timestamp == mean.timestamp);
+                Assert.IsTrue(meansData[i].data == mean.data);
+                Assert.IsTrue(mean.index == i + 1);
+            }
+        }
+
+        private async Task<List<(long, string)>> GenerateMeans()
         {
             var data = Enumerable.Range(0, 1000)
                 .Select(i => (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), i.ToString())).ToList();
@@ -78,7 +91,7 @@ namespace HDF5_CSharp.Example.UnitTest
             await Task.Delay(15000);
             var d2 = data.Skip(10).ToList();
             kama.AppendMeans(d2);
-
+            return data;
         }
     }
 }
