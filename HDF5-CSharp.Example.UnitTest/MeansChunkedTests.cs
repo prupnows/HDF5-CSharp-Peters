@@ -89,10 +89,11 @@ namespace HDF5_CSharp.Example.UnitTest
             }
 
             await Task.Delay(5000);
-            var d2 = data.Skip(10).ToList();
+            var d2 = data.Skip(10).Take(10).ToList();
             kama.AppendMeans(d2);
             await Task.Delay(5000);
-
+            var d3 = data.Skip(20).ToList();
+            kama.AppendMeans(d3);
             return data;
         }
     }
