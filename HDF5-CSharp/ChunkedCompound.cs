@@ -143,11 +143,11 @@ namespace HDF5CSharp
             }
 
             var _oldDims = this._currentDims.ToArray();
-            var _currentDims = new ulong[] { (ulong)list.LongCount(), 1 };
+            var _ListDims = new ulong[] { (ulong)list.LongCount(), 1 };
             ulong[] zeros = Enumerable.Range(0, 2).Select(z => (ulong)0).ToArray();
 
             /* Extend the dataset. Dataset becomes 10 x 3  */
-            var size = new ulong[] { _oldDims[0] + _currentDims[0], 1 };
+            var size = new ulong[] { _oldDims[0] + _ListDims[0], 1 };
 
             var _status = H5D.set_extent(_datasetId, size);
             ulong[] offset = new[] { _oldDims[0] }.Concat(zeros.Skip(1)).ToArray();
@@ -160,7 +160,7 @@ namespace HDF5CSharp
                 Hdf5Utils.LogError?.Invoke(msg);
                 throw new Hdf5Exception(msg);
             }
-            _status = H5S.select_hyperslab(filespaceId, H5S.seloper_t.SET, offset, null, _currentDims, null);
+            _status = H5S.select_hyperslab(filespaceId, H5S.seloper_t.SET, offset, null, _ListDims, null);
             if (_status < 0)
             {
                 string msg = $"error creating hyperslab.";
@@ -168,7 +168,7 @@ namespace HDF5CSharp
                 throw new Hdf5Exception(msg);
             }
             /* Define memory space */
-            var memId = H5S.create_simple(2, _currentDims, null);
+            var memId = H5S.create_simple(2, _ListDims, null);
             var ms = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(ms);
             foreach (var strct in list)
@@ -176,7 +176,7 @@ namespace HDF5CSharp
                 writer.Write(Hdf5.GetBytes(strct));
             }
             var bytes = ms.ToArray();
-
+            _currentDims = size;
             /* Write the data to the extended portion of dataset  */
             GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             _status = H5D.write(_datasetId, _datatype, memId, filespaceId,
@@ -185,6 +185,7 @@ namespace HDF5CSharp
             hnd.Free();
             H5S.close(memId);
             H5S.close(filespaceId);
+            
         }
 
         public void Flush()
