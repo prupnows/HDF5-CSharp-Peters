@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using HDF5.NET;
 
 namespace HDF5CSharp
 {
@@ -109,7 +110,7 @@ namespace HDF5CSharp
                     else
                     {
                         values = CallByReflection<Array>(nameof(ReadCompounds), elType,
-                            new object[] {groupId, name, alternativeName});
+                            new object[] { groupId, name, alternativeName });
                         success = true;
                     }
 
@@ -132,7 +133,7 @@ namespace HDF5CSharp
                             // MakeGenericType is badly named
                             Type constructedClass = genericClass.MakeGenericType(elType);
 
-                            IList created = (IList) Activator.CreateInstance(constructedClass);
+                            IList created = (IList)Activator.CreateInstance(constructedClass);
                             foreach (var o in values)
                             {
                                 created.Add(o);
@@ -145,7 +146,7 @@ namespace HDF5CSharp
                     else
                     {
                         var result = CallByReflection<object>(nameof(ReadCompounds), elType,
-                            new object[] {groupId, name, alternativeName});
+                            new object[] { groupId, name, alternativeName });
                         info.SetValue(readValue, result);
 
                     }
@@ -225,7 +226,7 @@ namespace HDF5CSharp
                     else
                     {
                         var obj = CallByReflection<IEnumerable>(nameof(ReadCompounds), elType,
-                            new object[] {groupId, name, alternativeName});
+                            new object[] { groupId, name, alternativeName });
                         var objArr = (obj).Cast<object>().ToArray();
                         values = Array.CreateInstance(elType, objArr.Length);
                         Array.Copy(objArr, values, objArr.Length);
@@ -246,7 +247,7 @@ namespace HDF5CSharp
                             // MakeGenericType is badly named
                             Type constructedClass = genericClass.MakeGenericType(elType);
 
-                            IList created = (IList) Activator.CreateInstance(constructedClass);
+                            IList created = (IList)Activator.CreateInstance(constructedClass);
                             foreach (var o in values)
                             {
                                 created.Add(o);
@@ -260,7 +261,7 @@ namespace HDF5CSharp
                     else
                     {
                         var result = CallByReflection<object>(nameof(ReadCompounds), elType,
-                            new object[] {groupId, name, alternativeName});
+                            new object[] { groupId, name, alternativeName });
                         info.SetValue(readValue, result);
                     }
                 }
@@ -298,32 +299,68 @@ namespace HDF5CSharp
             }
         }
 
-        public static List<Hdf5Element> ReadTreeFileStructure(string fileName)
+        public static Hdf5Element ReadTreeFileStructure(string fileName)
         {
-            return ReadFileStructure(fileName).tree;
+            var tree = ReadFileStructure(fileName).tree;
+            var root = H5File.OpenRead(fileName);
+            AddAttributes(tree, root, true);
+            return tree;
         }
-
         public static List<Hdf5Element> ReadFlatFileStructure(string fileName)
         {
-            return ReadFileStructure(fileName).flat;
+            var flat = ReadFileStructure(fileName).flat;
+            var root = H5File.OpenRead(fileName);
+            foreach (Hdf5Element e in flat)
+            {
+                AddAttributes(e, root, false);
+            }
+            return flat;
+        }
+        private static void AddAttributes(Hdf5Element element, H5File file, bool recursive)
+        {
+            try
+            {
+                var h5group = file.Group(element.Name).Attributes;
+                foreach (var attr in h5group)
+                {
+                    var val = attr.ReadString();
+                    element.AddAttribute(attr.Name, val, attr.Type.Class.ToString());
+                }
+
+            }
+            catch (Exception e)
+            {
+                //
+            }
+            if (recursive)
+            {
+                foreach (Hdf5Element child in element.GetChildren())
+                {
+                    AddAttributes(child, file, true);
+                }
+            }
+
         }
 
-        internal static (List<Hdf5Element> tree, List<Hdf5Element> flat) ReadFileStructure(string fileName)
+
+        internal static (Hdf5Element tree, List<Hdf5Element> flat) ReadFileStructure(string fileName)
         {
-            var attributes = new List<Hdf5AttributeElement>();
             var elements = new List<Hdf5Element>();
-            var structure = new List<Hdf5Element>();
             if (!File.Exists(fileName))
             {
                 Hdf5Utils.LogError?.Invoke($"File {fileName} does not exist");
-                return (structure, elements);
+                return (new Hdf5Element("/", Hdf5ElementType.Unknown, null, -1), elements);
             }
 
             long fileId = H5F.open(fileName, H5F.ACC_RDONLY);
+            var root = H5G.open(fileId, "/");
+            var rootGroup = new Hdf5Element("/", Hdf5ElementType.Group, null, root);
+            elements.Add(rootGroup);
+            H5G.close(root);
             if (fileId < 0)
             {
                 Hdf5Utils.LogError?.Invoke($"Could not open file {fileName}");
-                return (structure, elements);
+                return (rootGroup, elements);
             }
 
             try
@@ -398,18 +435,11 @@ namespace HDF5CSharp
 
                 if (parent == null)
                 {
-                    var element = new Hdf5Element(fullName, elementType, null, attributes, elementId, false);
-                    attributes.Clear();
-                    structure.Add(element);
-                    elements.Add(element);
+                    parent = elements.FirstOrDefault(e => e.Name == "/");
                 }
-                else
-                {
-                    var element = new Hdf5Element(fullName, elementType, parent, attributes, elementId, false);
-                    attributes.Clear();
-                    parent.AddChild(element);
-                    elements.Add(element);
-                }
+                var element = new Hdf5Element(fullName, elementType, parent, elementId);
+                parent.AddChild(element);
+                elements.Add(element);
 
                 if (objectType == H5O.type_t.GROUP)
                 {
@@ -430,27 +460,7 @@ namespace HDF5CSharp
 
                 return 0;
             }
-
-            int AttributeCallback(long location_id, IntPtr attr_name, ref H5A.info_t ainfo, IntPtr op_data)
-            {
-                var name = Marshal.PtrToStringAnsi(attr_name);
-
-                var att = ReadStringAttributes(location_id, name, String.Empty);
-                if (att.success && att.items.Any())
-                {
-                    attributes.Add(new Hdf5AttributeElement(name, att.items.First()));
-                }
-
-
-                //var typeId = H5A.get_type(location_id);
-                //H5T.class_t classType = H5T.get_class(location_id);
-                //var cset = H5T.get_cset(location_id);
-                //var padd = H5T.get_strpad(location_id);
-                return 0;
-
-            }
-
-            return (structure, elements);
+            return (rootGroup, elements);
         }
 
 
@@ -476,17 +486,17 @@ namespace HDF5CSharp
                     (success, values) = dsetRW.ReadArray(elType, groupId, datasetName, "");
                     if (success)
                     {
-                        table.Data = (T[,]) values;
+                        table.Data = (T[,])values;
                     }
                 }
                 else
                 {
                     var obj = CallByReflection<IEnumerable>(nameof(ReadCompounds), elType,
-                        new object[] {groupId, datasetName, ""});
+                        new object[] { groupId, datasetName, "" });
                     var objArr = (obj).Cast<object>().ToArray();
                     values = Array.CreateInstance(elType, objArr.Length);
                     Array.Copy(objArr, values, objArr.Length);
-                    table.Data = (T[,]) values;
+                    table.Data = (T[,])values;
                 }
 
             }

@@ -1,4 +1,5 @@
-﻿using HDF.PInvoke;
+﻿using System;
+using HDF.PInvoke;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,19 +16,19 @@ namespace HDF5CSharp.DataTypes
     public class Hdf5AttributeElement
     {
         public string Name { get; set; }
-        public string Value { get; set; }
-
-        public Hdf5AttributeElement(string name, string value)
+        public string[] Values { get; set; }
+        public string ElementType { get; set; }
+        public Hdf5AttributeElement(string name, string[] values,string elementType)
         {
             Name = name;
-            Value = value;
+            Values = values;
+            ElementType = elementType;
         }
     }
     public abstract class Hdf5ElementBase
     {
         public string Name { get; set; }
         public Hdf5ElementType Type { get; set; }
-        public bool IsLazyLoading { get; }
 
         public Hdf5ElementBase Parent { get; set; }
         public long Id { get; set; }
@@ -38,30 +39,35 @@ namespace HDF5CSharp.DataTypes
         protected abstract long GetId(long fileId);
         protected abstract void CloseId(long id);
 
-        public Hdf5ElementBase(string name, Hdf5ElementType type, Hdf5ElementBase parent, long id, bool isLazyLoading)
+        public Hdf5ElementBase(string name, Hdf5ElementType type, Hdf5ElementBase parent, long id)
         {
             Name = name;
             Type = type;
             Parent = parent;
-            IsLazyLoading = isLazyLoading;
             Id = id;
         }
 
         public override string ToString() => $"{nameof(Name)}: {Name} ({Type}) ID:{Id}";
+
+ 
     }
 
     public class Hdf5Element : Hdf5ElementBase
     {
         private List<Hdf5Element> Children { get; }
         private List<Hdf5AttributeElement> Attributes { get; }
-        public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, List<Hdf5AttributeElement> attributes, long id, bool isLazyLoading) : base(name, type, parent, id, isLazyLoading)
+        public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, long id) : base(name, type, parent, id)
         {
             Children = new List<Hdf5Element>();
-            Attributes = attributes.ToList();
+            Attributes = new List<Hdf5AttributeElement>();
         }
 
         public bool HasChildren => Children.Any();
 
+        public void AddAttribute(string attrName, string[] value,string type)
+        {
+            Attributes.Add(new Hdf5AttributeElement(attrName,value,type));
+        }
         public override string GetPath()
         {
             return Name;

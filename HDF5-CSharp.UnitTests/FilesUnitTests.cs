@@ -15,13 +15,13 @@ namespace HDF5CSharp.UnitTests.Core
         {
             Errors = new List<string>();
         }
-        //[TestMethod]
+        [TestMethod]
         public void TestReadStructure()
         {
             Hdf5.Settings.EnableErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
-            string fileName = @"recorder.hdf5";
+            string fileName = @"C:\Users\liorb\Downloads\hdf5_test.h5";
             if (File.Exists(fileName))
             {
                 var tree = Hdf5.ReadTreeFileStructure(fileName);
