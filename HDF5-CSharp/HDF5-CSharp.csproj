@@ -22,7 +22,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageReleaseNotes>Update icon</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.13.3</Version>
+		<Version>1.13.4</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
