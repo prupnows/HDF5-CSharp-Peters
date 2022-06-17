@@ -44,12 +44,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="files\" />
+		<None Update="files\testfile2.h5">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="files\TEST_TREE.h5">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="testFile.H5">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="testfile2.h5">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 

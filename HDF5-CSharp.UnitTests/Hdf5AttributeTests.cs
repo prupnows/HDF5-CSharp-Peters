@@ -241,15 +241,12 @@ namespace HDF5CSharp.UnitTests.Core
             File.Delete(filename);
         }
 
-        //[TestMethod]
-        //public void ReadStringAttributes()
-        //{
-        //    string filename = Path.Combine(folder, "files", "attestex.H5");
-        //    var openFileId = Hdf5.OpenFile(filename);
-        //    Hdf5.Settings.CharacterPaddingType = CharacterPaddingType.NULLTERM;
-        //    Hdf5.Settings.CharacterSetType = CharacterSetType.ASCII;
-        //    var data = Hdf5.ReadStringAttributes(openFileId, "test", "");
-        //    Hdf5.CloseFile(openFileId);
-        //}
+        [TestMethod]
+        public void TestReadFullTree()
+        {
+            string filename = Path.Combine(folder,"files", "testfile2.H5");
+            var results = Hdf5.ReadTreeFileStructure(filename);
+            
+        }
     }
 }
