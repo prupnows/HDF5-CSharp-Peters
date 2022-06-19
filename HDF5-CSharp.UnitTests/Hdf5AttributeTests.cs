@@ -116,6 +116,14 @@ namespace HDF5CSharp.UnitTests.Core
             }
         }
 
+        //[TestMethod]
+        //public void t()
+        //{
+        //    Directory.CreateDirectory("c:/测试");
+        //    var fileId = Hdf5.CreateFile("c:/测试/test测试.h5");
+        //    Hdf5.CloseFile(fileId);
+        //}
+
         [TestMethod]
         public void WriteAndReadAttributes()
         {

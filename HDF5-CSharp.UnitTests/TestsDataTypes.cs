@@ -53,7 +53,11 @@ namespace HDF5CSharp.UnitTests.Core
 
             public override int GetHashCode()
             {
+#if NET
                 return HashCode.Combine(noAttributeName, money);
+#else
+return 0;
+#endif
             }
         }
         [Hdf5("birthdate")]
@@ -108,7 +112,11 @@ namespace HDF5CSharp.UnitTests.Core
 
         public override int GetHashCode()
         {
+#if NET
             return HashCode.Combine(datetime, noAttribute, inner, StringProperty);
+#else
+return 0;
+#endif
         }
     }
     [Hdf5Attributes(new[] { "some info", "more info" })]
@@ -387,7 +395,14 @@ namespace HDF5CSharp.UnitTests.Core
             return Equals((TestClassWithJaggedArray)obj);
         }
 
-        public override int GetHashCode() => HashCode.Combine(dataField, Data);
+        public override int GetHashCode()
+        {
+#if NET
+            return HashCode.Combine(dataField, Data);
+#else
+return 0;
+#endif
+        }
     }
 
     class TestClassListOfList
