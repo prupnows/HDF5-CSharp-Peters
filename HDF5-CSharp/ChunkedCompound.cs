@@ -226,8 +226,7 @@ namespace HDF5CSharp
         {
             if (!Hdf5Utils.GetRealName(GroupId, GroupName, string.Empty).valid)
             {
-                Hdf5Utils.LogMessage($"Dataset {GroupName} does not exist.", Hdf5LogLevel.Error);
-                return;
+                Hdf5Utils.LogMessage($"Dataset {GroupName} does not exist.", Hdf5LogLevel.Warning);
             }
 
             if (_datasetId >= 0)

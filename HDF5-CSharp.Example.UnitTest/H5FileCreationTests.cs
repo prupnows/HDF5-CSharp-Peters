@@ -34,7 +34,6 @@ namespace HDF5_CSharp.Example.UnitTest
         {
             Errors = new List<string>();
             Hdf5.Settings.EnableH5InternalErrorReporting(true);
-            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }
         [TestCleanup]
