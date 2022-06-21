@@ -358,6 +358,11 @@ namespace HDF5CSharp
             }
             return flat;
         }
+        public static List<Hdf5Element> ReadFlatFileStructureWithoutAttributes(string fileName)
+        {
+            var flat = ReadFileStructure(fileName).flat;
+            return flat;
+        }
         private static void AddAttributes(Hdf5Element element, H5File file, bool recursive)
         {
             try

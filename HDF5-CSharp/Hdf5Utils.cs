@@ -192,7 +192,7 @@ namespace HDF5CSharp
 
             try
             {
-                var fileStructure = Hdf5.ReadFlatFileStructure(fileName);
+                var fileStructure = Hdf5.ReadFlatFileStructureWithoutAttributes(fileName);
                 fileId = Hdf5.OpenFile(fileName, true);
                 if (fileId <= 0)
                 {
@@ -236,7 +236,7 @@ namespace HDF5CSharp
 
             try
             {
-                var fileStructure = Hdf5.ReadFlatFileStructure(fileName);
+                var fileStructure = Hdf5.ReadFlatFileStructureWithoutAttributes(fileName);
                 fileId = Hdf5.OpenFile(fileName, true);
                 if (fileId <= 0)
                 {
