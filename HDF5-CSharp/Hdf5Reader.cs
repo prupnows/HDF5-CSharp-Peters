@@ -23,17 +23,6 @@ namespace HDF5CSharp
             }
 
             Type tyObject = readValue.GetType();
-            //foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
-            //{
-            //    if (attr is Hdf5GroupName)
-            //        groupName = (attr as Hdf5GroupName).Name;
-            //    if (attr is Hdf5SaveAttribute)
-            //    {
-            //        Hdf5SaveAttribute atLeg = attr as Hdf5SaveAttribute;
-            //        if (atLeg.SaveKind == Hdf5Save.DoNotSave)
-            //            return readValue;
-            //    }
-            //}
             bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (isGroupName)
             {
@@ -57,6 +46,75 @@ namespace HDF5CSharp
             return ReadObject(groupId, readValue, groupName);
         }
 
+        private static bool SkipReadProcessing(Attribute[] attributes)
+        {
+            bool skip;
+            Hdf5ReadWriteAttribute readWriteAttribute = null;
+            Hdf5SaveAttribute saveAttribute = null;
+            foreach (Attribute attr in attributes)
+            {
+                if (attr is Hdf5ReadWriteAttribute ra)
+                {
+                    readWriteAttribute = ra;
+                }
+                else if (attr is Hdf5SaveAttribute sa)
+                {
+                    saveAttribute = sa;
+                }
+
+            }
+
+            if (readWriteAttribute != null)
+            {
+                skip = (readWriteAttribute.ReadKind == Hdf5ReadWrite.SaveOnly);
+            }
+            else if (saveAttribute != null)
+            {
+                Hdf5Save kind = saveAttribute.SaveKind;
+                skip = (kind == Hdf5Save.DoNotSave);
+            }
+            else
+            {
+                skip = false;
+            }
+
+            return skip;
+        }
+        private static bool SkipSaveProcessing(Attribute[] attributes)
+        {
+            bool skip;
+            Hdf5ReadWriteAttribute readWriteAttribute = null;
+            Hdf5SaveAttribute saveAttribute = null;
+            foreach (Attribute attr in attributes)
+            {
+                if (attr is Hdf5ReadWriteAttribute ra)
+                {
+                    readWriteAttribute = ra;
+                }
+                else if (attr is Hdf5SaveAttribute sa)
+                {
+                    saveAttribute = sa;
+                }
+
+            }
+
+            if (readWriteAttribute != null)
+            {
+                Hdf5ReadWrite kind = readWriteAttribute.ReadKind;
+                skip = (kind == Hdf5ReadWrite.ReadOnly);
+            }
+            else if (saveAttribute != null)
+            {
+                Hdf5Save kind = saveAttribute.SaveKind;
+                skip = (kind == Hdf5Save.DoNotSave);
+            }
+            else
+            {
+                skip = false;
+            }
+
+            return skip;
+        }
         private static void ReadFields(Type tyObject, object readValue, long groupId)
         {
             FieldInfo[] miMembers = tyObject.GetFields(BindingFlags.DeclaredOnly |
@@ -65,36 +123,27 @@ namespace HDF5CSharp
 
             foreach (FieldInfo info in miMembers)
             {
-                bool nextInfo = false;
+
                 string alternativeName = string.Empty;
+                bool nextInfo = SkipReadProcessing(Attribute.GetCustomAttributes(info));
+                if (nextInfo)
+                {
+                    continue;
+                }
+
                 foreach (Attribute attr in Attribute.GetCustomAttributes(info))
                 {
                     if (attr is Hdf5EntryNameAttribute nameAttribute)
                     {
                         alternativeName = nameAttribute.Name;
                     }
-
-                    if (attr is Hdf5SaveAttribute attribute)
-                    {
-                        Hdf5Save kind = attribute.SaveKind;
-                        nextInfo = (kind == Hdf5Save.DoNotSave);
-                    }
-                    else
-                    {
-                        nextInfo = false;
-                    }
-                }
-
-                if (nextInfo)
-                {
-                    continue;
                 }
 
                 Type ty = info.FieldType;
                 TypeCode code = Type.GetTypeCode(ty);
 
                 string name = info.Name;
-                Hdf5Utils.LogDebug?.Invoke($"groupname: {tyObject.Name}; field name: {name}");
+                Hdf5Utils.LogMessage($"groupname: {tyObject.Name}; field name: {name}",Hdf5LogLevel.Debug);
                 bool success;
                 Array values;
 
@@ -183,25 +232,18 @@ namespace HDF5CSharp
 
             foreach (PropertyInfo info in miMembers)
             {
-                bool nextInfo = false;
+                bool nextInfo = SkipReadProcessing(Attribute.GetCustomAttributes(info));
+                if (nextInfo)
+                {
+                    continue;
+                }
                 string alternativeName = string.Empty;
                 foreach (Attribute attr in Attribute.GetCustomAttributes(info))
                 {
-                    if (attr is Hdf5SaveAttribute hdf5SaveAttribute)
-                    {
-                        Hdf5Save kind = hdf5SaveAttribute.SaveKind;
-                        nextInfo = (kind == Hdf5Save.DoNotSave);
-                    }
-
                     if (attr is Hdf5EntryNameAttribute hdf5EntryNameAttribute)
                     {
                         alternativeName = hdf5EntryNameAttribute.Name;
                     }
-                }
-
-                if (nextInfo)
-                {
-                    continue;
                 }
 
                 Type ty = info.PropertyType;
@@ -348,7 +390,7 @@ namespace HDF5CSharp
             var elements = new List<Hdf5Element>();
             if (!File.Exists(fileName))
             {
-                Hdf5Utils.LogError?.Invoke($"File {fileName} does not exist");
+                Hdf5Utils.LogMessage($"File {fileName} does not exist",Hdf5LogLevel.Error);
                 return (new Hdf5Element("/", Hdf5ElementType.Unknown, null, -1), elements);
             }
 
@@ -359,7 +401,7 @@ namespace HDF5CSharp
             H5G.close(root);
             if (fileId < 0)
             {
-                Hdf5Utils.LogError?.Invoke($"Could not open file {fileName}");
+                Hdf5Utils.LogMessage($"Could not open file {fileName}",Hdf5LogLevel.Error);
                 return (rootGroup, elements);
             }
 
@@ -368,18 +410,18 @@ namespace HDF5CSharp
                 StringBuilder filePath = new StringBuilder(260);
                 H5F.get_name(fileId, filePath, new IntPtr(260));
                 ulong idx = 0;
-                bool reEnableErrors = Settings.ErrorLoggingEnable;
+                bool reEnableErrors = Settings.H5InternalErrorLoggingEnable;
 
-                Settings.EnableErrorReporting(false);
+                Settings.EnableH5InternalErrorReporting(false);
                 H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,
                     Marshal.StringToHGlobalAnsi("/"));
-                Settings.EnableErrorReporting(reEnableErrors);
+                Settings.EnableH5InternalErrorReporting(reEnableErrors);
 
 
             }
             catch (Exception e)
             {
-                Hdf5Utils.LogError?.Invoke($"Error during reading file structure of {fileName}. Error:{e}");
+                Hdf5Utils.LogMessage($"Error during reading file structure of {fileName}. Error:{e}",Hdf5LogLevel.Error);
             }
             finally
             {

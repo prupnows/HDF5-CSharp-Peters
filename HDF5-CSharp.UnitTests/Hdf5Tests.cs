@@ -29,7 +29,7 @@ namespace HDF5CSharp.UnitTests.Core
 
         private static void EnableErrors()
         {
-            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }
@@ -123,7 +123,7 @@ namespace HDF5CSharp.UnitTests.Core
 
         private static void EnableErrors()
         {
-            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }

@@ -96,7 +96,7 @@ namespace HDF5CSharp
             var attrs = attrRW.ReadArray<T>(groupId, name, string.Empty);
             if (!attrs.success)
             {
-                Hdf5Utils.LogError?.Invoke($"{name} was not found");
+                Hdf5Utils.LogMessage($"{name} was not found", Hdf5LogLevel.Error);
                 return default;
             }
             int[] first = new int[attrs.result.Rank].Select(f => 0).ToArray();
@@ -109,7 +109,7 @@ namespace HDF5CSharp
             var nameToUse = Hdf5Utils.GetRealAttributeName(groupId, name, alternativeName);
             if (!nameToUse.valid)
             {
-                Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
+                Hdf5Utils.LogMessage($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}",Hdf5LogLevel.Error);
                 return (false, Array.Empty<string>());
             }
 
@@ -161,7 +161,7 @@ namespace HDF5CSharp
 
             if (attributeId <= 0)
             {
-                Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
+                Hdf5Utils.LogMessage($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}",Hdf5LogLevel.Error);
                 return (false, Array.Empty<T>());
             }
             var spaceId = H5A.get_space(attributeId);

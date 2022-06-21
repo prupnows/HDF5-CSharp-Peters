@@ -49,12 +49,22 @@ namespace HDF5CSharp.DataTypes
 
 
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    public sealed class Hdf5ReadWriteAttribute : Attribute
+    {
+        public Hdf5ReadWrite ReadKind { get; }     
+
+
+        public Hdf5ReadWriteAttribute(Hdf5ReadWrite readKind)
+        {
+            ReadKind = readKind;
+        }
+
+    }
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
     public sealed class Hdf5SaveAttribute : Attribute
     {
-        public Hdf5Save SaveKind { get; }      // Topic is a named parameter
-
-
-        public Hdf5SaveAttribute(Hdf5Save saveKind)  // url is a positional parameter
+        public Hdf5Save SaveKind { get; }
+        public Hdf5SaveAttribute(Hdf5Save saveKind) 
         {
             SaveKind = saveKind;
         }

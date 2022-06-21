@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp
 {
@@ -20,7 +21,7 @@ namespace HDF5CSharp
 
             if (datasetId <= 0)
             {
-                Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
+                Hdf5Utils.LogMessage($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}",Hdf5LogLevel.Error);
                 return (false, Array.Empty<string>());
             }
             long typeId = H5D.get_type(datasetId);

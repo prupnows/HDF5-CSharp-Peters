@@ -185,10 +185,9 @@ namespace HDF5CSharp
                         (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName);
                         return (success, result.ConvertArray<long, TimeSpan>(tcks => new TimeSpan(tcks)));
                     }
-                    string str = "type is not supported: ";
-                    Hdf5Utils.LogError?.Invoke($"Error: {str}");
+                    string str = $"type is not supported: {ty}";
+                    Hdf5Utils.LogMessage($"Error: {str}", Hdf5LogLevel.Error);
                     throw new NotSupportedException(str + elementType.FullName);
-
             }
         }
 

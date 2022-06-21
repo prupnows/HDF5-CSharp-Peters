@@ -50,12 +50,21 @@ namespace HDF5CSharp
 
             return (false, "");
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string NormalizedName(string name) => Hdf5.Settings.LowerCaseNaming ? name.ToLowerInvariant() : name;
+        public static string NormalizedName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return "";
+            }
+            return Hdf5.Settings.LowerCaseNaming ? name.ToLowerInvariant() : name;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void LogMessage(string msg, Hdf5LogLevel level)
         {
-            if (!Hdf5.Settings.ErrorLoggingEnable)
+            if (!Hdf5.Settings.EnableGlobalLogging)
             {
                 return;
             }
@@ -95,14 +104,14 @@ namespace HDF5CSharp
         }
         internal static long GetDatasetId(long parentId, string name, long dataType, long spaceId, long propId)
         {
-            return GetId(parentId, name, dataType, spaceId, propId,Hdf5ElementType.Dataset );
+            return GetId(parentId, name, dataType, spaceId, propId, Hdf5ElementType.Dataset);
         }
         internal static long GetAttributeId(long parentId, string name, long dataType, long spaceId)
         {
-            return GetId(parentId, name, dataType, spaceId, H5P.DEFAULT,Hdf5ElementType.Attribute);
+            return GetId(parentId, name, dataType, spaceId, H5P.DEFAULT, Hdf5ElementType.Attribute);
         }
 
-        private static long GetId(long parentId, string name, long dataType, long spaceId,long propId, Hdf5ElementType type)
+        private static long GetId(long parentId, string name, long dataType, long spaceId, long propId, Hdf5ElementType type)
         {
             string normalizedName = NormalizedName(name);
             bool exists = ItemExists(parentId, normalizedName, type);
@@ -312,7 +321,7 @@ namespace HDF5CSharp
             switch (Hdf5.Settings.CharacterSetType)
             {
                 case CharacterSetType.ASCII:
-                    return  Encoding.ASCII.GetBytes(str);
+                    return Encoding.ASCII.GetBytes(str);
                 case CharacterSetType.UTF8:
                     return Encoding.UTF8.GetBytes(str);
                 default:

@@ -18,7 +18,7 @@ namespace HDF5CSharp.UnitTests.Core
         [TestMethod]
         public void TestReadStructure()
         {
-            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
             string fileName = @"C:\Users\liorb\Downloads\hdf5_test.h5";

@@ -109,7 +109,7 @@ namespace HDF5CSharp.UnitTests.Core
         public void ReadObject()
         {
             Hdf5.Settings.LowerCaseNaming = false;
-            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
             string filename = @"D:\h5\d.hdf5";
@@ -135,7 +135,7 @@ namespace HDF5CSharp.UnitTests.Core
         public void ReadTable()
         {
             Hdf5.Settings.LowerCaseNaming = false;
-            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
             string filename = @"D:\h5\d.hdf5";

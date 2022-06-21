@@ -87,7 +87,7 @@ namespace HDF5CSharp
                 hnd.AddrOfPinnedObject());
             if (_status < 0)
             {
-                Hdf5Utils.LogError("Unable  to write dataset");
+                Hdf5Utils.LogMessage("Unable to write Dataset", Hdf5LogLevel.Error);
             }
 
             hnd.Free();
@@ -102,7 +102,7 @@ namespace HDF5CSharp
                 if (dataset.Rank < 1)
                 {
                     string msg = "Empty array was passed. Ignoring.";
-                    Hdf5Utils.LogError?.Invoke(msg);
+                    Hdf5Utils.LogMessage(msg, Hdf5LogLevel.Error);
                     return;
                 }
 
@@ -112,7 +112,7 @@ namespace HDF5CSharp
                     if (size == 0)
                     {
                         string msg = $"Empty array was passed for dimension {dimension}. Ignoring.";
-                        Hdf5Utils.LogError?.Invoke(msg);
+                        Hdf5Utils.LogMessage(msg, Hdf5LogLevel.Error);
                         return;
                     }
                 }
@@ -150,8 +150,11 @@ namespace HDF5CSharp
             if (!Hdf5Utils.GetRealName(GroupId, Datasetname, string.Empty).valid)
             {
                 string msg = "call constructor or FirstDataset first before appending.";
-                Hdf5Utils.LogError?.Invoke(msg);
-                throw new Hdf5Exception(msg);
+                Hdf5Utils.LogMessage(msg, Hdf5LogLevel.Error);
+                if (Hdf5.Settings.ThrowOnError)
+                {
+                    throw new Hdf5Exception(msg);
+                }
             }
             _oldDims = _currentDims;
             _currentDims = GetDims(dataset);
@@ -191,7 +194,7 @@ namespace HDF5CSharp
             }
             catch (Exception e)
             {
-                Hdf5Utils.LogError($"Unable to flash dataset: {e}");
+                Hdf5Utils.LogMessage($"Unable to flash dataset: {e}", Hdf5LogLevel.Error);
             }
 
         }
@@ -212,7 +215,7 @@ namespace HDF5CSharp
         {
             if (!Hdf5Utils.GetRealName(GroupId, Datasetname, string.Empty).valid)
             {
-                Hdf5Utils.LogInfo?.Invoke("Dataset does not exist.");
+                Hdf5Utils.LogMessage($"Dataset {Datasetname} does not exist.", Hdf5LogLevel.Error);
                 return;
             }
 

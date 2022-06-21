@@ -125,6 +125,37 @@ namespace HDF5CSharp.UnitTests.Core
         //}
 
         [TestMethod]
+        public void WriteAndReadAttributesWithBothSaveAndReadAttributes()
+        {
+            Hdf5.Settings.ThrowOnError = false;
+            Hdf5.Settings.EnableH5InternalErrorReporting(false);
+            string filename = Path.Combine(folder, $"{nameof(WriteAndReadAttributesWithBothSaveAndReadAttributes)}.H5");
+            int value = 10;
+            SaveReadAttributeClass testClass = new SaveReadAttributeClass(value);
+            try
+            {
+                var fileId = Hdf5.CreateFile(filename);
+                Assert.IsTrue(fileId > 0);
+                Hdf5.WriteObject(fileId, testClass);
+                Hdf5.CloseFile(fileId);
+                fileId = Hdf5.OpenFile(filename);
+                Assert.IsTrue(fileId > 0);
+                SaveReadAttributeClass readObject = new SaveReadAttributeClass();
+                readObject = Hdf5.ReadObject(fileId, readObject, "/test_object");
+                Assert.IsTrue(readObject.TestIntDoNotRead==0);
+                Assert.IsTrue(readObject.TestIntReadWrite == value);
+                Assert.IsTrue(readObject.TestIntReadOnly == 0);
+                Assert.IsTrue(readObject.TestIntNoAttribute == value);
+                Assert.IsTrue(readObject.TestIntReadOnlyOfOtherProperty == value);
+
+            }
+            catch (Exception ex)
+            {
+                CreateExceptionAssert(ex);
+            }
+        }
+
+        [TestMethod]
         public void WriteAndReadAttributes()
         {
             string filename = Path.Combine(folder, "testAttributes.H5");
@@ -252,9 +283,9 @@ namespace HDF5CSharp.UnitTests.Core
         [TestMethod]
         public void TestReadFullTree()
         {
-            string filename = Path.Combine(folder,"files", "testfile2.H5");
+            string filename = Path.Combine(folder, "files", "testfile2.H5");
             var results = Hdf5.ReadTreeFileStructure(filename);
-            
+
         }
     }
 }
