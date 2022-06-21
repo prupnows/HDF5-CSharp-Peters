@@ -54,8 +54,8 @@ namespace HDF5CSharp
             if (!valid)
             {
                 string error = $"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}";
-                Hdf5Utils.LogMessage(error,Hdf5LogLevel.Error);
-                if (Settings.ThrowOnError)
+                Hdf5Utils.LogMessage(error,Hdf5LogLevel.Warning);
+                if (Settings.ThrowOnNonExistNameWhenReading)
                 {
                     throw new Hdf5Exception(error);
                 }

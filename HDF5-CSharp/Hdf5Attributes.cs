@@ -161,7 +161,12 @@ namespace HDF5CSharp
 
             if (attributeId <= 0)
             {
-                Hdf5Utils.LogMessage($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}",Hdf5LogLevel.Error);
+                string error = $"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}";
+                Hdf5Utils.LogMessage(error,Hdf5LogLevel.Warning);
+                if (Settings.ThrowOnNonExistNameWhenReading)
+                {
+                    throw new Hdf5Exception(error);
+                }
                 return (false, Array.Empty<T>());
             }
             var spaceId = H5A.get_space(attributeId);

@@ -143,7 +143,7 @@ namespace HDF5CSharp
                 TypeCode code = Type.GetTypeCode(ty);
 
                 string name = info.Name;
-                Hdf5Utils.LogMessage($"groupname: {tyObject.Name}; field name: {name}", Hdf5LogLevel.Debug);
+                Hdf5Utils.LogMessage($"groupName: {tyObject.Name}; field name: {name}", Hdf5LogLevel.Debug);
                 bool success;
                 Array values;
 

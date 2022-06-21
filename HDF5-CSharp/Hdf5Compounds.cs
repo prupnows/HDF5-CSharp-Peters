@@ -34,7 +34,7 @@ namespace HDF5CSharp
                 }
                 catch (Exception e)
                 {
-                    Hdf5Utils.LogMessage(e.Message,Hdf5LogLevel.Error);
+                    Hdf5Utils.LogMessage(e.Message, Hdf5LogLevel.Error);
                     return WriteLargeCompounds<T>(groupId, name, list.ToList(), attributes);
                 }
 
@@ -64,7 +64,7 @@ namespace HDF5CSharp
 
                 // Create the dataset if it doesn't exist + remove and create otherwise
                 var datasetId = Hdf5Utils.GetDatasetId(groupId, Hdf5Utils.NormalizedName(name), typeId, spaceId, H5P.DEFAULT);
-                
+
                 GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
                 var statusId = H5D.write(datasetId, typeId, spaceId, H5S.ALL,
                     H5P.DEFAULT, hnd.AddrOfPinnedObject());
@@ -168,7 +168,7 @@ namespace HDF5CSharp
             ulong[] zeros = Enumerable.Range(0, 2).Select(z => (ulong)0).ToArray();
 
             /* Extend the dataset. Dataset becomes 10 x 3  */
-            var size = new ulong[] { (ulong)(_oldDims[0] + _currentDims[0]),1 };
+            var size = new ulong[] { (ulong)(_oldDims[0] + _currentDims[0]), 1 };
 
             var _status = H5D.set_extent(datasetId, size);
             ulong[] offset = new[] { _oldDims[0] }.Concat(zeros.Skip(1)).ToArray();
@@ -414,7 +414,12 @@ namespace HDF5CSharp
                 var nameToUse = Hdf5Utils.ItemExists(groupId, name, Hdf5ElementType.Dataset) ? name : alternativeName;
                 if (!Hdf5Utils.ItemExists(groupId, nameToUse, Hdf5ElementType.Dataset))
                 {
-                    Hdf5Utils.LogMessage($"Item {nameToUse} does not exist.", Hdf5LogLevel.Warning);
+                    string error = $"Item {nameToUse} does not exist.";
+                    Hdf5Utils.LogMessage(error, Hdf5LogLevel.Warning);
+                    if (Settings.ThrowOnNonExistNameWhenReading)
+                    {
+                        throw new Hdf5Exception(error);
+                    }
                     return Enumerable.Empty<T>();
                 }
                 var datasetId = H5D.open(groupId, nameToUse);

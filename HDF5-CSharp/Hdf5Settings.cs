@@ -22,6 +22,7 @@ namespace HDF5CSharp
         public bool LowerCaseNaming { get; set; }
         public bool H5InternalErrorLoggingEnabled { get; private set; }
         public bool ThrowOnError { get; private set; }
+        public bool ThrowOnNonExistNameWhenReading { get; set; }
         public bool OverrideExistingData { get; set; }
         public float Version { get; set; }
         public bool GlobalLoggingEnabled { get; private set; }
@@ -78,6 +79,11 @@ namespace HDF5CSharp
         public void EnableThrowOnErrors(bool enable)
         {
             ThrowOnError = enable;
+        }
+
+        public void EnableThrowOnNonExistNameWhenReading(bool enable)
+        {
+            ThrowOnNonExistNameWhenReading= enable;
         }
     }
 
