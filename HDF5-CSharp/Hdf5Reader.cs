@@ -410,7 +410,7 @@ namespace HDF5CSharp
                 StringBuilder filePath = new StringBuilder(260);
                 H5F.get_name(fileId, filePath, new IntPtr(260));
                 ulong idx = 0;
-                bool reEnableErrors = Settings.H5InternalErrorLoggingEnable;
+                bool reEnableErrors = Settings.H5InternalErrorLoggingEnabled;
 
                 Settings.EnableH5InternalErrorReporting(false);
                 H5L.iterate(fileId, H5.index_t.NAME, H5.iter_order_t.INC, ref idx, Callback,

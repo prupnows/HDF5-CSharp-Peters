@@ -20,11 +20,11 @@ namespace HDF5CSharp
     {
         public DateTimeType DateTimeType { get; set; }
         public bool LowerCaseNaming { get; set; }
-        public bool H5InternalErrorLoggingEnable { get; private set; }
-        public bool ThrowOnError { get; set; }
+        public bool H5InternalErrorLoggingEnabled { get; private set; }
+        public bool ThrowOnError { get; private set; }
         public bool OverrideExistingData { get; set; }
         public float Version { get; set; }
-        public bool EnableGlobalLogging { get; set; }
+        public bool GlobalLoggingEnabled { get; private set; }
         /// <summary>
         /// Character set to use for text strings.
         /// </summary>
@@ -41,7 +41,7 @@ namespace HDF5CSharp
             CharacterPaddingType = CharacterPaddingType.SPACEPAD;
             CharacterSetType = CharacterSetType.UTF8;
             Version = 2.0f;
-            EnableGlobalLogging = true;
+            GlobalLoggingEnabled = true;
         }
 
         public Settings(DateTimeType dateTimeType, bool lowerCaseNaming, bool throwOnError, bool overrideExistingData)
@@ -60,7 +60,7 @@ namespace HDF5CSharp
         }
         public bool EnableH5InternalErrorReporting(bool enable)
         {
-            H5InternalErrorLoggingEnable = enable;
+            H5InternalErrorLoggingEnabled = enable;
             if (enable)
             {
                 return H5E.set_auto(H5E.DEFAULT, Hdf5Errors.ErrorDelegateMethod, IntPtr.Zero) >= 0;
@@ -72,7 +72,12 @@ namespace HDF5CSharp
 
         public void EnableLogging(bool enable)
         {
-            EnableGlobalLogging = enable;
+            GlobalLoggingEnabled = enable;
+        }
+
+        public void EnableThrowOnErrors(bool enable)
+        {
+            ThrowOnError = enable;
         }
     }
 

@@ -127,8 +127,9 @@ namespace HDF5CSharp.UnitTests.Core
         [TestMethod]
         public void WriteAndReadAttributesWithBothSaveAndReadAttributes()
         {
-            Hdf5.Settings.ThrowOnError = false;
+            Hdf5.Settings.EnableThrowOnErrors(false);
             Hdf5.Settings.EnableH5InternalErrorReporting(false);
+            Hdf5.Settings.EnableLogging(false);
             string filename = Path.Combine(folder, $"{nameof(WriteAndReadAttributesWithBothSaveAndReadAttributes)}.H5");
             int value = 10;
             SaveReadAttributeClass testClass = new SaveReadAttributeClass(value);
@@ -152,6 +153,13 @@ namespace HDF5CSharp.UnitTests.Core
             catch (Exception ex)
             {
                 CreateExceptionAssert(ex);
+            }
+            finally
+            {
+                Hdf5.Settings.EnableThrowOnErrors(true);
+                Hdf5.Settings.EnableH5InternalErrorReporting(true);
+                Hdf5.Settings.EnableLogging(true);
+
             }
         }
 

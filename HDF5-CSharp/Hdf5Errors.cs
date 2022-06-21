@@ -8,7 +8,7 @@ namespace HDF5CSharp
     {
         internal static int ErrorDelegateMethod(long estack, IntPtr client_data)
         {
-            if (!Hdf5.Settings.H5InternalErrorLoggingEnable)
+            if (!Hdf5.Settings.H5InternalErrorLoggingEnabled)
             {
                 return 0;
             }

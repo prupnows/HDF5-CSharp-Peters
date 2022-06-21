@@ -64,7 +64,7 @@ namespace HDF5CSharp
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void LogMessage(string msg, Hdf5LogLevel level)
         {
-            if (!Hdf5.Settings.EnableGlobalLogging)
+            if (!Hdf5.Settings.GlobalLoggingEnabled)
             {
                 return;
             }
