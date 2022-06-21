@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HDF5-CSharp.Example.UnitTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HDF5-CSharp.UnitTests", "HDF5-CSharp.UnitTests\HDF5-CSharp.UnitTests.csproj", "{D8396F76-47C8-4519-A288-4519A17C3620}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HDF5.NET", "..\HDF5.NET\src\HDF5.NET\HDF5.NET.csproj", "{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{D8396F76-47C8-4519-A288-4519A17C3620}.Release|x64.Build.0 = Release|Any CPU
 		{D8396F76-47C8-4519-A288-4519A17C3620}.Release|x86.ActiveCfg = Release|Any CPU
 		{D8396F76-47C8-4519-A288-4519A17C3620}.Release|x86.Build.0 = Release|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Debug|x64.Build.0 = Debug|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Debug|x86.Build.0 = Debug|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Release|x64.ActiveCfg = Release|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Release|x64.Build.0 = Release|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Release|x86.ActiveCfg = Release|Any CPU
+		{3F7C140F-3A9B-4839-9EAA-BBFC6C1B2B8C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -57,7 +57,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="HDF.PInvoke.1.10" Version="1.10.612" />
-		<PackageReference Include="HDF5.NET" Version="1.0.0-alpha.12.final" />
+		<!--<PackageReference Include="HDF5.NET" Version="1.0.0-alpha.13.final" />-->
 		<PackageReference Include="Microsoft.Build.Tasks.Git" Version="1.1.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -74,6 +74,10 @@
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\HDF5.NET\src\HDF5.NET\HDF5.NET.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
