@@ -39,7 +39,7 @@ namespace HDF5_CSharp.Example.UnitTest
         [TestCleanup]
         public void TestCleanup()
         {
-            Assert.IsTrue(Errors.Count == 0, "Errors were found");
+            Assert.IsTrue(Errors.Count == 0, $"Errors were found: {String.Join(",",Errors)}");
             Errors.Clear();
         }
     }
