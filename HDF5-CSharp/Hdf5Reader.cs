@@ -143,7 +143,7 @@ namespace HDF5CSharp
                 TypeCode code = Type.GetTypeCode(ty);
 
                 string name = info.Name;
-                Hdf5Utils.LogMessage($"groupname: {tyObject.Name}; field name: {name}",Hdf5LogLevel.Debug);
+                Hdf5Utils.LogMessage($"groupname: {tyObject.Name}; field name: {name}", Hdf5LogLevel.Debug);
                 bool success;
                 Array values;
 
@@ -344,17 +344,31 @@ namespace HDF5CSharp
         public static Hdf5Element ReadTreeFileStructure(string fileName)
         {
             var tree = ReadFileStructure(fileName).tree;
-            var root = H5File.OpenRead(fileName);
-            AddAttributes(tree, root, true);
+            try
+            {
+                using (var root = H5File.OpenRead(fileName))
+                {
+                    AddAttributes(tree, root, true);
+                }
+            }
+            catch (Exception e)
+            {
+                Hdf5Utils.LogMessage($"Error Reading file attributes: {e.Message}", Hdf5LogLevel.Error);
+            }
+
             return tree;
         }
         public static List<Hdf5Element> ReadFlatFileStructure(string fileName)
         {
             var flat = ReadFileStructure(fileName).flat;
-            var root = H5File.OpenRead(fileName);
-            foreach (Hdf5Element e in flat)
+
+            using (var root = H5File.OpenRead(fileName))
             {
-                AddAttributes(e, root, false);
+                foreach (Hdf5Element e in flat)
+                {
+
+                    AddAttributes(e, root, false);
+                }
             }
             return flat;
         }
@@ -410,7 +424,7 @@ namespace HDF5CSharp
             var elements = new List<Hdf5Element>();
             if (!File.Exists(fileName))
             {
-                Hdf5Utils.LogMessage($"File {fileName} does not exist",Hdf5LogLevel.Error);
+                Hdf5Utils.LogMessage($"File {fileName} does not exist", Hdf5LogLevel.Error);
                 return (new Hdf5Element("/", Hdf5ElementType.Unknown, null, -1), elements);
             }
 
@@ -421,7 +435,7 @@ namespace HDF5CSharp
             H5G.close(root);
             if (fileId < 0)
             {
-                Hdf5Utils.LogMessage($"Could not open file {fileName}",Hdf5LogLevel.Error);
+                Hdf5Utils.LogMessage($"Could not open file {fileName}", Hdf5LogLevel.Error);
                 return (rootGroup, elements);
             }
 
@@ -441,7 +455,7 @@ namespace HDF5CSharp
             }
             catch (Exception e)
             {
-                Hdf5Utils.LogMessage($"Error during reading file structure of {fileName}. Error:{e}",Hdf5LogLevel.Error);
+                Hdf5Utils.LogMessage($"Error during reading file structure of {fileName}. Error:{e}", Hdf5LogLevel.Error);
             }
             finally
             {
