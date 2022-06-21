@@ -16,9 +16,9 @@ namespace HDF5CSharp.DataTypes
     public class Hdf5AttributeElement
     {
         public string Name { get; set; }
-        public string[] Values { get; set; }
+        public object Values { get; set; }
         public string ElementType { get; set; }
-        public Hdf5AttributeElement(string name, string[] values,string elementType)
+        public Hdf5AttributeElement(string name, object values,string elementType)
         {
             Name = name;
             Values = values;
@@ -64,7 +64,7 @@ namespace HDF5CSharp.DataTypes
 
         public bool HasChildren => Children.Any();
 
-        public void AddAttribute(string attrName, string[] value,string type)
+        public void AddAttribute(string attrName, object value,string type)
         {
             Attributes.Add(new Hdf5AttributeElement(attrName,value,type));
         }

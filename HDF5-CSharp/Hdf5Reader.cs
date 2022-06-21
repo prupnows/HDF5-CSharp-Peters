@@ -397,9 +397,9 @@ namespace HDF5CSharp
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                foreach (var attr in attributes)
+                foreach (H5Attribute attr in attributes)
                 {
-                    var val = attr.ReadString();
+                    var val = ReadAttributeData(attr);
                     element.AddAttribute(attr.Name, val, attr.Type.Class.ToString());
                 }
 
@@ -416,6 +416,34 @@ namespace HDF5CSharp
                 }
             }
 
+        }
+
+        private static object ReadAttributeData(H5Attribute attribute)
+        {
+            return (attribute.Type.Class, attribute.Type.Size) switch
+            {
+                (H5DataTypeClass.FloatingPoint, 4) => attribute.Read<float>(),
+                (H5DataTypeClass.FloatingPoint, 8) => attribute.Read<double>(),
+                (H5DataTypeClass.FixedPoint, 1) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<byte>(),
+                (H5DataTypeClass.FixedPoint, 1) when attribute.Type.FixedPoint.IsSigned => attribute.Read<sbyte>(),
+                (H5DataTypeClass.FixedPoint, 2) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<ushort>(),
+                (H5DataTypeClass.FixedPoint, 2) when attribute.Type.FixedPoint.IsSigned => attribute.Read<short>(),
+                (H5DataTypeClass.FixedPoint, 4) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<uint>(),
+                (H5DataTypeClass.FixedPoint, 4) when attribute.Type.FixedPoint.IsSigned => attribute.Read<int>(),
+                (H5DataTypeClass.FixedPoint, 8) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<ulong>(),
+                (H5DataTypeClass.FixedPoint, 8) when attribute.Type.FixedPoint.IsSigned => attribute.Read<long>(),
+                (H5DataTypeClass.VariableLength, _) => attribute.ReadString(),
+                (H5DataTypeClass.String, _) => attribute.ReadString(),
+                // Other types might currently be a bit difficult to read automatically.
+                // However, in future it will be possible to also read unknown structs.
+                //
+                // If you need to support more exotic HDF types, you could use reflection
+                // to get the full data type information and not just what is currently
+                // being exposed in the public API. E.g. some types like "Array" or "Enum"
+                // have base type information (e.g. an Enum value could be based on a uint16
+                // value) which would allow you to read these kind of attributes, too.
+                _ => $"The type class {attribute.Type.Class} is currently not supported."
+            };
         }
 
 
