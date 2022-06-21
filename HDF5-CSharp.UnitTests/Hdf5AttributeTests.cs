@@ -290,7 +290,7 @@ namespace HDF5CSharp.UnitTests.Core
 
         [TestMethod]
         public void TestReadFullTree()
-        {
+        { 
             string filename = Path.Combine(folder, "files", "testfile2.H5");
             var results = Hdf5.ReadTreeFileStructure(filename);
 

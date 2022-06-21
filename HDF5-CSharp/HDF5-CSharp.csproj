@@ -76,9 +76,6 @@
 		</None>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\..\HDF5.NET\src\HDF5.NET\HDF5.NET.csproj" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Update="Properties\Resources.Designer.cs">

@@ -367,8 +367,23 @@ namespace HDF5CSharp
         {
             try
             {
-                var h5group = file.Group(element.Name).Attributes;
-                foreach (var attr in h5group)
+                IEnumerable<H5Attribute> attributes = Enumerable.Empty<H5Attribute>();
+                switch (element.Type)
+                {
+                    case Hdf5ElementType.Unknown:
+                        break;
+                    case Hdf5ElementType.Group:
+                        attributes = file.Group(element.GetPath()).Attributes;
+                        break;
+                    case Hdf5ElementType.Dataset:
+                        attributes = file.Dataset(element.Name).Attributes;
+                        break;
+                    case Hdf5ElementType.Attribute:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                foreach (var attr in attributes)
                 {
                     var val = attr.ReadString();
                     element.AddAttribute(attr.Name, val, attr.Type.Class.ToString());
