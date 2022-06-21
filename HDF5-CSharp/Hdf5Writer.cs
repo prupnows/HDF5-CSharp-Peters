@@ -29,19 +29,12 @@ namespace HDF5CSharp
                 groupId = CreateOrOpenGroup(groupId, groupName);
             }
 
-
-            foreach (Attribute attr in Attribute.GetCustomAttributes(tyObject))
+            bool skip = SkipSaveProcessing(Attribute.GetCustomAttributes(tyObject));
+            if (skip)
             {
-                if (attr is Hdf5SaveAttribute legAt)
-                {
-                    Hdf5Save kind = legAt.SaveKind;
-                    if (kind == Hdf5Save.DoNotSave)
-                    {
-                        return writeValue;
-                    }
-                }
+                return writeValue;
             }
-
+        
             WriteProperties(tyObject, writeValue, groupId);
             WriteFields(tyObject, writeValue, groupId);
             WriteHdf5Attributes(tyObject, groupId, groupName);
@@ -79,7 +72,7 @@ namespace HDF5CSharp
 
             foreach (FieldInfo info in miMembers)
             {
-                if (NoSavePresent(Attribute.GetCustomAttributes(info)))
+                if (SkipSaveProcessing(Attribute.GetCustomAttributes(info)))
                 {
                     continue;
                 }
@@ -109,7 +102,7 @@ namespace HDF5CSharp
 
             foreach (PropertyInfo info in miMembers)
             {
-                if (NoSavePresent(Attribute.GetCustomAttributes(info)))
+                if (SkipSaveProcessing(Attribute.GetCustomAttributes(info)))
                 {
                     continue;
                 }
@@ -134,22 +127,7 @@ namespace HDF5CSharp
             }
         }
 
-        private static bool NoSavePresent(Attribute[] attributes)
-        {
-            bool noSaveAttr = false;
-            foreach (Attribute attr in attributes)
-            {
-                var legAttr = attr as Hdf5SaveAttribute;
-                var kind = legAttr?.SaveKind;
-                if (kind == Hdf5Save.DoNotSave)
-                {
-                    noSaveAttr = true;
-                    break;
-                }
-            }
-
-            return noSaveAttr;
-        }
+   
 
         private static void WriteField(object infoVal, Dictionary<string, List<string>> attributes, long groupId, string name)
         {

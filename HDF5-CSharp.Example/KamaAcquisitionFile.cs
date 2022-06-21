@@ -40,7 +40,7 @@ namespace HDF5CSharp.Example
         {
             Hdf5.Settings.LowerCaseNaming = true;
             Hdf5.Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
-            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5Utils.LogError = s => Logger?.LogError($"HDF5 Error: {s}");
             Hdf5Utils.LogWarning = s => Logger?.LogWarning($"HDF5 Warning: {s}");
             Hdf5Utils.LogDebug = s => Logger?.LogDebug($"HDF5 Debug: {s}");

@@ -53,7 +53,13 @@ namespace HDF5CSharp
             var (valid, datasetName) = Hdf5Utils.GetRealName(groupId, name, alternativeName);
             if (!valid)
             {
-                Hdf5Utils.LogError?.Invoke($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}");
+                string error = $"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}";
+                Hdf5Utils.LogMessage(error,Hdf5LogLevel.Error);
+                if (Settings.ThrowOnError)
+                {
+                    throw new Hdf5Exception(error);
+                }
+
                 return (false, Array.Empty<T>());
             }
             var datasetId = H5D.open(groupId, datasetName);

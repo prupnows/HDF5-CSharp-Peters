@@ -453,7 +453,7 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.CloseFile(id);
             File.Delete(filename1);
             string filename = "overridedataset.h5";
-            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5.Settings.OverrideExistingData = true;
             long tef2 = Hdf5.CreateFile(filename);
             int[] blah = { 1, 2, 4, 5, 0 };
@@ -481,7 +481,7 @@ namespace HDF5CSharp.UnitTests.Core
         public void OverrideAndIncreaseDataset()
         {
             string filename = "overrideandincreasedataset.h5";
-            Hdf5.Settings.EnableErrorReporting(true);
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5.Settings.OverrideExistingData = true;
             long id = Hdf5.CreateFile(filename);
             int[] d1 = { 1, 2, 3, 4, 5 };

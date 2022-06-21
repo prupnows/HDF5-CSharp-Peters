@@ -41,7 +41,13 @@
         Save,
         DoNotSave
     }
-
+    public enum Hdf5ReadWrite
+    {
+        ReadOnly,
+        SaveOnly,
+        ReadWrite
+        
+    }
     public enum Hdf5LogLevel
     {
         Debug,

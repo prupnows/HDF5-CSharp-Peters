@@ -74,7 +74,7 @@ namespace HDF5CSharp
             // Create dataspace.  Setting maximum size to NULL sets the maximum
             // size to be the current size.
             _spaceId = H5S.create_simple(dims.Length, dims, _maxDims);
-            
+
             // Create the dataset and write the compound data to it.
             _datasetId = Hdf5Utils.GetDatasetId(GroupId, Hdf5Utils.NormalizedName(GroupName), typeId, _spaceId, dcpl);
 
@@ -91,10 +91,10 @@ namespace HDF5CSharp
             GCHandle hnd = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             var statusId = H5D.write(_datasetId, typeId, _spaceId, H5S.ALL,
                 H5P.DEFAULT, hnd.AddrOfPinnedObject());
-            _currentDims = new[] { (ulong)items.LongCount(),(ulong) 1 };
+            _currentDims = new[] { (ulong)items.LongCount(), (ulong)1 };
             if (statusId < 0)
             {
-                Hdf5Utils.LogError("Error creating compound");
+                Hdf5Utils.LogMessage("Error creating compound", Hdf5LogLevel.Error);
             }
             /*
              * Close and release resources.
@@ -110,7 +110,7 @@ namespace HDF5CSharp
         {
             if (items == null || !items.Any())
             {
-                Hdf5Utils.LogWarning($"Empty list in {nameof(AppendOrCreateCompound)}");
+                Hdf5Utils.LogMessage($"Empty list in {nameof(AppendOrCreateCompound)}", Hdf5LogLevel.Warning);
                 return;
             }
             if (_currentDims == null)
@@ -118,7 +118,7 @@ namespace HDF5CSharp
                 if (items.LongCount() < 1)
                 {
                     string msg = "Empty array was passed. Ignoring.";
-                    Hdf5Utils.LogError?.Invoke(msg);
+                    Hdf5Utils.LogMessage(msg, Hdf5LogLevel.Error);
                     return;
                 }
                 FirstCompound(items);
@@ -132,14 +132,17 @@ namespace HDF5CSharp
         {
             if (list == null || !list.Any())
             {
-                Hdf5Utils.LogWarning($"Empty list in {nameof(AppendCompound)}");
+                Hdf5Utils.LogMessage($"Empty list in {nameof(AppendCompound)}", Hdf5LogLevel.Warning);
                 return;
             }
             if (!Hdf5Utils.GetRealName(GroupId, GroupName, string.Empty).valid)
             {
                 string msg = $"call constructor or {nameof(FirstCompound)} first before appending.";
-                Hdf5Utils.LogError?.Invoke(msg);
-                throw new Hdf5Exception(msg);
+                Hdf5Utils.LogMessage(msg, Hdf5LogLevel.Error);
+                if (Hdf5.Settings.ThrowOnError)
+                {
+                    throw new Hdf5Exception(msg);
+                }
             }
 
             var _oldDims = this._currentDims.ToArray();
@@ -157,15 +160,21 @@ namespace HDF5CSharp
             if (filespaceId < 0)
             {
                 string msg = $"error creating file space.";
-                Hdf5Utils.LogError?.Invoke(msg);
-                throw new Hdf5Exception(msg);
+                Hdf5Utils.LogMessage(msg, Hdf5LogLevel.Error);
+                if (Hdf5.Settings.ThrowOnError)
+                {
+                    throw new Hdf5Exception(msg);
+                }
             }
             _status = H5S.select_hyperslab(filespaceId, H5S.seloper_t.SET, offset, null, _ListDims, null);
             if (_status < 0)
             {
                 string msg = $"error creating hyperslab.";
-                Hdf5Utils.LogError?.Invoke(msg);
-                throw new Hdf5Exception(msg);
+                Hdf5Utils.LogMessage(msg, Hdf5LogLevel.Error);
+                if (Hdf5.Settings.ThrowOnError)
+                {
+                    throw new Hdf5Exception(msg);
+                }
             }
             /* Define memory space */
             var memId = H5S.create_simple(2, _ListDims, null);
@@ -185,7 +194,7 @@ namespace HDF5CSharp
             hnd.Free();
             H5S.close(memId);
             H5S.close(filespaceId);
-            
+
         }
 
         public void Flush()
@@ -196,7 +205,7 @@ namespace HDF5CSharp
             }
             catch (Exception e)
             {
-                Hdf5Utils.LogError($"Unable to flash dataset: {e}");
+                Hdf5Utils.LogMessage($"Unable to flash {nameof(ChunkedCompound<T>)}: {e}",Hdf5LogLevel.Error);
             }
 
         }
@@ -217,7 +226,7 @@ namespace HDF5CSharp
         {
             if (!Hdf5Utils.GetRealName(GroupId, GroupName, string.Empty).valid)
             {
-                Hdf5Utils.LogInfo?.Invoke("Dataset does not exist.");
+                Hdf5Utils.LogMessage($"Dataset {GroupName} does not exist.", Hdf5LogLevel.Error);
                 return;
             }
 

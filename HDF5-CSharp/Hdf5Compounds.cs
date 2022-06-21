@@ -34,7 +34,7 @@ namespace HDF5CSharp
                 }
                 catch (Exception e)
                 {
-                    Hdf5Utils.LogError(e.Message);
+                    Hdf5Utils.LogMessage(e.Message,Hdf5LogLevel.Error);
                     return WriteLargeCompounds<T>(groupId, name, list.ToList(), attributes);
                 }
 

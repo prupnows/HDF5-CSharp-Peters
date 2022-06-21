@@ -56,7 +56,7 @@ namespace HDF5CSharp.UnitTests.Core
 #if NET
                 return HashCode.Combine(noAttributeName, money);
 #else
-return 0;
+                return 0;
 #endif
             }
         }
@@ -115,10 +115,63 @@ return 0;
 #if NET
             return HashCode.Combine(datetime, noAttribute, inner, StringProperty);
 #else
-return 0;
+            return 0;
 #endif
         }
     }
+    [Hdf5Attributes(new[] { "some info", "more info" })]
+    [Hdf5GroupName("test_object")]
+    class SaveReadAttributeClass
+    {
+        [Hdf5EntryName("test_int_read_only")]
+        [Hdf5ReadWrite(Hdf5ReadWrite.ReadOnly)] public int TestIntReadOnly { get; set; }
+
+        [Hdf5EntryName("test_int_save_only")]
+        [Hdf5ReadWrite(Hdf5ReadWrite.SaveOnly)] public int TestIntDoNotRead { get; set; }
+
+        [Hdf5EntryName("test_int_read_write")]
+        [Hdf5ReadWrite(Hdf5ReadWrite.ReadWrite)] public int TestIntReadWrite { get; set; }
+      
+        [Hdf5EntryName("test_int_save_only")]
+        [Hdf5ReadWrite(Hdf5ReadWrite.ReadOnly)] public int TestIntReadOnlyOfOtherProperty { get; set; }
+
+        [Hdf5EntryName("test_int_no_attribute")] public int TestIntNoAttribute { get; set; }
+
+        public SaveReadAttributeClass()
+        {
+
+        }
+        public SaveReadAttributeClass(int value)
+        {
+            TestIntReadOnly = TestIntDoNotRead = TestIntNoAttribute = TestIntReadWrite = value;
+        }
+
+        protected bool Equals(SaveReadAttributeClass other)
+        {
+            return TestIntReadOnly == other.TestIntReadOnly && TestIntDoNotRead == other.TestIntDoNotRead && TestIntReadWrite == other.TestIntReadWrite && TestIntNoAttribute == other.TestIntNoAttribute;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((SaveReadAttributeClass)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = TestIntReadOnly;
+                hashCode = (hashCode * 397) ^ TestIntDoNotRead;
+                hashCode = (hashCode * 397) ^ TestIntReadWrite;
+                hashCode = (hashCode * 397) ^ TestIntNoAttribute;
+                return hashCode;
+            }
+        }
+    }
+
     [Hdf5Attributes(new[] { "some info", "more info" })]
     class AttributeClass
     {
@@ -189,7 +242,7 @@ return 0;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 5)]
         public string label;
     }
-   
+
     [StructLayout(LayoutKind.Sequential)]
     public struct WData3
     {
@@ -400,7 +453,7 @@ return 0;
 #if NET
             return HashCode.Combine(dataField, Data);
 #else
-return 0;
+            return 0;
 #endif
         }
     }
@@ -413,7 +466,7 @@ return 0;
         public TestClassListOfList()
         {
             Data = new List<int[]>(2) { new[] { 1 }, new[] { 1, 2 } };
-            dataField = new List<int[]>(21) { new[] { 2 }, new[] { 4, 5} };
+            dataField = new List<int[]>(21) { new[] { 2 }, new[] { 4, 5 } };
         }
     }
     class TestClassWithLists : IEquatable<TestClassWithLists>
@@ -439,7 +492,7 @@ return 0;
             NumbersProperty = new List<int> { 4, 5, 6 };
             floats = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(1f), new TestClassWithArrayOfFloats(2) };
 
-              FloatsProperties = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(3f), new TestClassWithArrayOfFloats(4) };
+            FloatsProperties = new List<TestClassWithArrayOfFloats> { new TestClassWithArrayOfFloats(3f), new TestClassWithArrayOfFloats(4) };
         }
 
         public bool Equals(TestClassWithLists other)
