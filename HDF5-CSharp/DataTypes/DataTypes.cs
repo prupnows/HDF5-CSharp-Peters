@@ -10,7 +10,8 @@ namespace HDF5CSharp.DataTypes
         Unknown = 0,
         Group,
         Dataset,
-        Attribute
+        Attribute,
+        CommitedDatatype
     }
 
     public class Hdf5AttributeElement
@@ -23,6 +24,11 @@ namespace HDF5CSharp.DataTypes
             Name = name;
             Values = values;
             ElementType = elementType;
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Name)}: {Name}, {nameof(Values)}: {string.Join(Environment.NewLine,Values)}, {nameof(ElementType)}: {ElementType}";
         }
     }
     public abstract class Hdf5ElementBase
@@ -54,8 +60,8 @@ namespace HDF5CSharp.DataTypes
 
     public class Hdf5Element : Hdf5ElementBase
     {
-        private List<Hdf5Element> Children { get; }
-        private List<Hdf5AttributeElement> Attributes { get; }
+        public List<Hdf5Element> Children { get; private set; }
+        public List<Hdf5AttributeElement> Attributes { get; private set; }
         public Hdf5Element(string name, Hdf5ElementType type, Hdf5ElementBase parent, long id) : base(name, type, parent, id)
         {
             Children = new List<Hdf5Element>();
@@ -112,6 +118,11 @@ namespace HDF5CSharp.DataTypes
 
             var subChildren = Children.Where(c => c.HasChildren).Select(c => c.GetChildWithName(childName));
             return subChildren.FirstOrDefault();
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}, {nameof(Children)}: {Children.Count}, {nameof(Attributes)}: {Attributes.Count}";
         }
     }
 }

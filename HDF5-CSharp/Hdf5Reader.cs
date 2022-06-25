@@ -360,17 +360,20 @@ namespace HDF5CSharp
         }
         public static List<Hdf5Element> ReadFlatFileStructure(string fileName)
         {
-            var flat = ReadFileStructure(fileName).flat;
-
-            using (var root = H5File.OpenRead(fileName))
+            var result = ReadFileStructure(fileName);
+            try
             {
-                foreach (Hdf5Element e in flat)
+                using (var root = H5File.OpenRead(fileName))
                 {
-
-                    AddAttributes(e, root, false);
+                    AddAttributes(result.tree, root, true);
                 }
             }
-            return flat;
+            catch (Exception e)
+            {
+                Hdf5Utils.LogMessage($"Error Reading file attributes: {e.Message}", Hdf5LogLevel.Error);
+            }
+
+            return result.flat;
         }
         public static List<Hdf5Element> ReadFlatFileStructureWithoutAttributes(string fileName)
         {
@@ -389,6 +392,9 @@ namespace HDF5CSharp
                     case Hdf5ElementType.Group:
                         attributes = file.Group(element.GetPath()).Attributes;
                         break;
+                    case Hdf5ElementType.CommitedDatatype:
+                        //attributes = file.CommitedDatatype(element.GetPath()).Attributes;
+                        break;
                     case Hdf5ElementType.Dataset:
                         attributes = file.Dataset(element.Name).Attributes;
                         break;
@@ -406,7 +412,7 @@ namespace HDF5CSharp
             }
             catch (Exception e)
             {
-                //
+                element.AddAttribute("ERROR READING ATTRIBUTES",e.Message,"Unknown");
             }
             if (recursive)
             {
@@ -524,7 +530,10 @@ namespace HDF5CSharp
                     else
                     {
                         objectType = H5O.type_t.UNKNOWN;
-                        elementType = Hdf5ElementType.Group;
+                        elementType = Hdf5ElementType.Unknown;
+
+                        //objectType = H5O.type_t.NAMED_DATATYPE;
+                        // elementType = Hdf5ElementType.CommitedDatatype;
                     }
                 }
 

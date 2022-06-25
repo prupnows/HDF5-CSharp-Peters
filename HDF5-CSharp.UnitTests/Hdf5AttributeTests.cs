@@ -143,7 +143,7 @@ namespace HDF5CSharp.UnitTests.Core
                 Assert.IsTrue(fileId > 0);
                 SaveReadAttributeClass readObject = new SaveReadAttributeClass();
                 readObject = Hdf5.ReadObject(fileId, readObject, "/test_object");
-                Assert.IsTrue(readObject.TestIntDoNotRead==0);
+                Assert.IsTrue(readObject.TestIntDoNotRead == 0);
                 Assert.IsTrue(readObject.TestIntReadWrite == value);
                 Assert.IsTrue(readObject.TestIntReadOnly == 0);
                 Assert.IsTrue(readObject.TestIntNoAttribute == value);
@@ -290,10 +290,38 @@ namespace HDF5CSharp.UnitTests.Core
 
         [TestMethod]
         public void TestReadFullTreeWithAttributes()
-        { 
-            string filename = Path.Combine(folder, "files", "testfile2.H5");
-            var results = Hdf5.ReadTreeFileStructure(filename);
+        {
+            string filename = Path.Combine(folder, "files", "attestex.H5");
+            var results1 = Hdf5.ReadTreeFileStructure(filename);
+            int count1 = CountAttributes(results1);
 
+            var results2 = Hdf5.ReadFlatFileStructure(filename);
+
+            int count2 = results2.Sum(e => e.Attributes.Count);
+             Assert.IsTrue(count1==count2);
+        }
+        [TestMethod]
+        public void TestReadFullTreeWithAttributes2()
+        {
+            string filename = Path.Combine(folder, "files", "testfile2.H5");
+            var results1 = Hdf5.ReadTreeFileStructure(filename);
+            int count1 = CountAttributes(results1);
+
+            var results2 = Hdf5.ReadFlatFileStructure(filename);
+
+            int count2 = results2.Sum(e => e.Attributes.Count);
+            Assert.IsTrue(count1 == count2);
+        }
+
+        private int CountAttributes(Hdf5Element element)
+        {
+            int count = element.Attributes.Count;
+            foreach (Hdf5Element child in element.Children)
+            {
+                count += CountAttributes(child);
+            }
+
+            return count;
         }
     }
 }
