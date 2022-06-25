@@ -32,7 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="FileStructure.h5">
+		<None Update="files\FileStructure.h5">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="files\attestex.h5">
@@ -50,7 +50,7 @@
 		<None Update="files\TEST_TREE.h5">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="testFile.H5">
+		<None Update="files\testFile.H5">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
