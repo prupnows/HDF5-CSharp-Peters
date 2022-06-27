@@ -412,7 +412,7 @@ namespace HDF5CSharp
             }
             catch (Exception e)
             {
-                element.AddAttribute("ERROR READING ATTRIBUTES",e.Message,"Unknown");
+                element.AddAttribute("ERROR READING ATTRIBUTES", e.Message, "Unknown");
             }
             if (recursive)
             {
@@ -597,9 +597,11 @@ namespace HDF5CSharp
                 if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
                 {
                     (success, values) = dsetRW.ReadArray(elType, groupId, datasetName, "");
+                    table.ReadSuccessful = success;
                     if (success)
                     {
                         table.Data = (T[,])values;
+                        table.HDF5Name = datasetName;
                     }
                 }
                 else

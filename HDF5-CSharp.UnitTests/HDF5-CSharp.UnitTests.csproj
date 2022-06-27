@@ -38,6 +38,9 @@
 		<None Update="files\attestex.h5">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="files\loop.h5">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="files\testCompounds_WData2_WData3.H5">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

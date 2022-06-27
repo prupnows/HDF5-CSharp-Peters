@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp.UnitTests.Core
 {
@@ -10,10 +11,13 @@ namespace HDF5CSharp.UnitTests.Core
     public class FilesUnitTests : Hdf5BaseUnitTests
     {
         private static List<string> Errors { get; set; }
+        private static string folder;
 
         public FilesUnitTests()
         {
             Errors = new List<string>();
+            folder = AppDomain.CurrentDomain.BaseDirectory;
+
         }
         [TestMethod]
         public void TestReadStructure()
@@ -38,6 +42,35 @@ namespace HDF5CSharp.UnitTests.Core
                 Assert.IsTrue(tree != null);
                 Assert.IsTrue(flat != null);
             }
+        }
+
+        [TestMethod]
+        public void Testloops()
+        {
+            Hdf5.Settings.EnableH5InternalErrorReporting(true);
+            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
+            Hdf5Utils.LogError = (s) => Errors.Add(s);
+            string fileName = Path.Combine(folder, "files", "loop.H5");
+            long fileId = -1;
+            bool readok = true;
+            Dictionary<string, TabularData<double>> data = new Dictionary<string, TabularData<double>>();
+            fileId = Hdf5.OpenFile(fileName, true);
+            var groupId = Hdf5.CreateOrOpenGroup(fileId, "/MODEL_STAGE[1]/RESULTS/ON_NODES/DISPLACEMENT/DATA/");
+            int step = 0;
+            do
+            {
+                string name = $"STEP_{step++}";
+                TabularData<double> disp = Hdf5.Read2DTable<double>(groupId, name);
+                if (disp.Data != null)
+                {
+                    data.Add(name, disp);
+                }
+                else
+                {
+                    readok = false;
+                }
+            } while (readok);
+            Assert.IsTrue(data.Count==10);
         }
     }
 }
