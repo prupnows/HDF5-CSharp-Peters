@@ -393,7 +393,7 @@ namespace HDF5CSharp
                         attributes = file.Group(element.GetPath()).Attributes;
                         break;
                     case Hdf5ElementType.CommitedDatatype:
-                        //attributes = file.CommitedDatatype(element.GetPath()).Attributes;
+                        attributes = file.CommitedDatatype(element.GetPath()).Attributes;
                         break;
                     case Hdf5ElementType.Dataset:
                         attributes = file.Dataset(element.Name).Attributes;
@@ -529,11 +529,11 @@ namespace HDF5CSharp
                     }
                     else
                     {
-                        objectType = H5O.type_t.UNKNOWN;
-                        elementType = Hdf5ElementType.Unknown;
+                        //objectType = H5O.type_t.UNKNOWN;
+                        //elementType = Hdf5ElementType.Unknown;
 
-                        //objectType = H5O.type_t.NAMED_DATATYPE;
-                        // elementType = Hdf5ElementType.CommitedDatatype;
+                        objectType = H5O.type_t.NAMED_DATATYPE;
+                         elementType = Hdf5ElementType.CommitedDatatype;
                     }
                 }
 

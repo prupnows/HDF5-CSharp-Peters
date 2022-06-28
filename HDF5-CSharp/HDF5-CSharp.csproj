@@ -22,7 +22,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageReleaseNotes>Update icon</PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>1.13.5.3-RC</Version>
+		<Version>1.13.5.4-RC</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -59,7 +59,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="HDF.PInvoke.1.10" Version="1.10.612" />
-		<PackageReference Include="HDF5.NET" Version="1.0.0-alpha.15.final" />
+		<PackageReference Include="HDF5.NET" Version="1.0.0-alpha.16.final" />
 		<PackageReference Include="Microsoft.Build.Tasks.Git" Version="1.1.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
