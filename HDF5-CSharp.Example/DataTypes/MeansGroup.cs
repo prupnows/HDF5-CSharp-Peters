@@ -11,16 +11,15 @@ namespace HDF5CSharp.Example.DataTypes
 {
     public class MeansGroup : Hdf5BaseFile, IDisposable
     {
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ReaderWriterLockSlim LockSlim { get; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private List<MeansFullECGEvent> MeansSamplesData { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private bool record;
-        [Hdf5Save(Hdf5Save.DoNotSave)] private long index;
-
-        [Hdf5Save(Hdf5Save.DoNotSave)] private int BatchSizeInSeconds;
-        [Hdf5Save(Hdf5Save.DoNotSave)] private int BatchSizeInSamples;
-        [Hdf5Save(Hdf5Save.DoNotSave)] private PeriodicTimer MeansSystemEventWriter { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private Task MeansSystemEventTaskWriter { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedCompound<MeansFullECGEvent> ChunkedMeansSystemEvents { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ReaderWriterLockSlim LockSlim { get; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private List<MeansFullECGEvent> MeansSamplesData { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private bool record;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private long index;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private int BatchSizeInSeconds;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private int BatchSizeInSamples;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private PeriodicTimer MeansSystemEventWriter { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private Task MeansSystemEventTaskWriter { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedCompound<MeansFullECGEvent> ChunkedMeansSystemEvents { get; set; }
         private CancellationTokenSource cts;
 
 

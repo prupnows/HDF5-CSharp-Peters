@@ -10,9 +10,8 @@ namespace HDF5CSharp.Example.DataTypes
     [Hdf5GroupName("tags")]
     public class TagsGroup : Hdf5BaseFile, IDisposable
     {
-        private Hdf5Events tags;
-        [Hdf5Save(Hdf5Save.DoNotSave)] private List<string> TagsData { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private bool record;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private List<string> TagsData { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private bool record;
         public TagsGroup(long fileId, long groupRoot, ILogger logger) : base(fileId, groupRoot, "tags", logger)
         {
             TagsData = new List<string>();

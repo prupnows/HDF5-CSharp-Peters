@@ -24,9 +24,9 @@ namespace HDF5CSharp.Example.DataTypes
     }
     public class SystemEventGroup : Hdf5BaseFile, IDisposable
     {
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ReaderWriterLockSlim LockSlim { get; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private List<SystemEvent> SystemEventSamplesData { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private bool record;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ReaderWriterLockSlim LockSlim { get; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private List<SystemEvent> SystemEventSamplesData { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private bool record;
         public SystemEventGroup(long fileId, long groupRoot, ILogger logger) : base(fileId, groupRoot, "events", logger)
         {
             SystemEventSamplesData = new List<SystemEvent>();
@@ -55,7 +55,7 @@ namespace HDF5CSharp.Example.DataTypes
 
             if (record)
             {
-                SystemEvent hdf5SystemEvent = new SystemEvent(systemEvent.TimeStamp, systemEvent.SystemEventType.ToString(), "", systemEvent.EventData,false);
+                SystemEvent hdf5SystemEvent = new SystemEvent(systemEvent.TimeStamp, systemEvent.SystemEventType.ToString(), "", systemEvent.EventData, false);
                 LockSlim.EnterWriteLock();
                 SystemEventSamplesData.Add(hdf5SystemEvent);
                 LockSlim.ExitWriteLock();

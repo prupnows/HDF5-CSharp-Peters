@@ -14,16 +14,16 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5EntryName("start_datetime")] public long? StartDateTime { get; set; }
         [Hdf5EntryName("end_datetime")] public long EndDateTime { get; set; }
         [Hdf5EntryName("sampling_rate")] public int SamplingRate { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] public Dictionary<string, string> Parameters { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] public Dictionary<string, string> Header { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<double> UnFiltered { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<double> Filtered { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<long> Timestamps { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> PacketIds { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private BlockingCollectionQueue<ECGFrame> EcgSamplesData { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private Task EcgTaskWriter { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private int ChunkSize;
-        [Hdf5Save(Hdf5Save.DoNotSave)] private bool completed;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] public Dictionary<string, string> Parameters { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] public Dictionary<string, string> Header { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<double> UnFiltered { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<double> Filtered { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<long> Timestamps { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<ulong> PacketIds { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private BlockingCollectionQueue<ECGFrame> EcgSamplesData { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private Task EcgTaskWriter { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private int ChunkSize;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private bool completed;
         public ECG(long fileId, long groupRoot, int chunkSize, int sampleRate, ILogger logger) : base(fileId, groupRoot, "ecg", logger)
         {
             ChunkSize = chunkSize;

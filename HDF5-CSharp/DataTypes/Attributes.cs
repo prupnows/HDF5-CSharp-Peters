@@ -47,24 +47,23 @@ namespace HDF5CSharp.DataTypes
         public string Name { get; private set; }
     }
 
-
+    
     [AttributeUsage(AttributeTargets.All)]
     public sealed class Hdf5ReadWriteAttribute : Attribute
     {
-        public Hdf5ReadWrite ReadKind { get; }     
-
-
+        public Hdf5ReadWrite ReadKind { get; }
         public Hdf5ReadWriteAttribute(Hdf5ReadWrite readKind)
         {
             ReadKind = readKind;
         }
 
     }
+    [Obsolete("Recommended Attribute is Hdf5ReadWriteAttribute")]
     [AttributeUsage(AttributeTargets.All)]
     public sealed class Hdf5SaveAttribute : Attribute
     {
         public Hdf5Save SaveKind { get; }
-        public Hdf5SaveAttribute(Hdf5Save saveKind) 
+        public Hdf5SaveAttribute(Hdf5Save saveKind)
         {
             SaveKind = saveKind;
         }

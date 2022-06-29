@@ -24,7 +24,7 @@ namespace HDF5CSharp.Example.DataTypes
 
     public class UserEventsGroup : Hdf5BaseFile, IDisposable
     {
-        [Hdf5Save(Hdf5Save.DoNotSave)] private List<UserEventRecord> userEventsData;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private List<UserEventRecord> userEventsData;
 
         public UserEventsGroup(long fileId, long groupRoot, ILogger logger) : base(fileId, groupRoot, Constants.EventGroupName, logger)
         {

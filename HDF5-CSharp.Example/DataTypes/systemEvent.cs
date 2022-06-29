@@ -102,11 +102,11 @@ namespace HDF5CSharp.Example.DataTypes
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 1000)][Hdf5EntryName("description")] public string description;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 200000)][Hdf5EntryName("data")] public string data;
         [Hdf5EntryName("error")] public int isError;
-        [Hdf5Save(Hdf5Save.DoNotSave)]
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)]
         private static readonly Dictionary<string, SystemEventType> values = Enum.GetNames(typeof(SystemEventType)).ToDictionary(x => x,
         x => (SystemEventType)Enum.Parse(typeof(SystemEventType), x), StringComparer.OrdinalIgnoreCase);
 
-        [Hdf5Save(Hdf5Save.DoNotSave)] private SystemEventType? eventType;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private SystemEventType? eventType;
         public SystemEventType SystemEventType
         {
             get

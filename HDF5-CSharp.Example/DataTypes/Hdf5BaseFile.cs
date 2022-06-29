@@ -7,12 +7,12 @@ namespace HDF5CSharp.Example.DataTypes
     [Serializable]
     public abstract class Hdf5BaseFile
     {
-        [Hdf5Save(Hdf5Save.DoNotSave)] private long FileId { get; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] protected long GroupRoot { get; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] protected string GroupName { get; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] protected long GroupId { get; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] protected bool Disposed { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] protected ILogger Logger { get; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private long FileId { get; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] protected long GroupRoot { get; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] protected string GroupName { get; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] protected long GroupId { get; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] protected bool Disposed { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] protected ILogger Logger { get; }
         protected Hdf5BaseFile(in long fileId, in long groupRoot, in string groupName, ILogger logger)
         {
             FileId = fileId;

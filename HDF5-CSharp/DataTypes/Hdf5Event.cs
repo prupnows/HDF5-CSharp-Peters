@@ -16,7 +16,7 @@ namespace HDF5CSharp.DataTypes
         /// <summary>
         /// Time property. Datetimes can't be saved so the TimeTicks field gets saved
         /// </summary>
-        [Hdf5Save(Hdf5Save.DoNotSave)]
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)]
         public DateTime Time
         {
             get => new DateTime(TimeTicks);
@@ -28,7 +28,7 @@ namespace HDF5CSharp.DataTypes
         /// <summary>
         /// Duration property. Timespans can't be saved so the DurationTicks field gets saved
         /// </summary>
-        [Hdf5Save(Hdf5Save.DoNotSave)]
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)]
         public TimeSpan Duration
         {
             get => new TimeSpan(DurationTicks);

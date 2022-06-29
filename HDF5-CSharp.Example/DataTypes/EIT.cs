@@ -12,17 +12,17 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5EntryName("configuration")] public string Configuration { get; set; }
         [Hdf5EntryName("start_datetime")] public long? StartDateTime { get; set; }
         [Hdf5EntryName("end_datetime")] public long EndDateTime { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<float> VoltagesReal { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<float> VoltagesIm { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<float> CurrentsReal { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<float> CurrentsIm { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> Saturation { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<long> Timestamps { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ChunkedDataset<ulong> PacketIds { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private BlockingCollectionQueue<ElectrodeFrame> ElectrodeSamplesData { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private Task ElectrodeTaskWriter { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private bool completed;
-        [Hdf5Save(Hdf5Save.DoNotSave)] private int ChunkSize;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<float> VoltagesReal { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<float> VoltagesIm { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<float> CurrentsReal { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<float> CurrentsIm { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<ulong> Saturation { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<long> Timestamps { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ChunkedDataset<ulong> PacketIds { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private BlockingCollectionQueue<ElectrodeFrame> ElectrodeSamplesData { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private Task ElectrodeTaskWriter { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private bool completed;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private int ChunkSize;
 
         public EIT(int recordNumber, int chunkSize, string acquisitionProtocol, long fileId, long groupRoot, ILogger logger) : base(fileId, groupRoot, "d" + recordNumber, logger)
         {
@@ -109,7 +109,7 @@ namespace HDF5CSharp.Example.DataTypes
                 PacketIds.AppendOrCreateDataset(packetIdData);
             }
 
-          
+
         }
 
         public void Dispose()

@@ -24,9 +24,9 @@ namespace HDF5CSharp.Example.DataTypes
     }
     public class RPositionGroup : Hdf5BaseFile, IDisposable
     {
-        [Hdf5Save(Hdf5Save.DoNotSave)] private ReaderWriterLockSlim LockSlim { get; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private List<RPositionEvent> RPositionSamplesData { get; set; }
-        [Hdf5Save(Hdf5Save.DoNotSave)] private bool record;
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private ReaderWriterLockSlim LockSlim { get; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private List<RPositionEvent> RPositionSamplesData { get; set; }
+        [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] private bool record;
 
         public RPositionGroup(long fileId, long groupRoot, ILogger logger) : base(fileId, groupRoot, "events", logger)
         {
