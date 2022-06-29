@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.3.112" />
-    <PackageReference Include="MessagePack.UnityShims" Version="2.3.112" />
+    <PackageReference Include="MessagePack" Version="2.4.35" />
+    <PackageReference Include="MessagePack.UnityShims" Version="2.4.35" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
