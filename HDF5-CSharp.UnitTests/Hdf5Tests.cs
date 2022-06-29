@@ -11,11 +11,13 @@ namespace HDF5CSharp.UnitTests.Core
     {
         protected static int ErrorCountExpected = 0;
         private static List<string> Errors { get; set; }
+        private static List<string> Warning { get; set; }
 
         [TestInitialize]
         public void TestInitialize()
         {
             Errors = new List<string>();
+            Warning = new List<string>();
             EnableErrors();
 
         }
@@ -30,7 +32,7 @@ namespace HDF5CSharp.UnitTests.Core
         private static void EnableErrors()
         {
             Hdf5.Settings.EnableH5InternalErrorReporting(true);
-            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
+            Hdf5Utils.LogWarning = (s) => Warning.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }
     }
@@ -49,11 +51,11 @@ namespace HDF5CSharp.UnitTests.Core
         protected static int ErrorCountExpected = 0;
         private static List<string> Errors { get; set; }
         static private string folder;
-  
+
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
-           Hdf5.Settings.LowerCaseNaming = true;
+            Hdf5.Settings.LowerCaseNaming = true;
             //folder = System.IO.Path.GetTempPath();
             folder = AppDomain.CurrentDomain.BaseDirectory;
             dsets = new List<double[,]> {
@@ -97,7 +99,7 @@ namespace HDF5CSharp.UnitTests.Core
                 {
                     Console.WriteLine(e);
                 }
-                
+
             }
         }
 
@@ -111,7 +113,7 @@ namespace HDF5CSharp.UnitTests.Core
         [TestCleanup]
         public void Cleanup()
         {
-            foreach(var e in Errors)
+            foreach (var e in Errors)
             {
                 Console.WriteLine(e);
             }

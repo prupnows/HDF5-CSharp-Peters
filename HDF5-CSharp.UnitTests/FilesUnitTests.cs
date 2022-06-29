@@ -45,14 +45,13 @@ namespace HDF5CSharp.UnitTests.Core
         }
 
         [TestMethod]
-        public void Testloops()
+        public void TestLoops()
         {
             Hdf5.Settings.EnableH5InternalErrorReporting(true);
-            Hdf5Utils.LogWarning = (s) => Errors.Add(s);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
             string fileName = Path.Combine(folder, "files", "loop.H5");
             long fileId = -1;
-            bool readok = true;
+            bool readOK = true;
             Dictionary<string, TabularData<double>> data = new Dictionary<string, TabularData<double>>();
             fileId = Hdf5.OpenFile(fileName, true);
             var groupId = Hdf5.CreateOrOpenGroup(fileId, "/MODEL_STAGE[1]/RESULTS/ON_NODES/DISPLACEMENT/DATA/");
@@ -67,10 +66,15 @@ namespace HDF5CSharp.UnitTests.Core
                 }
                 else
                 {
-                    readok = false;
+                    readOK = false;
                 }
-            } while (readok);
+            } while (readOK);
+
+            Hdf5.CloseGroup(groupId);
             Assert.IsTrue(data.Count==10);
+            Hdf5.CloseFile(fileId);
+            File.Delete(fileName);
+
         }
     }
 }

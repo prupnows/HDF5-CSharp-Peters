@@ -54,7 +54,7 @@ namespace HDF5CSharp
             if (!valid)
             {
                 string error = $"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}";
-                Hdf5Utils.LogMessage(error,Hdf5LogLevel.Warning);
+                Hdf5Utils.LogMessage(error, Hdf5LogLevel.Warning);
                 if (Settings.ThrowOnNonExistNameWhenReading)
                 {
                     throw new Hdf5Exception(error);
@@ -97,6 +97,7 @@ namespace HDF5CSharp
                 H5D.read(datasetId, datatype, memId, spaceId,
                     H5P.DEFAULT, hnd.AddrOfPinnedObject());
                 hnd.Free();
+                H5S.close(memId);
             }
             else
             {
@@ -248,7 +249,7 @@ namespace HDF5CSharp
         public static (int success, long CreatedgroupId) WriteOneValue<T>(long groupId, string name, T dset, Dictionary<string, List<string>> attributes)
         {
             if (typeof(T) == typeof(string))
-                //WriteStrings(groupId, name, new string[] { dset.ToString() });
+            //WriteStrings(groupId, name, new string[] { dset.ToString() });
             {
                 return dsetRW.WriteArray(groupId, name, new T[1] { dset }, attributes);
             }
@@ -328,7 +329,7 @@ namespace HDF5CSharp
 
                 var propId = H5P.create(H5P.DATASET_CREATE);
                 status = H5P.set_chunk(propId, rank, dimsChunk);
-                
+
                 /* Write data to dataset */
                 GCHandle hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
                 status = H5D.write(datasetId, datatype, H5S.ALL, H5S.ALL, H5P.DEFAULT,

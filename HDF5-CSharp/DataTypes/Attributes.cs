@@ -48,7 +48,7 @@ namespace HDF5CSharp.DataTypes
     }
 
 
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.All)]
     public sealed class Hdf5ReadWriteAttribute : Attribute
     {
         public Hdf5ReadWrite ReadKind { get; }     
@@ -60,7 +60,7 @@ namespace HDF5CSharp.DataTypes
         }
 
     }
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.All)]
     public sealed class Hdf5SaveAttribute : Attribute
     {
         public Hdf5Save SaveKind { get; }
@@ -71,7 +71,7 @@ namespace HDF5CSharp.DataTypes
 
     }
 
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.All)]
     public sealed class Hdf5EntryNameAttribute : Attribute
     {
         public string Name { get; }
