@@ -43,6 +43,7 @@
     }
     public enum Hdf5ReadWrite
     {
+        DoNothing,
         ReadOnly,
         SaveOnly,
         ReadWrite
