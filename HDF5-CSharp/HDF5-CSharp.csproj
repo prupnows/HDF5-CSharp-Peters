@@ -77,7 +77,7 @@
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
 		</None>
-		<None Include="Nuget\README.md" Pack="true" PackagePath="\"/>
+		<None Include="..\Nuget\README.md" Pack="true" PackagePath="\"/>
 
 	</ItemGroup>
 
