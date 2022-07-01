@@ -10,6 +10,65 @@ namespace HDF5CSharp.UnitTests.Core
 {
     public partial class Hdf5UnitTests
     {
+        public class TestAttributeClass
+        {
+
+            [Hdf5ReadWrite(Hdf5ReadWrite.DoNothing)] public int DoNothing { get; set; }
+
+            [Hdf5ReadWrite(Hdf5ReadWrite.WriteOnly)]
+            [Hdf5EntryName("write_only")]
+            public int IntWriteOnly { get; set; }
+
+            [Hdf5ReadWrite(Hdf5ReadWrite.ReadOnly)]
+            [Hdf5EntryName("write_only")]
+            public int IntReadOnly { get; set; }
+
+            [Hdf5ReadWrite(Hdf5ReadWrite.ReadWrite)]
+            [Hdf5EntryName("read_write")]
+            public int IntReadWrite { get; set; }
+
+            public int intNoAttribute { get; set; }
+            public TestAttributeClass()
+            {
+
+            }
+        }
+
+        [TestMethod]
+        public void TestReadWriteAttributeTest()
+        {
+            string filename = Path.Combine(folder, $"{nameof(TestReadWriteAttributeTest)}.H5");
+            var fileId = Hdf5.CreateFile(filename);
+            Assert.IsTrue(fileId > 0);
+            TestAttributeClass testclass = new TestAttributeClass()
+            {
+                DoNothing = 10,
+                IntWriteOnly = 20,
+                IntReadWrite = 30,
+                intNoAttribute = 40,
+                IntReadOnly = 50,
+
+            };
+            Hdf5.WriteObject(fileId, testclass, "/");
+            Hdf5.CloseFile(fileId);
+
+            fileId = Hdf5.OpenFile(filename);
+            var testRead = Hdf5.ReadObject<TestAttributeClass>(fileId, "/");
+            Assert.IsTrue(testRead.IntReadOnly == testclass.IntWriteOnly);
+            Assert.IsTrue(testRead.IntReadWrite == testclass.IntReadWrite);
+            Assert.IsTrue(testRead.intNoAttribute == testclass.intNoAttribute);
+            Assert.IsTrue(testRead.DoNothing == 0);
+            Assert.IsTrue(testRead.IntWriteOnly == 0);
+            Assert.IsTrue(Hdf5.DatasetExists(fileId, "/intnoattribute"));
+            Assert.IsTrue(Hdf5.DatasetExists(fileId, "/write_only"));
+            Assert.IsTrue(Hdf5.DatasetExists(fileId, "/read_write"));
+            Assert.IsFalse(Hdf5.DatasetExists(fileId, "/donothing"));
+            Assert.IsFalse(Hdf5.DatasetExists(fileId, "/read_only"));
+            Hdf5.CloseFile(fileId);
+            File.Delete(filename);
+        }
+
+
         [TestMethod]
         public void WriteAndReadAttributeByPath()
         {
@@ -298,7 +357,7 @@ namespace HDF5CSharp.UnitTests.Core
             var results2 = Hdf5.ReadFlatFileStructure(filename);
 
             int count2 = results2.Sum(e => e.Attributes.Count);
-             Assert.IsTrue(count1==count2);
+            Assert.IsTrue(count1 == count2);
         }
         [TestMethod]
         public void TestReadFullTreeWithAttributes2()
