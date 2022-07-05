@@ -583,7 +583,7 @@ namespace HDF5CSharp
                 TypeCode elCode = Type.GetTypeCode(elType);
                 if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
                 {
-                    (success, values) = dsetRW.ReadArray(elType, groupId, datasetName, "", true);
+                    (success, values) = dsetRW.ReadArray(elType, groupId, datasetName, "", false);
                     table.ReadSuccessful = success;
                     if (success)
                     {
