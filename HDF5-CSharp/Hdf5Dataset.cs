@@ -10,6 +10,7 @@ namespace HDF5CSharp
 {
     public class Hdf5Dataset : IHdf5ReaderWriter
     {
+      
         public (bool success, Array result) ReadToArray<T>(long groupId, string name, string alternativeName)
         {
             return Hdf5.ReadDatasetToArray<T>(groupId, name, alternativeName);
@@ -39,6 +40,19 @@ namespace HDF5CSharp
     {
         static Hdf5ReaderWriter dsetRW = new Hdf5ReaderWriter(new Hdf5Dataset());
 
+        public static long OpenDatasetIfExist(long fileOrGroupId,string name,string alternativeName)
+        {
+            if (DatasetExists(fileOrGroupId, name))
+            {
+                return H5D.open(fileOrGroupId, name);
+            }
+            if (DatasetExists(fileOrGroupId, alternativeName))
+            {
+                return H5D.open(fileOrGroupId, alternativeName);
+            }
+
+            return -1;
+        }
         public static bool DatasetExists(long groupId, string datasetName) => Hdf5Utils.ItemExists(groupId, datasetName, Hdf5ElementType.Dataset);
         /// <summary>
         /// Reads an n-dimensional dataset.

@@ -13,15 +13,11 @@ namespace HDF5CSharp
     {
         public static (bool success, IEnumerable<string> result) ReadStrings(long groupId, string name, string alternativeName)
         {
-            var datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(name));
+            long datasetId = OpenDatasetIfExist(groupId, Hdf5Utils.NormalizedName(name),
+                                                Hdf5Utils.NormalizedName(alternativeName));
             if (datasetId < 0) //does not exist?
             {
-                datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
-            }
-
-            if (datasetId <= 0)
-            {
-                Hdf5Utils.LogMessage($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}",Hdf5LogLevel.Error);
+                Hdf5Utils.LogMessage($"Warning reading {groupId}. Name:{name}. AlternativeName:{alternativeName}", Hdf5LogLevel.Warning);
                 return (false, Array.Empty<string>());
             }
             long typeId = H5D.get_type(datasetId);
