@@ -179,3 +179,7 @@ in order to log errors use this code snippet:
 ```
 
 
+## History
+
+### V1.13.6: 
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/211 : don't try to open group if it does not exist #211
