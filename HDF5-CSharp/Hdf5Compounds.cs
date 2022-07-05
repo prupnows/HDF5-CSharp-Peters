@@ -416,7 +416,7 @@ namespace HDF5CSharp
                 {
                     string error = $"Item {nameToUse} does not exist.";
                     Hdf5Utils.LogMessage(error, Hdf5LogLevel.Warning);
-                    if (mandatory && Settings.ThrowOnNonExistNameWhenReading)
+                    if (mandatory || Settings.ThrowOnNonExistNameWhenReading)
                     {
                         Hdf5Utils.LogMessage(error, Hdf5LogLevel.Error);
                         throw new Hdf5Exception(error);

@@ -177,5 +177,10 @@ in order to log errors use this code snippet:
 
 ## History
 
+### V1.14.2: 
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/214: OpenAttributeIfExists Tries to open dataset instead of attribute #214
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/212: Add Throw if not exists boolean flag or Mandatory Attribute? #212
+
+ 
 ### V1.14.1: 
- - https://github.com/LiorBanai/HDF5-CSharp/issues/211 : don't try to open group if it does not exist #211
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/211: don't try to open group if it does not exist #211

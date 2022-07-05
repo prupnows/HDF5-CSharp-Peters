@@ -18,7 +18,7 @@ namespace HDF5CSharp
             if (datasetId < 0) //does not exist?
             {
                 Hdf5Utils.LogMessage($"Warning reading {groupId}. Name:{name}. AlternativeName:{alternativeName}", Hdf5LogLevel.Warning);
-                if (mandatory && Settings.ThrowOnNonExistNameWhenReading)
+                if (mandatory || Settings.ThrowOnNonExistNameWhenReading)
                 {
                     string error = $"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}";
                     Hdf5Utils.LogMessage(error, Hdf5LogLevel.Error);
