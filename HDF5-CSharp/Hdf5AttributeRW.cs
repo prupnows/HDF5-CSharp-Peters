@@ -6,9 +6,15 @@ namespace HDF5CSharp
 {
     public class Hdf5AttributeRW : IHdf5ReaderWriter
     {
-        public (bool success, Array result) ReadToArray<T>(long groupId, string name, string alternativeName)
+        public (bool success, Array result) ReadToArray<T>(long groupId, string name, string alternativeName, bool mandatory)
         {
-            return Hdf5.ReadPrimitiveAttributes<T>(groupId, name, alternativeName);
+            return Hdf5.ReadPrimitiveAttributes<T>(groupId, name, alternativeName, mandatory);
+        }
+
+
+        public (bool success, IEnumerable<string>) ReadStrings(long groupId, string name, string alternativeName, bool mandatory)
+        {
+            return Hdf5.ReadStringAttributes(groupId, name, alternativeName, mandatory);
         }
 
         public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset)
@@ -19,12 +25,6 @@ namespace HDF5CSharp
         public (int success, long CreatedgroupId) WriteStrings(long groupId, string name, IEnumerable<string> collection, string datasetName = null)
         {
             return Hdf5.WriteStringAttributes(groupId, name, (string[])collection, datasetName);
-        }
-
-
-        public (bool success, IEnumerable<string>) ReadStrings(long groupId, string name, string alternativeName)
-        {
-            return Hdf5.ReadStringAttributes(groupId, name, alternativeName);
         }
 
     }

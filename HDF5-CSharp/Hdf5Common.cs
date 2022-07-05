@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using HDF5CSharp.DataTypes;
 
 namespace HDF5CSharp
 {
@@ -271,5 +272,24 @@ namespace HDF5CSharp
             return result.All(r => r);
         }
 
+        private static (string, bool) CheckAttribute(Attribute[] attributes)
+        {
+            string alternativeName = "";
+            bool mandatoryElement = false;
+            foreach (Attribute attr in attributes)
+            {
+                if (attr is Hdf5EntryNameAttribute nameAttribute)
+                {
+                    alternativeName = nameAttribute.Name;
+                }
+
+                if (attr is Hdf5MandatoryReadElementAttribute mandatoryReadAttribute)
+                {
+                    mandatoryElement = mandatoryReadAttribute.MandatoryRead ==
+                                       Hdf5MandatoryReadElement.MandatoryForRead;
+                }
+            }
+            return (alternativeName, mandatoryElement);
+        }
     }
 }

@@ -37,13 +37,13 @@ namespace HDF5CSharp
         internal static (bool valid, string name) GetRealAttributeName(long id, string name, string alternativeName)
         {
             string normalized = NormalizedName(name);
-            if (!String.IsNullOrEmpty(normalized) && H5A.exists(id, normalized) > 0)
+            if (!string.IsNullOrEmpty(normalized) && H5A.exists(id, normalized) > 0)
             {
                 return (true, normalized);
             }
 
             normalized = NormalizedName(alternativeName);
-            if (!String.IsNullOrEmpty(normalized) && H5A.exists(id, normalized) > 0)
+            if (!string.IsNullOrEmpty(normalized) && H5A.exists(id, normalized) > 0)
             {
                 return (true, normalized);
             }

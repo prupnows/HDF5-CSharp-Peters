@@ -67,7 +67,7 @@ namespace HDF5CSharp
             if (readWriteAttribute != null)
             {
                 skip = (readWriteAttribute.ReadKind == Hdf5ReadWrite.WriteOnly ||
-                        readWriteAttribute.ReadKind==Hdf5ReadWrite.DoNothing);
+                        readWriteAttribute.ReadKind == Hdf5ReadWrite.DoNothing);
             }
             else if (saveAttribute != null)
             {
@@ -119,26 +119,19 @@ namespace HDF5CSharp
         private static void ReadFields(Type tyObject, object readValue, long groupId)
         {
             FieldInfo[] miMembers = tyObject.GetFields(BindingFlags.DeclaredOnly |
-                                                       /*BindingFlags.NonPublic |*/ BindingFlags.Public |
+                                                       BindingFlags.Public |
                                                        BindingFlags.Instance);
 
             foreach (FieldInfo info in miMembers)
             {
 
-                string alternativeName = string.Empty;
                 bool nextInfo = SkipReadProcessing(Attribute.GetCustomAttributes(info));
                 if (nextInfo)
                 {
                     continue;
                 }
 
-                foreach (Attribute attr in Attribute.GetCustomAttributes(info))
-                {
-                    if (attr is Hdf5EntryNameAttribute nameAttribute)
-                    {
-                        alternativeName = nameAttribute.Name;
-                    }
-                }
+                (string alternativeName, bool mandatoryElement) = CheckAttribute(Attribute.GetCustomAttributes(info));
 
                 Type ty = info.FieldType;
                 TypeCode code = Type.GetTypeCode(ty);
@@ -155,12 +148,12 @@ namespace HDF5CSharp
 
                     if (elCode != TypeCode.Object)
                     {
-                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName, mandatoryElement);
                     }
                     else
                     {
                         values = CallByReflection<Array>(nameof(ReadCompounds), elType,
-                            new object[] { groupId, name, alternativeName });
+                            new object[] { groupId, name, alternativeName, mandatoryElement });
                         success = true;
                     }
 
@@ -176,7 +169,7 @@ namespace HDF5CSharp
                     TypeCode elCode = Type.GetTypeCode(elType);
                     if (elCode != TypeCode.Object)
                     {
-                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName, mandatoryElement);
                         if (success)
                         {
                             Type genericClass = typeof(List<>);
@@ -196,7 +189,7 @@ namespace HDF5CSharp
                     else
                     {
                         var result = CallByReflection<object>(nameof(ReadCompounds), elType,
-                            new object[] { groupId, name, alternativeName });
+                            new object[] { groupId, name, alternativeName, mandatoryElement });
                         info.SetValue(readValue, result);
 
                     }
@@ -207,7 +200,7 @@ namespace HDF5CSharp
                 }
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
-                    (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName);
+                    (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName, mandatoryElement);
                     // get first value depending on rank of the matrix
                     int[] first = new int[values.Rank].Select(f => 0).ToArray();
                     if (success)
@@ -238,14 +231,8 @@ namespace HDF5CSharp
                 {
                     continue;
                 }
-                string alternativeName = string.Empty;
-                foreach (Attribute attr in Attribute.GetCustomAttributes(info))
-                {
-                    if (attr is Hdf5EntryNameAttribute hdf5EntryNameAttribute)
-                    {
-                        alternativeName = hdf5EntryNameAttribute.Name;
-                    }
-                }
+
+                (string alternativeName, bool mandatoryElement) = CheckAttribute(Attribute.GetCustomAttributes(info));
 
                 Type ty = info.PropertyType;
                 TypeCode code = Type.GetTypeCode(ty);
@@ -260,7 +247,7 @@ namespace HDF5CSharp
 
                     if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
                     {
-                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName, mandatoryElement);
                         if (success)
                         {
                             info.SetValue(readValue, values);
@@ -269,7 +256,7 @@ namespace HDF5CSharp
                     else
                     {
                         var obj = CallByReflection<IEnumerable>(nameof(ReadCompounds), elType,
-                            new object[] { groupId, name, alternativeName });
+                            new object[] { groupId, name, alternativeName, mandatoryElement });
                         var objArr = (obj).Cast<object>().ToArray();
                         values = Array.CreateInstance(elType, objArr.Length);
                         Array.Copy(objArr, values, objArr.Length);
@@ -283,7 +270,7 @@ namespace HDF5CSharp
                     TypeCode elCode = Type.GetTypeCode(elType);
                     if (elCode != TypeCode.Object)
                     {
-                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName);
+                        (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName, mandatoryElement);
                         if (success)
                         {
                             Type genericClass = typeof(List<>);
@@ -304,7 +291,7 @@ namespace HDF5CSharp
                     else
                     {
                         var result = CallByReflection<object>(nameof(ReadCompounds), elType,
-                            new object[] { groupId, name, alternativeName });
+                            new object[] { groupId, name, alternativeName, mandatoryElement });
                         info.SetValue(readValue, result);
                     }
                 }
@@ -315,7 +302,7 @@ namespace HDF5CSharp
 
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
-                    (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName);
+                    (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName, mandatoryElement);
                     if (success && values.Length > 0)
                     {
                         int[] first = new int[values.Rank].Select(f => 0).ToArray();
@@ -534,7 +521,7 @@ namespace HDF5CSharp
                         //elementType = Hdf5ElementType.Unknown;
 
                         objectType = H5O.type_t.NAMED_DATATYPE;
-                         elementType = Hdf5ElementType.CommitedDatatype;
+                        elementType = Hdf5ElementType.CommitedDatatype;
                     }
                 }
 
@@ -594,10 +581,9 @@ namespace HDF5CSharp
             {
                 var elType = ty.GetElementType();
                 TypeCode elCode = Type.GetTypeCode(elType);
-
                 if (elCode != TypeCode.Object || ty == typeof(TimeSpan[]))
                 {
-                    (success, values) = dsetRW.ReadArray(elType, groupId, datasetName, "");
+                    (success, values) = dsetRW.ReadArray(elType, groupId, datasetName, "", true);
                     table.ReadSuccessful = success;
                     if (success)
                     {
@@ -608,7 +594,7 @@ namespace HDF5CSharp
                 else
                 {
                     var obj = CallByReflection<IEnumerable>(nameof(ReadCompounds), elType,
-                        new object[] { groupId, datasetName, "" });
+                        new object[] { groupId, datasetName, "", false });
                     var objArr = (obj).Cast<object>().ToArray();
                     values = Array.CreateInstance(elType, objArr.Length);
                     Array.Copy(objArr, values, objArr.Length);

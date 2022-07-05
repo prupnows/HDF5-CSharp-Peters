@@ -42,7 +42,7 @@ namespace HDF5CSharp.UnitTests.Core
             try
             {
                 var fileId = Hdf5.OpenFile(filename);
-                var dset = Hdf5.ReadCompounds<WData>(fileId, string.Concat(groupName, "/", datasetName),"").ToList();
+                var dset = Hdf5.ReadCompounds<WData>(fileId, string.Concat(groupName, "/", datasetName),"", true).ToList();
 
                 Assert.IsTrue(dset.LongCount() == wDataList.LongLength);
                 Hdf5.CloseFile(fileId);
@@ -81,7 +81,7 @@ namespace HDF5CSharp.UnitTests.Core
             try
             {
                 var fileId = Hdf5.OpenFile(filename);
-                var dset = Hdf5.ReadCompounds<WData>(fileId, string.Concat(groupName, "/", datasetName), "");
+                var dset = Hdf5.ReadCompounds<WData>(fileId, string.Concat(groupName, "/", datasetName), "", true);
                 Assert.IsTrue(dset.LongCount() == wDataList.LongLength);
                 Hdf5.CloseFile(fileId);
             }

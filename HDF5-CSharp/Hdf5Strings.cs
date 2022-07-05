@@ -11,13 +11,19 @@ namespace HDF5CSharp
 {
     public static partial class Hdf5
     {
-        public static (bool success, IEnumerable<string> result) ReadStrings(long groupId, string name, string alternativeName)
+        public static (bool success, IEnumerable<string> result) ReadStrings(long groupId, string name, string alternativeName, bool mandatory)
         {
-            long datasetId = OpenDatasetIfExist(groupId, Hdf5Utils.NormalizedName(name),
+            long datasetId = OpenDatasetIfExists(groupId, Hdf5Utils.NormalizedName(name),
                                                 Hdf5Utils.NormalizedName(alternativeName));
             if (datasetId < 0) //does not exist?
             {
                 Hdf5Utils.LogMessage($"Warning reading {groupId}. Name:{name}. AlternativeName:{alternativeName}", Hdf5LogLevel.Warning);
+                if (mandatory && Settings.ThrowOnNonExistNameWhenReading)
+                {
+                    string error = $"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}";
+                    Hdf5Utils.LogMessage(error, Hdf5LogLevel.Error);
+                    throw new Hdf5Exception(error);
+                }
                 return (false, Array.Empty<string>());
             }
             long typeId = H5D.get_type(datasetId);

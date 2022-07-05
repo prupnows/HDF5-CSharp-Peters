@@ -47,7 +47,17 @@ namespace HDF5CSharp.DataTypes
         public string Name { get; private set; }
     }
 
-    
+    [AttributeUsage(AttributeTargets.All)]
+    public sealed class Hdf5MandatoryReadElementAttribute : Attribute
+    {
+        public Hdf5MandatoryReadElement MandatoryRead { get; }
+        public Hdf5MandatoryReadElementAttribute(Hdf5MandatoryReadElement readKind)
+        {
+            MandatoryRead = readKind;
+        }
+
+    }
+
     [AttributeUsage(AttributeTargets.All)]
     public sealed class Hdf5ReadWriteAttribute : Attribute
     {
@@ -74,12 +84,11 @@ namespace HDF5CSharp.DataTypes
     public sealed class Hdf5EntryNameAttribute : Attribute
     {
         public string Name { get; }
-
-
         public Hdf5EntryNameAttribute(string name)
         {
             Name = name;
         }
 
     }
+
 }

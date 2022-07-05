@@ -86,14 +86,13 @@ namespace HDF5CSharp
             return attributes;
         }
 
-        public static (bool success, Array result) ReadAttributes<T>(long groupId, string name)
+        public static (bool success, Array result) ReadAttributes<T>(long groupId, string name, bool mandatory)
         {
-            return attrRW.ReadArray<T>(groupId, name, string.Empty);
+            return attrRW.ReadArray<T>(groupId, name, string.Empty, mandatory);
         }
-        public static bool AttributeExists(long groupId, string attributeName) => Hdf5Utils.ItemExists(groupId, attributeName, Hdf5ElementType.Attribute);
         public static T ReadAttribute<T>(long groupId, string name)
         {
-            var attrs = attrRW.ReadArray<T>(groupId, name, string.Empty);
+            var attrs = attrRW.ReadArray<T>(groupId, name, string.Empty, false);
             if (!attrs.success)
             {
                 Hdf5Utils.LogMessage($"{name} was not found", Hdf5LogLevel.Error);
@@ -104,12 +103,17 @@ namespace HDF5CSharp
             return result;
         }
 
-        public static (bool success, IEnumerable<string> items) ReadStringAttributes(long groupId, string name, string alternativeName)
+        public static (bool success, IEnumerable<string> items) ReadStringAttributes(long groupId, string name, string alternativeName, bool mandatory)
         {
             var nameToUse = Hdf5Utils.GetRealAttributeName(groupId, name, alternativeName);
             if (!nameToUse.valid)
             {
-                Hdf5Utils.LogMessage($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}",Hdf5LogLevel.Error);
+                Hdf5Utils.LogMessage($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}", Hdf5LogLevel.Warning);
+                if (mandatory && Settings.ThrowOnNonExistNameWhenReading)
+                {
+                    Hdf5Utils.LogMessage($"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}", Hdf5LogLevel.Error);
+                    throw new Hdf5Exception($@"unable to read {name} or {alternativeName}");
+                }
                 return (false, Array.Empty<string>());
             }
 
@@ -148,23 +152,20 @@ namespace HDF5CSharp
 
 
 
-        public static (bool success, Array result) ReadPrimitiveAttributes<T>(long groupId, string name, string alternativeName) //where T : struct
+        public static (bool success, Array result) ReadPrimitiveAttributes<T>(long groupId, string name, string alternativeName, bool mandatory)
         {
             Type type = typeof(T);
             var datatype = GetDatatype(type);
-
-            var attributeId = H5A.open(groupId, Hdf5Utils.NormalizedName(name));
-            if (attributeId <= 0)
-            {
-                attributeId = H5A.open(groupId, Hdf5Utils.NormalizedName(alternativeName));
-            }
+            var attributeId = OpenAttributeIfExists(groupId, Hdf5Utils.NormalizedName(name),
+                Hdf5Utils.NormalizedName(alternativeName));
 
             if (attributeId <= 0)
             {
                 string error = $"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}";
-                Hdf5Utils.LogMessage(error,Hdf5LogLevel.Warning);
-                if (Settings.ThrowOnNonExistNameWhenReading)
+                Hdf5Utils.LogMessage(error, Hdf5LogLevel.Warning);
+                if (mandatory && Settings.ThrowOnNonExistNameWhenReading)
                 {
+                    Hdf5Utils.LogMessage(error, Hdf5LogLevel.Error);
                     throw new Hdf5Exception(error);
                 }
                 return (false, Array.Empty<T>());

@@ -135,7 +135,7 @@ namespace HDF5CSharp.Example
             {
                 try
                 {
-                    var e = Hdf5.ReadCompounds<MeansFullECGEvent>(fileId, groupName, "");
+                    var e = Hdf5.ReadCompounds<MeansFullECGEvent>(fileId, groupName, "",false);
                     Means.AddRange(e);
                     return Means;
                 }
@@ -164,7 +164,7 @@ namespace HDF5CSharp.Example
             {
                 try
                 {
-                    var e = Hdf5.ReadCompounds<SystemEvent>(fileId, groupName, "");
+                    var e = Hdf5.ReadCompounds<SystemEvent>(fileId, groupName, "",false);
                     Events.AddRange(e);
                 }
                 catch (Exception exception)

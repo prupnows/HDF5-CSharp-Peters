@@ -26,7 +26,7 @@ namespace HDF5CSharp.UnitTests.Core
 
                 // Read the strings and close file
                 Assert.IsTrue(fileId > 0);
-                IEnumerable<string> strs2 = Hdf5.ReadStrings(fileId, "/test", "").result;
+                IEnumerable<string> strs2 = Hdf5.ReadStrings(fileId, "/test", "", true).result;
                 Assert.IsTrue(strs2.Count() == 1);
                 foreach (var s in strs2)
                 {
@@ -64,7 +64,7 @@ namespace HDF5CSharp.UnitTests.Core
 
                 // Read the strings and close file
                 Assert.IsTrue(fileId > 0);
-                IEnumerable<string> strs2 = Hdf5.ReadStrings(fileId, "/test", "").result;
+                IEnumerable<string> strs2 = Hdf5.ReadStrings(fileId, "/test", "", true).result;
                 Assert.IsTrue(strs.Count() == strs2.Count());
                 foreach (var item in strs2.Select((str, i) => new { i, str }))
                 {

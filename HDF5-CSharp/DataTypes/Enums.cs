@@ -47,7 +47,12 @@
         ReadOnly,
         WriteOnly,
         ReadWrite
-        
+
+    }
+    public enum Hdf5MandatoryReadElement
+    {
+        CanSkipRead,
+        MandatoryForRead
     }
     public enum Hdf5LogLevel
     {

@@ -59,11 +59,11 @@ namespace HDF5CSharp.UnitTests.Core
             Assert.IsTrue(testRead.intNoAttribute == testclass.intNoAttribute);
             Assert.IsTrue(testRead.DoNothing == 0);
             Assert.IsTrue(testRead.IntWriteOnly == 0);
-            Assert.IsTrue(Hdf5.DatasetExists(fileId, "/intnoattribute"));
-            Assert.IsTrue(Hdf5.DatasetExists(fileId, "/write_only"));
-            Assert.IsTrue(Hdf5.DatasetExists(fileId, "/read_write"));
-            Assert.IsFalse(Hdf5.DatasetExists(fileId, "/donothing"));
-            Assert.IsFalse(Hdf5.DatasetExists(fileId, "/read_only"));
+            Assert.IsTrue(Hdf5Utils.ItemExists(fileId, "/intnoattribute", Hdf5ElementType.Dataset));
+            Assert.IsTrue(Hdf5Utils.ItemExists(fileId, "/write_only", Hdf5ElementType.Dataset));
+            Assert.IsTrue(Hdf5Utils.ItemExists(fileId, "/read_write", Hdf5ElementType.Dataset));
+            Assert.IsFalse(Hdf5Utils.ItemExists(fileId, "/donothing", Hdf5ElementType.Dataset));
+            Assert.IsFalse(Hdf5Utils.ItemExists(fileId, "/read_only", Hdf5ElementType.Dataset));
             Hdf5.CloseFile(fileId);
             File.Delete(filename);
         }
@@ -102,7 +102,7 @@ namespace HDF5CSharp.UnitTests.Core
                 Hdf5.WriteAttributes<DateTime>(groupId, "times", new List<DateTime> { nowTime, nowTime.AddDays(1) }.ToArray());
 
                 DateTime readTime = Hdf5.ReadAttribute<DateTime>(groupId, "time");
-                var allTimes = Hdf5.ReadAttributes<DateTime>(groupId, "times");
+                var allTimes = Hdf5.ReadAttributes<DateTime>(groupId, "times", true);
 
                 Assert.IsTrue(readTime == nowTime);
                 Assert.IsTrue(Hdf5.CloseFile(fileId) == 0);
@@ -266,13 +266,13 @@ namespace HDF5CSharp.UnitTests.Core
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
                 var groupId = H5G.open(fileId, groupStr);
-                IEnumerable<int> readInts = (int[])Hdf5.ReadAttributes<int>(groupId, intName).result;
+                IEnumerable<int> readInts = (int[])Hdf5.ReadAttributes<int>(groupId, intName, true).result;
                 Assert.IsTrue(intValues.SequenceEqual(readInts));
                 double readDbl = Hdf5.ReadAttribute<double>(groupId, dblName);
                 Assert.IsTrue(dblValue == readDbl);
                 string readStr = Hdf5.ReadAttribute<string>(groupId, strName);
                 Assert.IsTrue(strValue == readStr);
-                IEnumerable<string> readStrs = (string[])Hdf5.ReadAttributes<string>(groupId, strNames).result;
+                IEnumerable<string> readStrs = (string[])Hdf5.ReadAttributes<string>(groupId, strNames, true).result;
                 Assert.IsTrue(strValues.SequenceEqual(readStrs));
                 bool readBool = Hdf5.ReadAttribute<bool>(groupId, boolName);
                 Assert.IsTrue(boolValue == readBool);

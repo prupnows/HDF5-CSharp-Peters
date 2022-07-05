@@ -192,7 +192,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var cmpList = Hdf5.ReadCompounds<SystemEvent>(fileId, "/test", "").ToArray();
+                var cmpList = Hdf5.ReadCompounds<SystemEvent>(fileId, "/test", "", true).ToArray();
                 Hdf5.CloseFile(fileId);
                 CollectionAssert.AreEqual(se, cmpList);
 
@@ -226,7 +226,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var cmpList = Hdf5.ReadCompounds<WData2>(fileId, "/test", "").ToArray();
+                var cmpList = Hdf5.ReadCompounds<WData2>(fileId, "/test", "", true).ToArray();
                 Hdf5.CloseFile(fileId);
                 CollectionAssert.AreEqual(wData2List, cmpList);
 
@@ -246,7 +246,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var cmpList = Hdf5.ReadCompounds<WData3>(fileId, "/test", "").ToArray();
+                var cmpList = Hdf5.ReadCompounds<WData3>(fileId, "/test", "", true).ToArray();
                 Hdf5.CloseFile(fileId);
                 // CollectionAssert.AreEqual(wData2List, cmpList);
 
@@ -279,7 +279,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                var cmpList = Hdf5.ReadCompounds<WData>(fileId, "/test", "").ToArray();
+                var cmpList = Hdf5.ReadCompounds<WData>(fileId, "/test", "", true).ToArray();
                 Hdf5.CloseFile(fileId);
                 CollectionAssert.AreEqual(wDataList, cmpList);
 
@@ -313,7 +313,7 @@ namespace HDF5CSharp.UnitTests.Core
             {
                 var fileId = Hdf5.OpenFile(filename);
                 Assert.IsTrue(fileId > 0);
-                Responses[] cmpList = Hdf5.ReadCompounds<Responses>(fileId, "/test", "").ToArray();
+                Responses[] cmpList = Hdf5.ReadCompounds<Responses>(fileId, "/test", "", true).ToArray();
                 Hdf5.CloseFile(fileId);
                 var isSame = responseList.Zip(cmpList, (r, c) =>
                 {

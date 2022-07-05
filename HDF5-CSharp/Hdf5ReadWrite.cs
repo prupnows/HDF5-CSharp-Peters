@@ -117,12 +117,12 @@ namespace HDF5CSharp
         }
 
 
-        public (bool success, Array result) ReadArray<T>(long groupId, string name, string alternativeName)
+        public (bool success, Array result) ReadArray<T>(long groupId, string name, string alternativeName, bool mandatoryElement)
         {
-            return ReadArray(typeof(T), groupId, name, alternativeName);
+            return ReadArray(typeof(T), groupId, name, alternativeName,mandatoryElement);
         }
 
-        public (bool success, Array result) ReadArray(Type elementType, long groupId, string name, string alternativeName)
+        public (bool success, Array result) ReadArray(Type elementType, long groupId, string name, string alternativeName, bool mandatoryElement)
         {
             TypeCode ty = Type.GetTypeCode(elementType);
             bool success;
@@ -130,59 +130,59 @@ namespace HDF5CSharp
             switch (ty)
             {
                 case TypeCode.Boolean:
-                    (success, result) = rw.ReadToArray<ushort>(groupId, name, alternativeName);
+                    (success, result) = rw.ReadToArray<ushort>(groupId, name, alternativeName, mandatoryElement);
                     return (success, result.ConvertArray<ushort, bool>(Convert.ToBoolean));
 
                 case TypeCode.Byte:
-                    return rw.ReadToArray<byte>(groupId, name, alternativeName);
+                    return rw.ReadToArray<byte>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.Char:
-                    (success, result) = rw.ReadToArray<ushort>(groupId, name, alternativeName);
+                    (success, result) = rw.ReadToArray<ushort>(groupId, name, alternativeName, mandatoryElement);
                     return (success, result.ConvertArray<ushort, char>(Convert.ToChar));
 
                 case TypeCode.DateTime:
-                    (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName);
+                    (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName, mandatoryElement);
                     return (success, result.ConvertArray<long, DateTime>(tc => Hdf5Conversions.ToDateTime(tc, Hdf5.Settings.DateTimeType)));
 
                 case TypeCode.Decimal:
-                    (success, result) = rw.ReadToArray<double>(groupId, name, alternativeName);
+                    (success, result) = rw.ReadToArray<double>(groupId, name, alternativeName, mandatoryElement);
                     return (success, result.ConvertArray<double, decimal>(Convert.ToDecimal));
 
                 case TypeCode.Double:
-                    return rw.ReadToArray<double>(groupId, name, alternativeName);
+                    return rw.ReadToArray<double>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.Int16:
-                    return rw.ReadToArray<short>(groupId, name, alternativeName);
+                    return rw.ReadToArray<short>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.Int32:
-                    return rw.ReadToArray<int>(groupId, name, alternativeName);
+                    return rw.ReadToArray<int>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.Int64:
-                    return rw.ReadToArray<long>(groupId, name, alternativeName);
+                    return rw.ReadToArray<long>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.SByte:
-                    return rw.ReadToArray<sbyte>(groupId, name, alternativeName);
+                    return rw.ReadToArray<sbyte>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.Single:
-                    return rw.ReadToArray<float>(groupId, name, alternativeName);
+                    return rw.ReadToArray<float>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.UInt16:
-                    return rw.ReadToArray<ushort>(groupId, name, alternativeName);
+                    return rw.ReadToArray<ushort>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.UInt32:
-                    return rw.ReadToArray<uint>(groupId, name, alternativeName);
+                    return rw.ReadToArray<uint>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.UInt64:
-                    return rw.ReadToArray<ulong>(groupId, name, alternativeName);
+                    return rw.ReadToArray<ulong>(groupId, name, alternativeName, mandatoryElement);
 
                 case TypeCode.String:
-                    var (valid, strings) = rw.ReadStrings(groupId, name, alternativeName);
+                    var (valid, strings) = rw.ReadStrings(groupId, name, alternativeName, mandatoryElement);
                     return (valid, strings.ToArray());
 
                 default:
                     if (elementType == typeof(TimeSpan))
                     {
-                        (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName);
+                        (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName, mandatoryElement);
                         return (success, result.ConvertArray<long, TimeSpan>(tcks => new TimeSpan(tcks)));
                     }
                     string str = $"type is not supported: {ty}";

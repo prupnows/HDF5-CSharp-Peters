@@ -10,10 +10,10 @@ namespace HDF5CSharp
 {
     public class Hdf5Dataset : IHdf5ReaderWriter
     {
-      
-        public (bool success, Array result) ReadToArray<T>(long groupId, string name, string alternativeName)
+
+        public (bool success, Array result) ReadToArray<T>(long groupId, string name, string alternativeName, bool mandatory)
         {
-            return Hdf5.ReadDatasetToArray<T>(groupId, name, alternativeName);
+            return Hdf5.ReadDatasetToArray<T>(groupId, name, alternativeName, mandatory);
         }
 
         public (int success, long CreatedgroupId) WriteFromArray<T>(long groupId, string name, Array dset)
@@ -25,14 +25,14 @@ namespace HDF5CSharp
             return Hdf5.WriteStrings(groupId, name, (string[])collection);
         }
 
-        public Array ReadStructs<T>(long groupId, string name, string alternativeName) where T : struct
+        public Array ReadStructs<T>(long groupId, string name, string alternativeName, bool mandatory) where T : struct
         {
-            return Hdf5.ReadCompounds<T>(groupId, name, alternativeName).ToArray();
+            return Hdf5.ReadCompounds<T>(groupId, name, alternativeName, mandatory).ToArray();
         }
 
-        public (bool success, IEnumerable<string>) ReadStrings(long groupId, string name, string alternativeName)
+        public (bool success, IEnumerable<string>) ReadStrings(long groupId, string name, string alternativeName, bool mandatory)
         {
-            return Hdf5.ReadStrings(groupId, name, alternativeName);
+            return Hdf5.ReadStrings(groupId, name, alternativeName, mandatory);
         }
 
     }
@@ -40,19 +40,34 @@ namespace HDF5CSharp
     {
         static Hdf5ReaderWriter dsetRW = new Hdf5ReaderWriter(new Hdf5Dataset());
 
-        public static long OpenDatasetIfExist(long fileOrGroupId,string name,string alternativeName)
+        public static long OpenDatasetIfExists(long fileOrGroupId, string name, string alternativeName)
         {
-            if (DatasetExists(fileOrGroupId, name))
+            if (Hdf5Utils.ItemExists(fileOrGroupId, name, Hdf5ElementType.Dataset))
             {
                 return H5D.open(fileOrGroupId, name);
             }
-            if (DatasetExists(fileOrGroupId, alternativeName))
+            if (Hdf5Utils.ItemExists(fileOrGroupId, alternativeName, Hdf5ElementType.Dataset))
             {
                 return H5D.open(fileOrGroupId, alternativeName);
             }
 
             return -1;
         }
+
+        public static long OpenAttributeIfExists(long fileOrGroupId, string name, string alternativeName)
+        {
+            if (Hdf5Utils.ItemExists(fileOrGroupId, name, Hdf5ElementType.Attribute))
+            {
+                return H5A.open(fileOrGroupId, name);
+            }
+            if (Hdf5Utils.ItemExists(fileOrGroupId, alternativeName, Hdf5ElementType.Attribute))
+            {
+                return H5A.open(fileOrGroupId, alternativeName);
+            }
+
+            return -1;
+        }
+        [Obsolete("Use ItemExists")]
         public static bool DatasetExists(long groupId, string datasetName) => Hdf5Utils.ItemExists(groupId, datasetName, Hdf5ElementType.Dataset);
         /// <summary>
         /// Reads an n-dimensional dataset.
@@ -62,15 +77,16 @@ namespace HDF5CSharp
         /// <param name="name">name of the dataset</param>
         /// <param name="alternativeName">Alternative name</param>
         /// <returns>The n-dimensional dataset</returns>
-        public static (bool success, Array result) ReadDatasetToArray<T>(long groupId, string name, string alternativeName = "") //where T : struct
+        public static (bool success, Array result) ReadDatasetToArray<T>(long groupId, string name, string alternativeName = "", bool mandatory = false) //where T : struct
         {
             var (valid, datasetName) = Hdf5Utils.GetRealName(groupId, name, alternativeName);
             if (!valid)
             {
                 string error = $"Error reading {groupId}. Name:{name}. AlternativeName:{alternativeName}";
                 Hdf5Utils.LogMessage(error, Hdf5LogLevel.Warning);
-                if (Settings.ThrowOnNonExistNameWhenReading)
+                if (mandatory && Settings.ThrowOnNonExistNameWhenReading)
                 {
+                    Hdf5Utils.LogMessage(error, Hdf5LogLevel.Error);
                     throw new Hdf5Exception(error);
                 }
 
@@ -238,18 +254,19 @@ namespace HDF5CSharp
         /// <param name="groupId">id of the group. Can also be a file Id</param>
         /// <param name="name">name of the dataset</param>
         /// <param name="alternativeName"></param>
+        /// <param name="mandatory"></param>
         /// <returns>One value or string</returns>
-        public static T ReadOneValue<T>(long groupId, string name, string alternativeName = "") //where T : struct
+        public static T ReadOneValue<T>(long groupId, string name, string alternativeName = "", bool mandatory = false)
         {
-            var dset = dsetRW.ReadArray<T>(groupId, name, alternativeName);
+            var dset = dsetRW.ReadArray<T>(groupId, name, alternativeName, mandatory);
             int[] first = new int[dset.result.Rank].Select(f => 0).ToArray();
             T result = (T)dset.result.GetValue(first);
             return result;
         }
 
-        public static (bool success, Array result) ReadDataset<T>(long groupId, string name, string alternativeName = "")
+        public static (bool success, Array result) ReadDataset<T>(long groupId, string name, string alternativeName = "", bool mandatory = false)
         {
-            return dsetRW.ReadArray<T>(groupId, name, alternativeName);
+            return dsetRW.ReadArray<T>(groupId, name, alternativeName,mandatory);
         }
 
         /// <summary>

@@ -402,7 +402,7 @@ namespace HDF5CSharp
         }
 
         public static ulong MaxMemoryAllocationOnRead { get; set; } = 1000000000;
-        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name, string alternativeName)
+        public static IEnumerable<T> ReadCompounds<T>(long groupId, string name, string alternativeName, bool mandatory)
         {
             Type type = typeof(T);
             if (type.IsValueType)
@@ -416,8 +416,9 @@ namespace HDF5CSharp
                 {
                     string error = $"Item {nameToUse} does not exist.";
                     Hdf5Utils.LogMessage(error, Hdf5LogLevel.Warning);
-                    if (Settings.ThrowOnNonExistNameWhenReading)
+                    if (mandatory && Settings.ThrowOnNonExistNameWhenReading)
                     {
+                        Hdf5Utils.LogMessage(error, Hdf5LogLevel.Error);
                         throw new Hdf5Exception(error);
                     }
                     return Enumerable.Empty<T>();
@@ -493,7 +494,7 @@ namespace HDF5CSharp
                 return strcts;
             }
 
-            var result = ReadCompounds<byte>(groupId, name, alternativeName);
+            var result = ReadCompounds<byte>(groupId, name, alternativeName,mandatory);
             return (IEnumerable<T>)ByteArrayToObject(result.ToArray());
         }
 
