@@ -45,6 +45,20 @@ namespace HDF5CSharp.UnitTests.Core
         }
 
         [TestMethod]
+        public void TestInnerPathNotExist()
+        {
+            Hdf5.Settings.EnableH5InternalErrorReporting(false);
+            Hdf5Utils.LogError = (s) => Errors.Add(s);
+            string fileName = Path.Combine(folder, "files", "testFile.H5");
+            var fileId = Hdf5.OpenFile(fileName, true);
+            var result = Hdf5.DatasetExists(fileId, "/A/B/C");
+            Assert.IsFalse(result);
+            var id = Hdf5.OpenDatasetIfExist(fileId, "/A/B/C","");
+            Assert.IsTrue(id==-1);
+        }
+
+
+        [TestMethod]
         public void TestLoops()
         {
             Hdf5.Settings.EnableH5InternalErrorReporting(true);
@@ -71,7 +85,7 @@ namespace HDF5CSharp.UnitTests.Core
             } while (readOK);
 
             Hdf5.CloseGroup(groupId);
-            Assert.IsTrue(data.Count==10);
+            Assert.IsTrue(data.Count == 10);
             Hdf5.CloseFile(fileId);
             File.Delete(fileName);
 
