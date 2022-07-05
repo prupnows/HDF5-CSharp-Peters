@@ -66,7 +66,7 @@ namespace HDF5CSharp
 
             if (readWriteAttribute != null)
             {
-                skip = (readWriteAttribute.ReadKind == Hdf5ReadWrite.SaveOnly ||
+                skip = (readWriteAttribute.ReadKind == Hdf5ReadWrite.WriteOnly ||
                         readWriteAttribute.ReadKind==Hdf5ReadWrite.DoNothing);
             }
             else if (saveAttribute != null)

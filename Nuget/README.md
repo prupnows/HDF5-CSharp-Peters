@@ -96,10 +96,6 @@ var tree =Hdf5.ReadTreeFileStructure(fileName);
 var flat = Hdf5.ReadFlatFileStructure(fileName);
 ```
 
-in tree-like format you can drill inside the hierarchy of the file wile the flat option shows all the name is the groups and datasets.
-
-![Flat tree](Assets/hdf5FlatStructure.jpg)
-
 ## Additional settings
  - Hdf5EntryNameAttribute: control the name of the field/property in the h5 file:
  

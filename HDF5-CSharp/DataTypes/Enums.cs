@@ -45,7 +45,7 @@
     {
         DoNothing,
         ReadOnly,
-        SaveOnly,
+        WriteOnly,
         ReadWrite
         
     }
