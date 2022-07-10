@@ -244,6 +244,7 @@ namespace HDF5CSharp
             H5D.close(datasetId);
             H5S.close(spaceId);
             H5S.close(memId);
+            Marshal.FreeHGlobal(ptr);
             return msg;
         }
 
