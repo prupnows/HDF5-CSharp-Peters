@@ -191,8 +191,8 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.CloseFile(fileID);
             var readObject = new TestClassWithArrayWithNulls();
 #if NET
-            readObject.InnerClassWithArrayWithNull = new TestInnerClassWithArrayWithNulls();
-            readObject.innerFieldClassWithArrayWithNulls = new TestInnerClassWithArrayWithNulls();
+           // readObject.InnerClassWithArrayWithNull = new TestInnerClassWithArrayWithNulls();
+           // readObject.innerFieldClassWithArrayWithNulls = new TestInnerClassWithArrayWithNulls();
 #endif
             fileID = Hdf5.OpenFile(fn);
             readObject = Hdf5.ReadObject(fileID, readObject, "testObject");

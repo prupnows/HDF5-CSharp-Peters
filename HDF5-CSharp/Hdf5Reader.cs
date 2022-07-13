@@ -217,7 +217,15 @@ namespace HDF5CSharp
                     object value = info.GetValue(targetObjectToFill);
                     if (value != null)
                     {
-                        ReadObject(groupId, value, name);
+                        var result = ReadObject(groupId, value, name);
+                        info.SetValue(targetObjectToFill, result);
+                    }
+                    else
+                    {
+                        var nonNull = Activator.CreateInstance(ty);
+                        info.SetValue(targetObjectToFill, nonNull);
+                        ReadObject(groupId, nonNull, name);
+
                     }
                 }
             }
@@ -326,8 +334,16 @@ namespace HDF5CSharp
                     object value = info.GetValue(targetObjectToFill, null);
                     if (value != null)
                     {
-                        value = ReadObject(groupId, value, name);
-                        info.SetValue(targetObjectToFill, value);
+                       var result= ReadObject(groupId, value, name);
+                       info.SetValue(targetObjectToFill, result);
+
+                    }
+                    else
+                    {
+                        var nonNull = Activator.CreateInstance(ty);
+                        info.SetValue(targetObjectToFill, nonNull);
+                        ReadObject(groupId, nonNull, name);
+
                     }
                 }
             }

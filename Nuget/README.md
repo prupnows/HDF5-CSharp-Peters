@@ -176,6 +176,8 @@ in order to log errors use this code snippet:
 
 
 ## History
+### V1.15.1:
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/219:  Add Support for Reference Nullable Types #219
 
 ### V1.15.0:
  - https://github.com/LiorBanai/HDF5-CSharp/issues/216:  Nullable support for "ReadObject" #216
