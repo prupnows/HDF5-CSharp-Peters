@@ -46,10 +46,6 @@ namespace HDF5_CSharp.Example.UnitTest
             await kama.StartLogging(parameters);
 
 
-            Array values = Enum.GetValues(typeof(SystemEventType));
-            Random random = new Random();
-            int written = 0;
-            // writting 50 000 system event of ECG to have extra data and test the fix of the pull request  #178
             for (int i = 0; i < 25000; i++)
             {
                 string txt = meanContent.Replace("ZZZZZZZZZZZZZZ", i.ToString());

@@ -177,6 +177,9 @@ in order to log errors use this code snippet:
 
 ## History
 
+### V1.15.0:
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/216:  Nullable support for "ReadObject" #216
+
 ### V1.14.3:
  - https://github.com/LiorBanai/HDF5-CSharp/issues/215:  [BUG] Compound struct - missing memory release #215 
 
