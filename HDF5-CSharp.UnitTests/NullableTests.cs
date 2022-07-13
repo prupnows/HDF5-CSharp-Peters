@@ -1,4 +1,7 @@
-﻿using System;
+﻿#if NET
+#nullable enable
+#endif
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +10,53 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HDF5CSharp.UnitTests.Core
 {
+    public class TestInnerClassWithArrayWithNulls
+    {
+        public bool TestBooleanNonNull { get; set; }
+        public bool TestBooleanNull { get; set; }
+        public bool? TestBooleanNullableNonNull { get; set; }
+        public bool? TestBooleanNullableNull { get; set; }
+        public bool TestFieldBooleanNonNull;
+        public bool TestFieldBooleanNull;
+        public bool? TestFieldBooleanNullableNonNull;
+        public bool? TestFieldBooleanNullableNull;
+
+        protected bool Equals(TestInnerClassWithArrayWithNulls other)
+        {
+            return TestFieldBooleanNonNull == other.TestFieldBooleanNonNull &&
+                   TestFieldBooleanNull == other.TestFieldBooleanNull &&
+                   TestFieldBooleanNullableNonNull == other.TestFieldBooleanNullableNonNull &&
+                   TestFieldBooleanNullableNull == other.TestFieldBooleanNullableNull &&
+                   TestBooleanNonNull == other.TestBooleanNonNull && TestBooleanNull == other.TestBooleanNull &&
+                   TestBooleanNullableNonNull == other.TestBooleanNullableNonNull &&
+                   TestBooleanNullableNull == other.TestBooleanNullableNull;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TestInnerClassWithArrayWithNulls)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = TestFieldBooleanNonNull.GetHashCode();
+                hashCode = (hashCode * 397) ^ TestFieldBooleanNull.GetHashCode();
+                hashCode = (hashCode * 397) ^ TestFieldBooleanNullableNonNull.GetHashCode();
+                hashCode = (hashCode * 397) ^ TestFieldBooleanNullableNull.GetHashCode();
+                hashCode = (hashCode * 397) ^ TestBooleanNonNull.GetHashCode();
+                hashCode = (hashCode * 397) ^ TestBooleanNull.GetHashCode();
+                hashCode = (hashCode * 397) ^ TestBooleanNullableNonNull.GetHashCode();
+                hashCode = (hashCode * 397) ^ TestBooleanNullableNull.GetHashCode();
+                return hashCode;
+            }
+        }
+    }
+
     public class TestClassWithArrayWithNulls
     {
         public bool TestBooleanNonNull { get; set; }
@@ -18,6 +68,15 @@ namespace HDF5CSharp.UnitTests.Core
         public bool? TestFieldBooleanNullableNonNull;
         public bool? TestFieldBooleanNullableNull;
 
+        public TestInnerClassWithArrayWithNulls InnerClassWithArrayWithNullsNonNull { get; set; }
+#if NET
+        public TestInnerClassWithArrayWithNulls? InnerClassWithArrayWithNull { get; set; }
+#endif
+
+        public TestClassWithArrayWithNulls()
+        {
+            InnerClassWithArrayWithNullsNonNull = new TestInnerClassWithArrayWithNulls();
+        }
         protected bool Equals(TestClassWithArrayWithNulls other)
         {
             return TestFieldBooleanNonNull == other.TestFieldBooleanNonNull &&
@@ -26,7 +85,8 @@ namespace HDF5CSharp.UnitTests.Core
                    TestFieldBooleanNullableNull == other.TestFieldBooleanNullableNull &&
                    TestBooleanNonNull == other.TestBooleanNonNull && TestBooleanNull == other.TestBooleanNull &&
                    TestBooleanNullableNonNull == other.TestBooleanNullableNonNull &&
-                   TestBooleanNullableNull == other.TestBooleanNullableNull;
+                   TestBooleanNullableNull == other.TestBooleanNullableNull &&
+                   InnerClassWithArrayWithNullsNonNull.Equals(other.InnerClassWithArrayWithNullsNonNull);
         }
 
         public override bool Equals(object obj)
@@ -73,6 +133,32 @@ namespace HDF5CSharp.UnitTests.Core
                 TestFieldBooleanNullableNonNull = true,
                 TestFieldBooleanNullableNull = null
             };
+
+            testClass.InnerClassWithArrayWithNullsNonNull = new TestInnerClassWithArrayWithNulls
+            {
+                TestBooleanNonNull = true,
+                TestBooleanNull = false,
+                TestBooleanNullableNonNull = true,
+                TestBooleanNullableNull = null,
+                TestFieldBooleanNonNull = true,
+                TestFieldBooleanNull = false,
+                TestFieldBooleanNullableNonNull = true,
+                TestFieldBooleanNullableNull = null
+            };
+
+#if NET
+            testClass.InnerClassWithArrayWithNull = new TestInnerClassWithArrayWithNulls
+            {
+                TestBooleanNonNull = true,
+                TestBooleanNull = false,
+                TestBooleanNullableNonNull = true,
+                TestBooleanNullableNull = null,
+                TestFieldBooleanNonNull = true,
+                TestFieldBooleanNull = false,
+                TestFieldBooleanNullableNonNull = true,
+                TestFieldBooleanNullableNull = null
+            };
+#endif
             var fileID = Hdf5.CreateFile(fn);
             Hdf5.WriteObject(fileID, testClass, "testObject");
             Hdf5.CloseFile(fileID);
@@ -92,6 +178,10 @@ namespace HDF5CSharp.UnitTests.Core
                           testClass.TestFieldBooleanNullableNull == null);
 
             Assert.IsTrue(readObject.Equals(testClass));
+            Assert.IsTrue(readObject.InnerClassWithArrayWithNullsNonNull.Equals(testClass.InnerClassWithArrayWithNullsNonNull));
+#if NET
+            Assert.IsTrue(readObject.InnerClassWithArrayWithNull.Equals(testClass.InnerClassWithArrayWithNull));
+#endif
         }
     }
 }
