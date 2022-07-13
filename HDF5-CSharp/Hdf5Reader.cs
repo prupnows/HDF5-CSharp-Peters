@@ -197,11 +197,19 @@ namespace HDF5CSharp
                         info.SetValue(targetObjectToFill, result);
 
                     }
-
-
-
-
                 }
+#if NET
+                else if (ty == typeof(Half) || ty == typeof(TimeOnly) || ty == typeof(DateOnly))
+                {
+                    (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName, mandatoryElement);
+                    // get first value depending on rank of the matrix
+                    int[] first = new int[values.Rank].Select(f => 0).ToArray();
+                    if (success)
+                    {
+                        info.SetValue(targetObjectToFill, values.GetValue(first));
+                    }
+                }
+#endif
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
                     (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName, mandatoryElement);
@@ -312,6 +320,25 @@ namespace HDF5CSharp
                         info.SetValue(targetObjectToFill, result);
                     }
                 }
+#if NET
+                else if (ty == typeof(Half) || ty == typeof(TimeOnly) || ty == typeof(DateOnly))
+                {
+                    (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName, mandatoryElement);
+                    if (success && values.Length > 0)
+                    {
+                        int[] first = new int[values.Rank].Select(f => 0).ToArray();
+                        if (info.CanWrite)
+                        {
+                            info.SetValue(targetObjectToFill, values.GetValue(first));
+                        }
+                        else
+                        {
+                            Hdf5Utils.LogMessage($"property {info.Name} is read only. cannot set value",
+                                Hdf5LogLevel.Warning);
+                        }
+                    }
+                }
+#endif
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
                     (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName, mandatoryElement);

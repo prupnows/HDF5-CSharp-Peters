@@ -93,8 +93,25 @@ namespace HDF5CSharp
                     {
                         var tss = collection.ConvertArray<TimeSpan, long>(dt => dt.Ticks);
                         result = rw.WriteFromArray<long>(groupId, name, tss);
+                    }
+#if NET
+                    else if (elementType == typeof(Half))
+                    {
+                        var tss = collection.ConvertArray<Half, float>(h => (float)h);
+                        result = rw.WriteFromArray<float>(groupId, name, tss);
 
                     }
+                    else if (elementType == typeof(DateOnly))
+                    {
+                        var tss = collection.ConvertArray<DateOnly, long>(d => d.ToDateTime(new TimeOnly(0, 0)).Ticks);
+                        result = rw.WriteFromArray<long>(groupId, name, tss);
+                    }
+                    else if (elementType == typeof(TimeOnly))
+                    {
+                        var tss = collection.ConvertArray<TimeOnly, long>(d => d.ToTimeSpan().Ticks);
+                        result = rw.WriteFromArray<long>(groupId, name, tss);
+                    }
+#endif
                     else
                     {
                         string str = "type is not supported: ";
@@ -118,7 +135,7 @@ namespace HDF5CSharp
 
         public (bool success, Array result) ReadArray<T>(long groupId, string name, string alternativeName, bool mandatoryElement)
         {
-            return ReadArray(typeof(T), groupId, name, alternativeName,mandatoryElement);
+            return ReadArray(typeof(T), groupId, name, alternativeName, mandatoryElement);
         }
 
         public (bool success, Array result) ReadArray(Type elementType, long groupId, string name, string alternativeName, bool mandatoryElement)
@@ -179,6 +196,28 @@ namespace HDF5CSharp
                     return (valid, strings.ToArray());
 
                 default:
+#if NET
+                    if (elementType == typeof(Half))
+                    {
+                        (success, result) = rw.ReadToArray<float>(groupId, name, alternativeName, mandatoryElement);
+                        return (success, result.ConvertArray<float, Half>(f16 => (Half)f16));
+
+                    }
+                    if (elementType == typeof(DateOnly))
+                    {
+                        (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName, mandatoryElement);
+                        return (success, result.ConvertArray<long, DateOnly>(tcks =>
+                        {
+                            var dt = new DateTime(tcks);
+                            return new DateOnly(dt.Year, dt.Month, dt.Day);
+                        }));
+                    }
+                    if (elementType == typeof(TimeOnly))
+                    {
+                        (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName, mandatoryElement);
+                        return (success, result.ConvertArray<long, TimeOnly>(tcks => new TimeOnly(tcks)));
+                    }
+#endif
                     if (elementType == typeof(TimeSpan))
                     {
                         (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName, mandatoryElement);

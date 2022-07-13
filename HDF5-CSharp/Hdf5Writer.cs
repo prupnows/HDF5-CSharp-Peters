@@ -177,9 +177,18 @@ namespace HDF5CSharp
                 }
 
             }
+#if NET
+            else if (ty == typeof(Half) || ty == typeof(TimeOnly) || ty == typeof(DateOnly))
+            {
+                (int success, long CreatedgroupId) =// WriteOneValue(groupId, name, infoVal);
+
+                    CallByReflection<(int, long)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal, attributes });
+
+            }
+#endif
             else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
             {
-                (int success, long CreatedgroupId) = //WriteOneValue(groupId, name, infoVal);
+                (int success, long CreatedgroupId) =// WriteOneValue(groupId, name, infoVal);
 
                     CallByReflection<(int, long)>(nameof(WriteOneValue), ty, new[] { groupId, name, infoVal, attributes });
                 //todo: fix it
