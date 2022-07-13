@@ -103,7 +103,7 @@ namespace HDF5CSharp
                     }
                     else if (elementType == typeof(DateOnly))
                     {
-                        var tss = collection.ConvertArray<DateOnly, long>(d => d.ToDateTime(new TimeOnly(0, 0)).Ticks);
+                        var tss = collection.ConvertArray<DateOnly, int>(d => d.DayNumber);
                         result = rw.WriteFromArray<long>(groupId, name, tss);
                     }
                     else if (elementType == typeof(TimeOnly))
@@ -205,12 +205,8 @@ namespace HDF5CSharp
                     }
                     if (elementType == typeof(DateOnly))
                     {
-                        (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName, mandatoryElement);
-                        return (success, result.ConvertArray<long, DateOnly>(tcks =>
-                        {
-                            var dt = new DateTime(tcks);
-                            return new DateOnly(dt.Year, dt.Month, dt.Day);
-                        }));
+                        (success, result) = rw.ReadToArray<int>(groupId, name, alternativeName, mandatoryElement);
+                        return (success, result.ConvertArray<int, DateOnly>(DateOnly.FromDayNumber));
                     }
                     if (elementType == typeof(TimeOnly))
                     {
