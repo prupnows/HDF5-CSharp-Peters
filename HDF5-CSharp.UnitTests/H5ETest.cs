@@ -2,7 +2,7 @@
 using HDF.PInvoke;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HDF5CSharp.UnitTests.Core
+namespace HDF5CSharp.UnitTests
 {
     [TestClass]
     public class H5ETest

@@ -1,12 +1,12 @@
-﻿using HDF5CSharp.DataTypes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using HDF5CSharp.DataTypes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HDF5CSharp.UnitTests.Core
+namespace HDF5CSharp.UnitTests
 {
     public partial class Hdf5UnitTests
     {

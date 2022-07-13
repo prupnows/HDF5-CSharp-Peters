@@ -4,7 +4,7 @@ using System.Linq;
 using HDF.PInvoke;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HDF5CSharp.UnitTests.Core
+namespace HDF5CSharp.UnitTests
 {
     public partial class Hdf5UnitTests
     {

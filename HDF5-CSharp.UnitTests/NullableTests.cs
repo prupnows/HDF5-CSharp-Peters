@@ -1,14 +1,9 @@
 ﻿#if NET
 #nullable enable
 #endif
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HDF5CSharp.UnitTests.Core
+namespace HDF5CSharp.UnitTests
 {
     public class TestInnerClassWithArrayWithNulls
     {

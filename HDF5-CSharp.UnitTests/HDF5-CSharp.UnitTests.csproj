@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<TargetFrameworks>net472;net6.0-windows</TargetFrameworks>
 		<IsPackable>false</IsPackable>
-		<AssemblyName>HDF5CSharp.UnitTests.Core</AssemblyName>
-		<RootNamespace>HDF5CSharp.UnitTests.Core</RootNamespace>
+		<AssemblyName>HDF5CSharp.UnitTests</AssemblyName>
+		<RootNamespace>HDF5CSharp.UnitTests</RootNamespace>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

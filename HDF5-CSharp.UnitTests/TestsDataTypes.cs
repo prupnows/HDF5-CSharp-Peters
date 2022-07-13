@@ -1,10 +1,10 @@
-﻿using HDF5CSharp.DataTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using HDF5CSharp.DataTypes;
 
-namespace HDF5CSharp.UnitTests.Core
+namespace HDF5CSharp.UnitTests
 {
     [Hdf5Attributes(new[] { "some info", "more info" })]
     class AttributeSimpleClass : IEquatable<AttributeSimpleClass>
