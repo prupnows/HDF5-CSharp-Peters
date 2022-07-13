@@ -23,18 +23,18 @@ namespace HDF5CSharp
             {
                 groupName = ((Hdf5GroupName)attribute).Name;
             }
-            bool createGroupName = !string.IsNullOrWhiteSpace(groupName);
-            if (createGroupName)
-            {
-                groupId = CreateOrOpenGroup(groupId, groupName);
-            }
-
+  
             bool skip = SkipSaveProcessing(Attribute.GetCustomAttributes(tyObject));
             if (skip)
             {
                 return writeValue;
             }
-        
+
+            bool createGroupName = !string.IsNullOrWhiteSpace(groupName);
+            if (createGroupName)
+            {
+                groupId = CreateOrOpenGroup(groupId, groupName);
+            }
             WriteProperties(tyObject, writeValue, groupId);
             WriteFields(tyObject, writeValue, groupId);
             WriteHdf5Attributes(tyObject, groupId, groupName);

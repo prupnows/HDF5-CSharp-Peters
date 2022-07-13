@@ -55,7 +55,6 @@ namespace HDF5CSharp
                 case TypeCode.Int32:
                     result = rw.WriteFromArray<int>(groupId, name, collection);
                     break;
-
                 case TypeCode.Int64:
                     result = rw.WriteFromArray<long>(groupId, name, collection);
                     break;
@@ -124,10 +123,10 @@ namespace HDF5CSharp
 
         public (bool success, Array result) ReadArray(Type elementType, long groupId, string name, string alternativeName, bool mandatoryElement)
         {
-            TypeCode ty = Type.GetTypeCode(elementType);
+            TypeCode typeCode = Type.GetTypeCode(elementType);
             bool success;
             Array result;
-            switch (ty)
+            switch (typeCode)
             {
                 case TypeCode.Boolean:
                     (success, result) = rw.ReadToArray<ushort>(groupId, name, alternativeName, mandatoryElement);
@@ -185,7 +184,7 @@ namespace HDF5CSharp
                         (success, result) = rw.ReadToArray<long>(groupId, name, alternativeName, mandatoryElement);
                         return (success, result.ConvertArray<long, TimeSpan>(tcks => new TimeSpan(tcks)));
                     }
-                    string str = $"type is not supported: {ty}";
+                    string str = $"type is not supported: {typeCode}";
                     Hdf5Utils.LogMessage($"Error: {str}", Hdf5LogLevel.Error);
                     throw new NotSupportedException(str + elementType.FullName);
             }
