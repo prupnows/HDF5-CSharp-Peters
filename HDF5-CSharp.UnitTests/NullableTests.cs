@@ -69,13 +69,17 @@ namespace HDF5CSharp.UnitTests.Core
         public bool? TestFieldBooleanNullableNull;
 
         public TestInnerClassWithArrayWithNulls InnerClassWithArrayWithNullsNonNull { get; set; }
+        public TestInnerClassWithArrayWithNulls innerFieldClassWithArrayWithNullsNonNull;
 #if NET
         public TestInnerClassWithArrayWithNulls? InnerClassWithArrayWithNull { get; set; }
+        public TestInnerClassWithArrayWithNulls? innerFieldClassWithArrayWithNulls;
+
 #endif
 
         public TestClassWithArrayWithNulls()
         {
             InnerClassWithArrayWithNullsNonNull = new TestInnerClassWithArrayWithNulls();
+            innerFieldClassWithArrayWithNullsNonNull = new TestInnerClassWithArrayWithNulls();
         }
         protected bool Equals(TestClassWithArrayWithNulls other)
         {
@@ -86,7 +90,8 @@ namespace HDF5CSharp.UnitTests.Core
                    TestBooleanNonNull == other.TestBooleanNonNull && TestBooleanNull == other.TestBooleanNull &&
                    TestBooleanNullableNonNull == other.TestBooleanNullableNonNull &&
                    TestBooleanNullableNull == other.TestBooleanNullableNull &&
-                   InnerClassWithArrayWithNullsNonNull.Equals(other.InnerClassWithArrayWithNullsNonNull);
+                   InnerClassWithArrayWithNullsNonNull.Equals(other.InnerClassWithArrayWithNullsNonNull) &&
+                   innerFieldClassWithArrayWithNullsNonNull.Equals(other.innerFieldClassWithArrayWithNullsNonNull);
         }
 
         public override bool Equals(object obj)
@@ -145,9 +150,31 @@ namespace HDF5CSharp.UnitTests.Core
                 TestFieldBooleanNullableNonNull = true,
                 TestFieldBooleanNullableNull = null
             };
+            testClass.innerFieldClassWithArrayWithNullsNonNull = new TestInnerClassWithArrayWithNulls
+            {
+                TestBooleanNonNull = true,
+                TestBooleanNull = false,
+                TestBooleanNullableNonNull = true,
+                TestBooleanNullableNull = null,
+                TestFieldBooleanNonNull = true,
+                TestFieldBooleanNull = false,
+                TestFieldBooleanNullableNonNull = true,
+                TestFieldBooleanNullableNull = null
+            };
 
 #if NET
             testClass.InnerClassWithArrayWithNull = new TestInnerClassWithArrayWithNulls
+            {
+                TestBooleanNonNull = true,
+                TestBooleanNull = false,
+                TestBooleanNullableNonNull = true,
+                TestBooleanNullableNull = null,
+                TestFieldBooleanNonNull = true,
+                TestFieldBooleanNull = false,
+                TestFieldBooleanNullableNonNull = true,
+                TestFieldBooleanNullableNull = null
+            };
+            testClass.innerFieldClassWithArrayWithNulls = new TestInnerClassWithArrayWithNulls
             {
                 TestBooleanNonNull = true,
                 TestBooleanNull = false,
@@ -163,8 +190,13 @@ namespace HDF5CSharp.UnitTests.Core
             Hdf5.WriteObject(fileID, testClass, "testObject");
             Hdf5.CloseFile(fileID);
             var readObject = new TestClassWithArrayWithNulls();
+#if NET
+            readObject.InnerClassWithArrayWithNull = new TestInnerClassWithArrayWithNulls();
+            readObject.innerFieldClassWithArrayWithNulls = new TestInnerClassWithArrayWithNulls();
+#endif
             fileID = Hdf5.OpenFile(fn);
             readObject = Hdf5.ReadObject(fileID, readObject, "testObject");
+
             Hdf5.CloseFile(fileID);
             Assert.IsTrue(readObject.TestBooleanNonNull == testClass.TestBooleanNonNull);
             Assert.IsTrue(readObject.TestBooleanNull == testClass.TestBooleanNull);
@@ -179,8 +211,12 @@ namespace HDF5CSharp.UnitTests.Core
 
             Assert.IsTrue(readObject.Equals(testClass));
             Assert.IsTrue(readObject.InnerClassWithArrayWithNullsNonNull.Equals(testClass.InnerClassWithArrayWithNullsNonNull));
+            Assert.IsTrue(readObject.innerFieldClassWithArrayWithNullsNonNull.Equals(testClass.innerFieldClassWithArrayWithNullsNonNull));
+
 #if NET
             Assert.IsTrue(readObject.InnerClassWithArrayWithNull.Equals(testClass.InnerClassWithArrayWithNull));
+            Assert.IsTrue(readObject.innerFieldClassWithArrayWithNulls.Equals(testClass.innerFieldClassWithArrayWithNulls));
+
 #endif
         }
     }
