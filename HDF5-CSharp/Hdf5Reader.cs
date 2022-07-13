@@ -15,29 +15,29 @@ namespace HDF5CSharp
     public partial class Hdf5
     {
 
-        public static T ReadObject<T>(long groupId, T readValue, string groupName)
+        public static T ReadObject<T>(long groupId, T targetObjectToFill, string groupName)
         {
-            if (readValue == null)
+            if (targetObjectToFill == null)
             {
-                throw new ArgumentNullException(nameof(readValue));
+                throw new ArgumentNullException(nameof(targetObjectToFill));
             }
 
-            Type tyObject = readValue.GetType();
+            Type tyObject = targetObjectToFill.GetType();
             bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (isGroupName)
             {
                 groupId = H5G.open(groupId, Hdf5Utils.NormalizedName(groupName));
             }
 
-            ReadFields(tyObject, readValue, groupId);
-            ReadProperties(tyObject, readValue, groupId);
+            ReadFields(tyObject, targetObjectToFill, groupId);
+            ReadProperties(tyObject, targetObjectToFill, groupId);
 
             if (isGroupName)
             {
                 CloseGroup(groupId);
             }
 
-            return readValue;
+            return targetObjectToFill;
         }
 
         public static T ReadObject<T>(long groupId, string groupName) where T : new()
@@ -116,7 +116,7 @@ namespace HDF5CSharp
 
             return skip;
         }
-        private static void ReadFields(Type tyObject, object readValue, long groupId)
+        private static void ReadFields(Type tyObject, object targetObjectToFill, long groupId)
         {
             FieldInfo[] miMembers = tyObject.GetFields(BindingFlags.DeclaredOnly |
                                                        BindingFlags.Public |
@@ -135,7 +135,12 @@ namespace HDF5CSharp
 
                 Type ty = info.FieldType;
                 TypeCode code = Type.GetTypeCode(ty);
-
+                if (ty.IsGenericType &&
+                    ty.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    ty = ty.GetGenericArguments()[0];
+                    code = Type.GetTypeCode(ty);
+                }
                 string name = info.Name;
                 Hdf5Utils.LogMessage($"groupName: {tyObject.Name}; field name: {name}", Hdf5LogLevel.Debug);
                 bool success;
@@ -159,7 +164,7 @@ namespace HDF5CSharp
 
                     if (success)
                     {
-                        info.SetValue(readValue, values);
+                        info.SetValue(targetObjectToFill, values);
                     }
                 }
 
@@ -183,14 +188,14 @@ namespace HDF5CSharp
 
                             }
 
-                            info.SetValue(readValue, created);
+                            info.SetValue(targetObjectToFill, created);
                         }
                     }
                     else
                     {
                         var result = CallByReflection<object>(nameof(ReadCompounds), elType,
                             new object[] { groupId, name, alternativeName, mandatoryElement });
-                        info.SetValue(readValue, result);
+                        info.SetValue(targetObjectToFill, result);
 
                     }
 
@@ -205,12 +210,12 @@ namespace HDF5CSharp
                     int[] first = new int[values.Rank].Select(f => 0).ToArray();
                     if (success)
                     {
-                        info.SetValue(readValue, values.GetValue(first));
+                        info.SetValue(targetObjectToFill, values.GetValue(first));
                     }
                 }
                 else
                 {
-                    object value = info.GetValue(readValue);
+                    object value = info.GetValue(targetObjectToFill);
                     if (value != null)
                     {
                         ReadObject(groupId, value, name);
@@ -219,7 +224,7 @@ namespace HDF5CSharp
             }
         }
 
-        private static void ReadProperties(Type tyObject, object readValue, long groupId)
+        private static void ReadProperties(Type tyObject, object targetObjectToFill, long groupId)
         {
             PropertyInfo[] miMembers = tyObject.GetProperties( /*BindingFlags.DeclaredOnly |*/
                 BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
@@ -238,6 +243,12 @@ namespace HDF5CSharp
                 TypeCode code = Type.GetTypeCode(ty);
                 string name = info.Name;
 
+                if (ty.IsGenericType &&
+                    ty.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    ty = ty.GetGenericArguments()[0];
+                    code = Type.GetTypeCode(ty);
+                }
                 bool success;
                 Array values;
                 if (ty.IsArray)
@@ -250,7 +261,7 @@ namespace HDF5CSharp
                         (success, values) = dsetRW.ReadArray(elType, groupId, name, alternativeName, mandatoryElement);
                         if (success)
                         {
-                            info.SetValue(readValue, values);
+                            info.SetValue(targetObjectToFill, values);
                         }
                     }
                     else
@@ -260,7 +271,7 @@ namespace HDF5CSharp
                         var objArr = (obj).Cast<object>().ToArray();
                         values = Array.CreateInstance(elType, objArr.Length);
                         Array.Copy(objArr, values, objArr.Length);
-                        info.SetValue(readValue, values);
+                        info.SetValue(targetObjectToFill, values);
                     }
 
                 }
@@ -284,7 +295,7 @@ namespace HDF5CSharp
 
                             }
 
-                            info.SetValue(readValue, created);
+                            info.SetValue(targetObjectToFill, created);
                         }
 
                     }
@@ -292,14 +303,9 @@ namespace HDF5CSharp
                     {
                         var result = CallByReflection<object>(nameof(ReadCompounds), elType,
                             new object[] { groupId, name, alternativeName, mandatoryElement });
-                        info.SetValue(readValue, result);
+                        info.SetValue(targetObjectToFill, result);
                     }
                 }
-
-
-
-
-
                 else if (primitiveTypes.Contains(code) || ty == typeof(TimeSpan))
                 {
                     (success, values) = dsetRW.ReadArray(ty, groupId, name, alternativeName, mandatoryElement);
@@ -308,7 +314,7 @@ namespace HDF5CSharp
                         int[] first = new int[values.Rank].Select(f => 0).ToArray();
                         if (info.CanWrite)
                         {
-                            info.SetValue(readValue, values.GetValue(first));
+                            info.SetValue(targetObjectToFill, values.GetValue(first));
                         }
                         else
                         {
@@ -319,11 +325,11 @@ namespace HDF5CSharp
                 }
                 else
                 {
-                    object value = info.GetValue(readValue, null);
+                    object value = info.GetValue(targetObjectToFill, null);
                     if (value != null)
                     {
                         value = ReadObject(groupId, value, name);
-                        info.SetValue(readValue, value);
+                        info.SetValue(targetObjectToFill, value);
                     }
                 }
             }
