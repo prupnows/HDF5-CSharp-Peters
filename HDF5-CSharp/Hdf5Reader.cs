@@ -135,17 +135,16 @@ namespace HDF5CSharp
 
                 Type ty = info.FieldType;
                 TypeCode code = Type.GetTypeCode(ty);
+                string name = info.Name;
+                Hdf5Utils.LogMessage($"groupName: {tyObject.Name}; field name: {name}", Hdf5LogLevel.Debug);
+                bool success;
+                Array values;
                 if (ty.IsGenericType &&
                     ty.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     ty = ty.GetGenericArguments()[0];
                     code = Type.GetTypeCode(ty);
                 }
-                string name = info.Name;
-                Hdf5Utils.LogMessage($"groupName: {tyObject.Name}; field name: {name}", Hdf5LogLevel.Debug);
-                bool success;
-                Array values;
-
                 if (ty.IsArray)
                 {
                     var elType = ty.GetElementType();
@@ -242,15 +241,14 @@ namespace HDF5CSharp
                 Type ty = info.PropertyType;
                 TypeCode code = Type.GetTypeCode(ty);
                 string name = info.Name;
-
+                bool success;
+                Array values;
                 if (ty.IsGenericType &&
                     ty.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     ty = ty.GetGenericArguments()[0];
                     code = Type.GetTypeCode(ty);
                 }
-                bool success;
-                Array values;
                 if (ty.IsArray)
                 {
                     var elType = ty.GetElementType();
@@ -583,6 +581,10 @@ namespace HDF5CSharp
             Type ty = typeof(T[,]);
             bool success;
             Array values;
+            if (ty.IsGenericType && ty.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                ty = ty.GetGenericArguments()[0];
+            }
             if (ty.IsArray)
             {
                 var elType = ty.GetElementType();
