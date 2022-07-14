@@ -41,7 +41,7 @@ The object is written to a file and than read back in a new object.
                     TestDoubles = new double[] { 1.1, 1.2, -1.1, -1.2 },
                     TestStrings = new string[] { "one", "two", "three", "four" }
         };
-    int fileId = Hdf5.CreateFile("testFile.H5");
+    long fileId = Hdf5.CreateFile("testFile.H5");
 
     Hdf5.WriteObject(fileId, testClass, "testObject");
 
@@ -82,7 +82,7 @@ The object is written to a file and than read back in a new object.
                 createDataset(20) };
 
     string filename = Path.Combine(folder, "testChunks.H5");
-    int fileId = Hdf5.CreateFile(filename);    
+    long fileId = Hdf5.CreateFile(filename);    
 
     // create a dataset and append two more datasets to it
     using (var chunkedDset = new ChunkedDataset<double>("/test", fileId, dsets.First()))
@@ -107,7 +107,7 @@ you can use the following two method to read the structure of an existing file:
 ```csharp
 
 string fileName = @"FileStructure.h5";
-var tree =Hdf5.ReadTreeFileStructure(fileName);
+var tree = Hdf5.ReadTreeFileStructure(fileName);
 var flat = Hdf5.ReadFlatFileStructure(fileName);
 ```
 
@@ -166,8 +166,8 @@ usage:
         [ClassInitialize()]
         public static void ClassInitialize(TestContext context)
         {
-            Hdf5.Hdf5Settings.LowerCaseNaming = true;
-            Hdf5.Hdf5Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
+            Hdf5.Settings.LowerCaseNaming = true;
+            Hdf5.Settings.DateTimeType = DateTimeType.UnixTimeMilliseconds;
         }
             
 ```
@@ -177,10 +177,10 @@ usage:
  ```csharp
 public static class Hdf5Utils
     {
-        public static Action<string> LogError;
-        public static Action<string> LogInfo;
         public static Action<string> LogDebug;
-        public static Action<string> LogCritical;
+        public static Action<string> LogInfo;
+        public static Action<string> LogWarning;
+        public static Action<string> LogError;
     }
  ```
 
@@ -188,8 +188,9 @@ public static class Hdf5Utils
 in order to log errors use this code snippet:
 ```csharp
             Hdf5.Hdf5Settings.EnableErrorReporting(true);
+            Hdf5Utils.LogDebug = (string s) => {...}
+            Hdf5Utils.LogInfo = (string s) => {...}
             Hdf5Utils.LogWarning = (string s) => {...}
-            Hdf5Utils.LogCritical = (string s) => {...}
             Hdf5Utils.LogError = (string s) => {...}
 ```
 
