@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Bogus;
@@ -54,17 +56,29 @@ namespace HDF5CSharp.UnitTests
         [TestMethod]
         public void TestMemory()
         {
+
             Hdf5.Settings.EnableH5InternalErrorReporting(true);
             string fn = $"{nameof(TestMemory)}.h5";
-            var data = TestCreateFile(fn);
-            for (int i = 0; i < 1; i++)
+            var data = TestCreateFile(fn).ToList();
+            for (int i = 0; i < 100; i++)
             {
-                var read = TestReadFile(fn);
-                Assert.IsTrue(data.SequenceEqual(read));
+                TestReadAndCompare(fn, data);
             }
-           
-           
 
+        }
+
+        private void TestReadAndCompare(string fn, List<HDF5DataClass> original)
+        {            /*
+            PerformanceCounter PC = new PerformanceCounter();
+            PC.CategoryName = "Process";
+            PC.CounterName = "Working Set - Private";
+            PC.InstanceName = Process.GetCurrentProcess().ProcessName;
+            */
+            List<HDF5DataClass> fromH5File = TestReadFile(fn);
+            //Console.WriteLine($"After Read {i}: {Convert.ToInt32(PC.NextValue()) / 1024}");
+            Assert.IsTrue(original.SequenceEqual(fromH5File));
+            // PC.Close();
+            // PC.Dispose();
         }
 
         private IEnumerable<HDF5DataClass> GenerateDate()
@@ -81,7 +95,7 @@ namespace HDF5CSharp.UnitTests
             }
         }
 
-        private List<HDF5DataClass> TestCreateFile(string filename)
+        private IEnumerable<HDF5DataClass> TestCreateFile(string filename)
         {
             if (File.Exists(filename))
             {
