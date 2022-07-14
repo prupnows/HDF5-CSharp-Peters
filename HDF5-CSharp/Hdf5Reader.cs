@@ -14,6 +14,37 @@ namespace HDF5CSharp
 {
     public partial class Hdf5
     {
+        public static T ReadMandatoryObject<T>(long groupId, T targetObjectToFill, string groupName)
+        {
+            if (targetObjectToFill == null)
+            {
+                throw new ArgumentNullException(nameof(targetObjectToFill));
+            }
+
+            string normalized = Hdf5Utils.NormalizedName(groupName);
+            if (!GroupExists(groupId, normalized))
+            {
+                string error = $"Group {groupId}. Name:{normalized} does not exist";
+                Hdf5Utils.LogMessage(error, Hdf5LogLevel.Error);
+                throw new Hdf5Exception(error);
+            }
+            Type tyObject = targetObjectToFill.GetType();
+            bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
+            if (isGroupName)
+            {
+                groupId = H5G.open(groupId, normalized);
+            }
+
+            ReadFields(tyObject, targetObjectToFill, groupId);
+            ReadProperties(tyObject, targetObjectToFill, groupId);
+
+            if (isGroupName)
+            {
+                CloseGroup(groupId);
+            }
+
+            return targetObjectToFill;
+        }
 
         public static T ReadObject<T>(long groupId, T targetObjectToFill, string groupName)
         {
@@ -22,11 +53,22 @@ namespace HDF5CSharp
                 throw new ArgumentNullException(nameof(targetObjectToFill));
             }
 
+            string normalized = Hdf5Utils.NormalizedName(groupName);
+            if (!GroupExists(groupId, normalized))
+            {
+                if (Settings.ThrowOnNonExistNameWhenReading)
+                {
+                    string error = $"Group {groupId}. Name:{normalized} does not exist";
+                    Hdf5Utils.LogMessage(error, Hdf5LogLevel.Error);
+                    throw new Hdf5Exception(error);
+                }
+                return default(T);
+            }
             Type tyObject = targetObjectToFill.GetType();
             bool isGroupName = !string.IsNullOrWhiteSpace(groupName);
             if (isGroupName)
             {
-                groupId = H5G.open(groupId, Hdf5Utils.NormalizedName(groupName));
+                groupId = H5G.open(groupId, normalized);
             }
 
             ReadFields(tyObject, targetObjectToFill, groupId);
@@ -44,6 +86,13 @@ namespace HDF5CSharp
         {
             T readValue = new T();
             return ReadObject(groupId, readValue, groupName);
+        }
+        public static T ReadObject<T>(long groupId, string groupName, bool mandatoryElement) where T : new()
+        {
+            T readValue = new T();
+            return mandatoryElement
+                ? ReadMandatoryObject(groupId, readValue, groupName)
+                : ReadObject(groupId, readValue, groupName);
         }
 
         private static bool SkipReadProcessing(Attribute[] attributes)
@@ -225,14 +274,23 @@ namespace HDF5CSharp
                     object value = info.GetValue(targetObjectToFill);
                     if (value != null)
                     {
-                        var result = ReadObject(groupId, value, name);
+                        object result = mandatoryElement
+                            ? ReadMandatoryObject(groupId, value, name)
+                            : ReadObject(groupId, value, name);
                         info.SetValue(targetObjectToFill, result);
                     }
                     else
                     {
                         var nonNull = Activator.CreateInstance(ty);
                         info.SetValue(targetObjectToFill, nonNull);
-                        ReadObject(groupId, nonNull, name);
+                        if (mandatoryElement)
+                        {
+                            ReadMandatoryObject(groupId, nonNull, name);
+                        }
+                        else
+                        {
+                            ReadObject(groupId, nonNull, name);
+                        }
 
                     }
                 }
@@ -361,15 +419,18 @@ namespace HDF5CSharp
                     object value = info.GetValue(targetObjectToFill, null);
                     if (value != null)
                     {
-                       var result= ReadObject(groupId, value, name);
-                       info.SetValue(targetObjectToFill, result);
-
+                        object result = mandatoryElement
+                            ? ReadMandatoryObject(groupId, value, name)
+                            : ReadObject(groupId, value, name);
+                        info.SetValue(targetObjectToFill, result);
                     }
                     else
                     {
                         var nonNull = Activator.CreateInstance(ty);
-                        info.SetValue(targetObjectToFill, nonNull);
-                        ReadObject(groupId, nonNull, name);
+                        object result = mandatoryElement
+                            ? ReadMandatoryObject(groupId, nonNull, name)
+                            : ReadObject(groupId, nonNull, name);
+                        info.SetValue(targetObjectToFill, result);
 
                     }
                 }

@@ -97,7 +97,7 @@ namespace HDF5CSharp
             var spaceId = H5D.get_space(datasetId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             long count = H5S.get_simple_extent_npoints(spaceId);
-            Array dset;
+            
             Type type = typeof(T);
             if (rank >= 0 && count >= 0)
             {
@@ -107,7 +107,7 @@ namespace HDF5CSharp
                 ulong[] chunkDims = new ulong[rank];
                 long memId = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
                 long[] lengths = dims.Select(d => Convert.ToInt64(d)).ToArray();
-                dset = Array.CreateInstance(type, lengths);
+                Array dset = Array.CreateInstance(type, lengths);
                 //var typeId = H5D.get_type(datasetId);
                 //var mem_type = H5T.copy(datatype);
                 if (datatype == H5T.C_S1)
@@ -123,21 +123,18 @@ namespace HDF5CSharp
                 }
 
                 memId = H5S.create_simple(rank, dims, maxDims);
-                GCHandle hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
+                var hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
                 H5D.read(datasetId, datatype, memId, spaceId,
                     H5P.DEFAULT, hnd.AddrOfPinnedObject());
-                hnd.Free();
+
                 H5S.close(memId);
-            }
-            else
-            {
-                dset = Array.CreateInstance(type, new long[1] { 0 });
+                H5D.close(datasetId);
+                H5S.close(spaceId);
+                hnd.Free();
+                return (true, dset);
             }
 
-            H5D.close(datasetId);
-            H5S.close(spaceId);
-            return (true, dset);
-
+            return (true, Array.CreateInstance(type, new long[1] { 0 }));
         }
 
         /// <summary>
@@ -267,7 +264,7 @@ namespace HDF5CSharp
 
         public static (bool success, Array result) ReadDataset<T>(long groupId, string name, string alternativeName = "", bool mandatory = false)
         {
-            return dsetRW.ReadArray<T>(groupId, name, alternativeName,mandatory);
+            return dsetRW.ReadArray<T>(groupId, name, alternativeName, mandatory);
         }
 
         /// <summary>
