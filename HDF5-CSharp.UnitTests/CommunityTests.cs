@@ -57,7 +57,7 @@ namespace HDF5CSharp.UnitTests
             Hdf5.Settings.EnableH5InternalErrorReporting(true);
             string fn = $"{nameof(TestMemory)}.h5";
             var data = TestCreateFile(fn);
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var read = TestReadFile(fn);
                 Assert.IsTrue(data.SequenceEqual(read));
