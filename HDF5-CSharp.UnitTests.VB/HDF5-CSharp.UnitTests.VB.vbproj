@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>HDF5_CSharp.UnitTests.VB</RootNamespace>
+    <RootNamespace>HDF5CSharp.UnitTests.VB</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>

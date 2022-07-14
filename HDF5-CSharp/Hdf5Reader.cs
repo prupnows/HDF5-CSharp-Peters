@@ -281,17 +281,15 @@ namespace HDF5CSharp
                     }
                     else
                     {
-                        var nonNull = Activator.CreateInstance(ty);
-                        info.SetValue(targetObjectToFill, nonNull);
-                        if (mandatoryElement)
-                        {
-                            ReadMandatoryObject(groupId, nonNull, name);
-                        }
-                        else
-                        {
-                            ReadObject(groupId, nonNull, name);
-                        }
 
+                        var nonNull = Activator.CreateInstance(ty);
+                        var result = mandatoryElement
+                            ? ReadMandatoryObject(groupId, nonNull, name)
+                            : ReadObject(groupId, nonNull, name);
+                        if (result != default)
+                        {
+                            info.SetValue(targetObjectToFill, nonNull);
+                        }
                     }
                 }
             }
@@ -430,8 +428,10 @@ namespace HDF5CSharp
                         object result = mandatoryElement
                             ? ReadMandatoryObject(groupId, nonNull, name)
                             : ReadObject(groupId, nonNull, name);
-                        info.SetValue(targetObjectToFill, result);
-
+                        if (result != default)
+                        {
+                            info.SetValue(targetObjectToFill, nonNull);
+                        }
                     }
                 }
             }
