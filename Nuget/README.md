@@ -178,7 +178,7 @@ in order to log errors use this code snippet:
 ## History
 ### V1.15.2:
 - https://github.com/LiorBanai/HDF5-CSharp/issues/213:  [NET5+] Add support for newly added primitive types #213 
-- https://github.com/LiorBanai/HDF5-CSharp/issues/219:  Add Support for Reference Nullable Types #219
+- https://github.com/LiorBanai/HDF5-CSharp/issues/216:  Nullable support for "ReadObject" #216 (additional changes)
 
 ### V1.15.1:
  - https://github.com/LiorBanai/HDF5-CSharp/issues/219:  Add Support for Reference Nullable Types #219
