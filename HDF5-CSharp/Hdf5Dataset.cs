@@ -97,17 +97,17 @@ namespace HDF5CSharp
             var spaceId = H5D.get_space(datasetId);
             int rank = H5S.get_simple_extent_ndims(spaceId);
             long count = H5S.get_simple_extent_npoints(spaceId);
-            
             Type type = typeof(T);
+            Array result = Array.Empty<T>();
             if (rank >= 0 && count >= 0)
             {
                 int rankChunk;
                 ulong[] maxDims = new ulong[rank];
                 ulong[] dims = new ulong[rank];
                 ulong[] chunkDims = new ulong[rank];
-                long memId = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
+                long simpleId = H5S.get_simple_extent_dims(spaceId, dims, maxDims);
                 long[] lengths = dims.Select(d => Convert.ToInt64(d)).ToArray();
-                Array dset = Array.CreateInstance(type, lengths);
+                result = Array.CreateInstance(type, lengths);
                 //var typeId = H5D.get_type(datasetId);
                 //var mem_type = H5T.copy(datatype);
                 if (datatype == H5T.C_S1)
@@ -122,19 +122,19 @@ namespace HDF5CSharp
                     rankChunk = H5P.get_chunk(propId, rank, chunkDims);
                 }
 
-                memId = H5S.create_simple(rank, dims, maxDims);
-                var hnd = GCHandle.Alloc(dset, GCHandleType.Pinned);
+                var memId = H5S.create_simple(rank, dims, maxDims);
+                var hnd = GCHandle.Alloc(result, GCHandleType.Pinned);
                 H5D.read(datasetId, datatype, memId, spaceId,
                     H5P.DEFAULT, hnd.AddrOfPinnedObject());
 
                 H5S.close(memId);
-                H5D.close(datasetId);
-                H5S.close(spaceId);
+                H5P.close(propId);
                 hnd.Free();
-                return (true, dset);
-            }
 
-            return (true, Array.CreateInstance(type, new long[1] { 0 }));
+            }
+            H5D.close(datasetId);
+            H5S.close(spaceId);
+            return (true, result);
         }
 
         /// <summary>
@@ -400,7 +400,7 @@ namespace HDF5CSharp
                 hnd.Free();
                 H5S.close(memId1);
                 H5S.close(memId2);
-
+                H5P.close(propId);
                 H5D.close(filespaceId);
             }
             //todo: close?

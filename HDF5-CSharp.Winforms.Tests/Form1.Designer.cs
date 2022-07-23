@@ -33,6 +33,7 @@
             this.btnCompare = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.cbPopup = new System.Windows.Forms.CheckBox();
+            this.ceCompare = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnCreateData
@@ -70,11 +71,22 @@
             this.cbPopup.Text = "popup";
             this.cbPopup.UseVisualStyleBackColor = true;
             // 
+            // ceCompare
+            // 
+            this.ceCompare.AutoSize = true;
+            this.ceCompare.Location = new System.Drawing.Point(282, 42);
+            this.ceCompare.Name = "ceCompare";
+            this.ceCompare.Size = new System.Drawing.Size(142, 24);
+            this.ceCompare.TabIndex = 3;
+            this.ceCompare.Text = "Compare Results";
+            this.ceCompare.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1069, 450);
+            this.Controls.Add(this.ceCompare);
             this.Controls.Add(this.cbPopup);
             this.Controls.Add(this.btnCompare);
             this.Controls.Add(this.btnCreateData);
@@ -92,5 +104,6 @@
         private System.Windows.Forms.Button btnCompare;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.CheckBox cbPopup;
+        private System.Windows.Forms.CheckBox ceCompare;
     }
 }

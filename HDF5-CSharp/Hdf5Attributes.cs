@@ -193,6 +193,9 @@ namespace HDF5CSharp
             H5T.close(typeId);
             H5A.close(attributeId);
             H5S.close(spaceId);
+            //H5S.close(memId);
+            //H5P.close(propId);
+
             return (true, attributes);
         }
 

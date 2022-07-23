@@ -174,20 +174,24 @@ in order to log errors use this code snippet:
             Hdf5Utils.LogError = (string s) => {...}
 ```
 
+Memory increased #224
 
 ## History
-### V1.15.2 ((14.07.2022)):
-- https://github.com/LiorBanai/HDF5-CSharp/issues/213:  [NET5+] Add support for newly added primitive types #213
-- https://github.com/LiorBanai/HDF5-CSharp/issues/216:  Nullable support for "ReadObject" #216 (additional changes)
+### V1.15.3 (23.07.2022):
+- https://github.com/LiorBanai/HDF5-CSharp/issues/224: Memory increased #224
+
+### V1.15.2 (14.07.2022):
+- https://github.com/LiorBanai/HDF5-CSharp/issues/213: [NET5+] Add support for newly added primitive types #213
+- https://github.com/LiorBanai/HDF5-CSharp/issues/216: Nullable support for "ReadObject" #216 (additional changes)
 
 ### V1.15.1:
- - https://github.com/LiorBanai/HDF5-CSharp/issues/219:  Add Support for Reference Nullable Types #219
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/219: Add Support for Reference Nullable Types #219
 
 ### V1.15.0:
- - https://github.com/LiorBanai/HDF5-CSharp/issues/216:  Nullable support for "ReadObject" #216
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/216: Nullable support for "ReadObject" #216
 
 ### V1.14.3:
- - https://github.com/LiorBanai/HDF5-CSharp/issues/215:  [BUG] Compound struct - missing memory release #215 
+ - https://github.com/LiorBanai/HDF5-CSharp/issues/215: [BUG] Compound struct - missing memory release #215 
 
 ### V1.14.2: 
  - https://github.com/LiorBanai/HDF5-CSharp/issues/214: [BUG] OpenAttributeIfExists Tries to open dataset instead of attribute #214
