@@ -16,7 +16,6 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
         configuration: [Release, Debug]
 
     runs-on: windows-latest  # For a list of available runner types, refer to 
@@ -56,8 +55,6 @@ jobs:
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test
-      env:
-        Configuration: ${{ matrix.os }}
 
     # Publish Artifacts 
     - name: 'Publish Artifacts'   
