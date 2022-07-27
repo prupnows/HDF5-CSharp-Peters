@@ -16,7 +16,6 @@ jobs:
 
     strategy:
       matrix:
-        target: [net472, net60]
         configuration: [Release, Debug]
 
     runs-on: windows-latest  # For a list of available runner types, refer to 
@@ -56,8 +55,7 @@ jobs:
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test
-      env:
-        Configuration: ${{ matrix.target }}
+
     # Publish Artifacts 
     - name: 'Publish Artifacts'   
       uses: actions/upload-artifact@v1.0.0
