@@ -20,7 +20,7 @@
 		<PackageIconUrl />
 		<RepositoryUrl>https://github.com/LiorBanai/HDF5-CSharp</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Update icon</PackageReleaseNotes>
+		<PackageReleaseNotes></PackageReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Version>1.15.3</Version>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -31,6 +31,8 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<LangVersion>8</LangVersion>
+		<!--<EnablePackageValidation>true</EnablePackageValidation>
+		<PackageValidationBaselineVersion>1.15.2</PackageValidationBaselineVersion>-->
 		<PackageTags>Hdf5</PackageTags>
 	</PropertyGroup>
 
@@ -59,16 +61,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="HDF.PInvoke.1.10" Version="1.10.612" />
 		<PackageReference Include="HDF5.NET" Version="1.0.0-alpha.16.final" />
-		<PackageReference Include="Microsoft.Build.Tasks.Git" Version="1.1.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
 	</ItemGroup>
 
