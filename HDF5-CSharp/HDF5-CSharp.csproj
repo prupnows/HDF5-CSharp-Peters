@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0-windows;netstandard2.0</TargetFrameworks>
+		<TargetFrameworks>netstandard20;netstandard21;net60</TargetFrameworks>
 		<AssemblyName>HDF5CSharp</AssemblyName>
 		<RootNamespace>HDF5CSharp</RootNamespace>
 		<SignAssembly>false</SignAssembly>
@@ -68,6 +68,14 @@
 		<PackageReference Include="HDF.PInvoke.1.10" Version="1.10.612" />
 		<PackageReference Include="HDF5.NET" Version="1.0.0-alpha.16.final" />
 		<PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='netstandard20'">
+		<PackageReference Include="System.Memory" Version="4.5.4" />
+		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='netstandard21'">
+		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
