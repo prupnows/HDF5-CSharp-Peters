@@ -174,9 +174,8 @@ in order to log errors use this code snippet:
             Hdf5Utils.LogError = (string s) => {...}
 ```
 
-Memory increased #224
-
 ## History
+
 ### V1.15.3 (23.07.2022):
 - https://github.com/LiorBanai/HDF5-CSharp/issues/224: Memory increased #224
 
