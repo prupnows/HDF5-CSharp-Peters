@@ -176,6 +176,9 @@ in order to log errors use this code snippet:
 
 ## History
 
+### V1.15.4.1 (03.08.2022):
+- Replace net.6.0-windows target with net6.0.
+
 ### V1.15.3 (23.07.2022):
 - https://github.com/LiorBanai/HDF5-CSharp/issues/224: Memory increased #224
 
