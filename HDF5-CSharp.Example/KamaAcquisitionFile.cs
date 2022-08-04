@@ -186,7 +186,6 @@ namespace HDF5CSharp.Example
             await CloseHandles();
             Hdf5.Flush(groupRoot, H5F.scope_t.GLOBAL);
             Hdf5.CloseGroup(groupEIT);
-            Hdf5.CloseGroup(groupRoot);
             long result = Hdf5.CloseFile(fileId);
             if (result >= 0)
             {

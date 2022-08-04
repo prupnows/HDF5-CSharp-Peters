@@ -40,7 +40,10 @@ namespace HDF5CSharp
             WriteHdf5Attributes(tyObject, groupId, groupName);
             if (createGroupName)
             {
-                CloseGroup(groupId);
+                if (CloseGroup(groupId) != 0)
+                {
+                    Hdf5Utils.LogMessage($"Error closing group: {groupName}({groupId})",Hdf5LogLevel.Error);
+                }
             }
 
             return (writeValue);

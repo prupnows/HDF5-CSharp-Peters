@@ -40,7 +40,10 @@ namespace HDF5CSharp
 
             if (isGroupName)
             {
-                CloseGroup(groupId);
+                if (CloseGroup(groupId) != 0)
+                {
+                    Hdf5Utils.LogMessage($"Error closing group: {groupName}({groupId})", Hdf5LogLevel.Error);
+                }
             }
 
             return targetObjectToFill;
@@ -76,7 +79,10 @@ namespace HDF5CSharp
 
             if (isGroupName)
             {
-                CloseGroup(groupId);
+                if (CloseGroup(groupId) != 0)
+                {
+                    Hdf5Utils.LogMessage($"Error closing group: {groupName}({groupId})", Hdf5LogLevel.Error);
+                }
             }
 
             return targetObjectToFill;

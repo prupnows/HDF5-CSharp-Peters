@@ -33,6 +33,7 @@ namespace HDF5_CSharp.Example.UnitTest
         public void TestInitialize()
         {
             Errors = new List<string>();
+            Hdf5.Settings.EnableLogging(true);
             Hdf5.Settings.EnableH5InternalErrorReporting(true);
             Hdf5Utils.LogError = (s) => Errors.Add(s);
         }
