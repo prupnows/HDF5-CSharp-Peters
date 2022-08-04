@@ -13,13 +13,14 @@ namespace HDF5CSharp.Example.DataTypes
         [Hdf5EntryName("last_name")]
         public string LastName { get; set; }
         public string Id { get; set; }
-
+        public string Type { get; set; }
         public string Gender { get; set; }
         public float Age { get; set; }
         public double Height { get; set; }
         public double Weight { get; set; }
         [Hdf5EntryName("exam_date")]
         public DateTime ExamDate { get; set; }
+        public long StartRecordingTimeStamp { get; set; }
 
         public Patient(long fileId, long groupRoot, ILogger logger) : base(fileId, groupRoot, "patient", logger)
         {

@@ -63,16 +63,17 @@ namespace HDF5_CSharp.Example.UnitTest
             kama = new KamaAcquisitionFile(filename, AcquisitionInterface.Simulator, Logger);
             ProcedureInfo info = new ProcedureInfo
             {
-                Age = 18,
-                FirstName = "Lior",
-                LastName = "Banai",
                 ExamDate = DateTime.Now,
                 Procedure = "test",
-                ProcedureID = "ID",
                 Patient = new PatientInfo()
+                {
+                    PatientFamilyName = "PArker",
+                    PatientFirstName = "Peter",
+                    PatientAge = 26
+                }
             };
 
-            kama.SavePatientInfo(info);
+            kama.SavePatientInfo(info.Patient, info.ExamDate);
             kama.UpdateSystemInformation("32423423", new[] { "11", "12" });
             kama.SetProcedureInformation(info);
             string data = File.ReadAllText(AcquisitionScanProtocolPath);
@@ -122,16 +123,17 @@ namespace HDF5_CSharp.Example.UnitTest
             kama = new KamaAcquisitionFile(filename, AcquisitionInterface.Simulator, Logger);
             ProcedureInfo info = new ProcedureInfo
             {
-                Age = 18,
-                FirstName = "First",
-                LastName = "Last",
                 ExamDate = DateTime.Now,
                 Procedure = "test",
-                ProcedureID = "ID",
                 Patient = new PatientInfo()
+                {
+                    PatientFamilyName = "PArker",
+                    PatientFirstName = "Peter",
+                    PatientAge = 26
+                }
             };
 
-            kama.SavePatientInfo(info);
+            kama.SavePatientInfo(info.Patient, info.ExamDate);
             kama.UpdateSystemInformation("32423423", new[] { "11", "12" });
             string data = File.ReadAllText(calibrationPath);
             CalibrationsSystemInformation calib = CalibrationsSystemInformation.FromJson(data);
@@ -153,16 +155,16 @@ namespace HDF5_CSharp.Example.UnitTest
             kama = new KamaAcquisitionFile(filename, AcquisitionInterface.Simulator, Logger);
             ProcedureInfo info = new ProcedureInfo
             {
-                Age = 18,
-                FirstName = "First",
-                LastName = "Last",
                 ExamDate = DateTime.Now,
                 Procedure = "test",
-                ProcedureID = "ID",
                 Patient = new PatientInfo()
+                {
+                    PatientFamilyName = "PArker",
+                    PatientFirstName = "Peter",
+                    PatientAge = 26
+                }
             };
-
-            kama.SavePatientInfo(info);
+            kama.SavePatientInfo(info.Patient, info.ExamDate);
             kama.UpdateSystemInformation("32423423", new[] { "11", "12" });
             await kama.StopProcedure();
             File.Delete(filename);
@@ -172,16 +174,18 @@ namespace HDF5_CSharp.Example.UnitTest
         {
             ProcedureInfo info = new ProcedureInfo
             {
-                Age = 18,
-                FirstName = "First",
-                LastName = "Last",
                 ExamDate = DateTime.Now,
                 Procedure = "test",
-                ProcedureID = "ID",
                 Patient = new PatientInfo()
+                {
+                    PatientFamilyName = "PArker",
+                    PatientFirstName = "Peter",
+                    PatientAge = 26
+                }
             };
 
-            file.SavePatientInfo(info);
+            file.SavePatientInfo(info.Patient, info.ExamDate);
+
         }
 
         private void UpdateSystemInformation(KamaAcquisitionFile file)
@@ -340,16 +344,17 @@ namespace HDF5_CSharp.Example.UnitTest
             kama = new KamaAcquisitionFile(filename, AcquisitionInterface.Simulator, Logger);
             ProcedureInfo info = new ProcedureInfo
             {
-                Age = 18,
-                FirstName = "First",
-                LastName = "Last",
                 ExamDate = DateTime.Now,
                 Procedure = "test",
-                ProcedureID = "ID",
                 Patient = new PatientInfo()
+                {
+                    PatientFamilyName = "PArker",
+                    PatientFirstName = "Peter",
+                    PatientAge = 26
+                }
             };
 
-            kama.SavePatientInfo(info);
+            kama.SavePatientInfo(info.Patient, info.ExamDate);
             kama.UpdateSystemInformation("32423423", new[] { "11", "12" });
             string data = File.ReadAllText(AcquisitionScanProtocolPath);
             AcquisitionProtocolParameters parameters = AcquisitionProtocolParameters.FromJson(data);

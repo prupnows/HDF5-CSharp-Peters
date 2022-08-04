@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace HDF5_CSharp.Example.UnitTest
 {
     [TestClass]
-    public class Hdf5UnitTests 
+    public class Hdf5UnitTests
     {
         //[TestMethod]
         public async Task TestFullFileWriteReadWithManyMeansResults()
@@ -25,19 +25,20 @@ namespace HDF5_CSharp.Example.UnitTest
 
             Console.WriteLine(filename);
 
-         var   kama = new KamaAcquisitionFile(filename, AcquisitionInterface.Simulator, null);
+            var kama = new KamaAcquisitionFile(filename, AcquisitionInterface.Simulator, null);
             ProcedureInfo info = new ProcedureInfo
             {
-                Age = 18,
-                FirstName = "Lior",
-                LastName = "Banai",
                 ExamDate = DateTime.Now,
                 Procedure = "test",
-                ProcedureID = "ID",
                 Patient = new PatientInfo()
+                {
+                    PatientFamilyName = "PArker",
+                    PatientFirstName = "Peter",
+                    PatientAge = 26
+                }
             };
 
-            kama.SavePatientInfo(info);
+            kama.SavePatientInfo(info.Patient, info.ExamDate);
             kama.UpdateSystemInformation("32423423", new[] { "11", "12" });
             kama.SetProcedureInformation(info);
 

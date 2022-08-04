@@ -199,15 +199,19 @@ namespace HDF5CSharp.Example
             return GeneralUtils.CheckFileSize(FileName);
         }
 
-        public void SavePatientInfo(ProcedureInfo procedureInfo)
+        public void SavePatientInfo(PatientInfo p, DateTime examDate)
         {
             PatientInfo = new Patient(fileId, groupRoot, Logger)
             {
-                FirstName = procedureInfo.FirstName,
-                LastName = procedureInfo.LastName,
-                Age = procedureInfo.Age,
-                ExamDate = procedureInfo.ExamDate,
-                Gender = "unknown",
+                FirstName = p.PatientFirstName ?? "Unknown",
+                LastName = p.PatientFamilyName ?? "Unknown",
+                Age = p.PatientAge,
+                Id = p.PatientId ?? "Unknown",
+                Gender = p.PatientGender ?? "Unknown",
+                Type = p.Type ?? "Unknown",
+                ExamDate = examDate,
+                Height = p.PatientHeight,
+                Weight = p.PatientWeight
             };
             PatientInfo.FlushDataAndCloseObject();
         }
@@ -220,8 +224,15 @@ namespace HDF5CSharp.Example
 
         public void SetProcedureInformation(ProcedureInfo procedureInfo)
         {
-            ProcedureInformation.ProcedureType = procedureInfo.Procedure;
-            ProcedureInformation.ProcedureID = procedureInfo.ProcedureID;
+            ProcedureInformation.ProcedureType = procedureInfo.Procedure ?? string.Empty;
+            ProcedureInformation.GeolocationData = procedureInfo.GeolocationData ?? string.Empty;
+            ProcedureInformation.ProcedureInstitute = procedureInfo.Institute ?? string.Empty;
+            ProcedureInformation.guid = procedureInfo.Guid.ToString();
+            ProcedureInformation.LocalTimeZone = procedureInfo.LocalTimeZone ?? string.Empty;
+            ProcedureInformation.UtcOffset = procedureInfo.UtcOffset;
+            ProcedureInformation.IsDaylightSaving = procedureInfo.IsDaylightSaving;
+            ProcedureInformation.StartDateTime = procedureInfo.StartTimeUtc;
+            ProcedureInformation.Reviewer = procedureInfo.Reviewer;
         }
 
         public void AppendEcgCycleDescriptionSample(ECGCycleDescription e) => ECG.AppendEcgCycleDescriptionSample(e);
