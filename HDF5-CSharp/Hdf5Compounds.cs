@@ -201,10 +201,12 @@ namespace HDF5CSharp
             {
                 return null;
             }
+#pragma warning disable SYSLIB0011
 
             BinaryFormatter bf = new BinaryFormatter();
             MemoryStream ms = new MemoryStream();
             bf.Serialize(ms, obj);
+#pragma warning restore SYSLIB0011
 
             return ms.ToArray();
         }
@@ -216,8 +218,11 @@ namespace HDF5CSharp
             BinaryFormatter binForm = new BinaryFormatter();
             memStream.Write(arrBytes, 0, arrBytes.Length);
             memStream.Seek(0, SeekOrigin.Begin);
+#pragma warning disable SYSLIB0011
             object obj = binForm.Deserialize(memStream);
             return obj;
+#pragma warning restore SYSLIB0011
+
         }
         public static long CreateProperty(ulong[] chunk_size)
         {
