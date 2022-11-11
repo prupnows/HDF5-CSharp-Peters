@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Bogus;
+using HDF5CSharp.UnitTests.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HDF5CSharp.UnitTests
@@ -132,5 +133,96 @@ namespace HDF5CSharp.UnitTests
             Hdf5.CloseFile(fileID);
             return read;
         }
+
+        [TestMethod]
+        public void TestAttributesCreation()
+        {
+            string filename = $"{nameof(TestAttributesCreation)}.h5";
+            long fileId = Hdf5.CreateFile(filename);
+
+            long groupFId = Hdf5.CreateOrOpenGroup(fileId, "GROUP_F");
+
+            var featureCodeDs = new Hdf5Dataset();
+            featureCodeDs.WriteStrings(groupFId, "featureCode", new[] { "WaterLevel" });
+
+            var waterLevelFeatures = new List<WaterLevelFeature>();
+            waterLevelFeatures.Add(new WaterLevelFeature(
+                code: "waterLevelHeight",
+                name: "Water level height",
+                uomName: "metres",
+                fillValue: "-9999.0",
+                dataType: "H5T_FLOAT",
+                lower: "-99.99",
+                upper: "99.99",
+                closure: "closedInterval"));
+
+            waterLevelFeatures.Add(new WaterLevelFeature(
+                code: "waterLevelTrend",
+                name: "Water level trend",
+                uomName: "",
+                fillValue: "0",
+                dataType: "H5T_ENUM",
+                lower: "",
+                upper: "",
+                closure: ""));
+
+            waterLevelFeatures.Add(new WaterLevelFeature(
+                code: "waterLevelTime",
+                name: "Water level time",
+                uomName: "DateTime",
+                fillValue: "",
+                dataType: "H5T_STRING",
+                lower: "19000101T000000Z",
+                upper: "21500101T000000Z",
+                closure: "closedInterval"));
+
+            Dictionary<string, List<string>> attributes = new Dictionary<string, List<string>>();
+            attributes.Add("chunking", new List<string>() { "0,0" });
+
+            Hdf5.WriteCompounds(groupFId, "WaterLevel", waterLevelFeatures, attributes);
+            Hdf5.CloseGroup(groupFId);
+
+            long waterLevelGroupId = Hdf5.CreateOrOpenGroup(fileId, "Waterlevel");
+            Hdf5.WriteAttribute(waterLevelGroupId, "commonPointRule", (byte)4);
+            Hdf5.WriteAttribute(waterLevelGroupId, "dataCodingFormat", (byte)1);
+            Hdf5.WriteAttribute(waterLevelGroupId, "dimension", (Int16)2);
+            Hdf5.WriteAttribute(waterLevelGroupId, "horizontalPositionUncertainty", (int)-1);
+            Hdf5.WriteAttribute(waterLevelGroupId, "maxDatasetHeight", (float)2.898);
+            Hdf5.WriteAttribute(waterLevelGroupId, "methodWaterLevelProduct", "pred, obsv, hcst, or fcst");
+            Hdf5.WriteAttribute(waterLevelGroupId, "minDatasetHeight", (float)0.039);
+            Hdf5.WriteAttribute(waterLevelGroupId, "numInstances", (Int16)1);
+            Hdf5.WriteAttribute(waterLevelGroupId, "timeUncertainty", (float)-1.0);
+            Hdf5.WriteAttribute(waterLevelGroupId, "verticalUncertainty", (float)-1.0);
+
+            long wlGroup01 = Hdf5.CreateOrOpenGroup(waterLevelGroupId, "WaterLevel.01");
+            Hdf5.WriteAttribute(wlGroup01, "dateTimeOfFirstRecord", "20190703T000000Z");
+            Hdf5.WriteAttribute(wlGroup01, "dateTimeOfLastRecord", "20190704T000000Z");
+            Hdf5.WriteAttribute(wlGroup01, "eastBoundLongitude", (double)3.5);
+            Hdf5.WriteAttribute(wlGroup01, "northBoundLatitude", (double)53.2);
+            Hdf5.WriteAttribute(wlGroup01, "numGRP", (Int16)4);
+            Hdf5.WriteAttribute(wlGroup01, "numberOfStations", (Int16)4);
+            Hdf5.WriteAttribute(wlGroup01, "southBoundLatitude", (double)50.2);
+            Hdf5.WriteAttribute(wlGroup01, "typeOfWaterLevelData", (byte)2);
+            Hdf5.WriteAttribute(wlGroup01, "westBoundLongitude", (double)1.1);
+
+            long group001 = Hdf5.CreateOrOpenGroup(wlGroup01, "Group_001");
+            var waterLevelItems = new List<WaterLevelItem>();
+            waterLevelItems.Add(new WaterLevelItem(height: "1.325", trend: "0"));
+            waterLevelItems.Add(new WaterLevelItem(height: "1.324", trend: "0"));
+            waterLevelItems.Add(new WaterLevelItem(height: "1.238", trend: "0"));
+            waterLevelItems.Add(new WaterLevelItem(height: "1.825", trend: "0"));
+
+            Hdf5.WriteCompounds(group001, "values", waterLevelItems, attributes);
+            Hdf5.WriteAttribute(group001, "timePoint", "20190703T000000Z");
+
+            Hdf5.CloseGroup(group001);
+
+            Hdf5.CloseGroup(wlGroup01);
+            Hdf5.CloseGroup(waterLevelGroupId);
+            Hdf5.CloseFile(fileId);
+            File.Delete(filename);
+        }
     }
+
+
 }

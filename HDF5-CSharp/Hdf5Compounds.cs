@@ -77,6 +77,14 @@ namespace HDF5CSharp
                 H5S.close(spaceId);
                 H5T.close(typeId);
                 H5P.close(dcpl);
+                if (attributes != null)
+                {
+                    foreach (KeyValuePair<string, List<string>> kvp in attributes)
+                    {
+                        WriteStringAttributes(groupId, kvp.Key, kvp.Value);
+                    }
+                }
+
                 //Marshal.FreeHGlobal(p);
                 return (statusId, datasetId);
             }
@@ -147,6 +155,10 @@ namespace HDF5CSharp
                 H5S.close(spaceId);
                 H5T.close(typeId);
                 H5P.close(dcpl);
+                foreach (KeyValuePair<string, List<string>> keyValuePair in attributes)
+                {
+                    WriteStringAttributes(groupId, keyValuePair.Key, keyValuePair.Value);
+                }
                 return (statusId, datasetId);
             }
             else

@@ -85,7 +85,7 @@ namespace HDF5CSharp.UnitTests
             } while (readOK);
 
             Hdf5.CloseGroup(groupId);
-            Assert.IsTrue(data.Count == 10);
+            Assert.IsTrue(data.Count == 10,$"Actual: {data.Count}");
             Hdf5.CloseFile(fileId);
             File.Delete(fileName);
 
