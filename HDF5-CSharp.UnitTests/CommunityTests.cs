@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Bogus;
+using HDF.PInvoke;
 using HDF5CSharp.UnitTests.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -51,6 +52,7 @@ namespace HDF5CSharp.UnitTests
             }
         }
     }
+
     [TestClass]
     public class CommunityTests : Hdf5BaseUnitTests
     {
@@ -69,7 +71,8 @@ namespace HDF5CSharp.UnitTests
         }
 
         private void TestReadAndCompare(string fn, List<HDF5DataClass> original)
-        {            /*
+        {
+            /*
             PerformanceCounter PC = new PerformanceCounter();
             PC.CategoryName = "Process";
             PC.CounterName = "Working Set - Private";
@@ -102,15 +105,18 @@ namespace HDF5CSharp.UnitTests
             {
                 File.Delete(filename);
             }
+
             var fileID = Hdf5.CreateFile(filename);
             List<HDF5DataClass> original = GenerateDate().ToList();
             for (int i = 0; i < original.Count; i++)
             {
                 Hdf5.WriteObject(fileID, original[i], $"testObject{i}");
             }
+
             Hdf5.CloseFile(fileID);
             return original;
         }
+
         private List<HDF5DataClass> TestReadFile(string filename)
         {
             var fileID = Hdf5.OpenFile(filename);
@@ -222,7 +228,28 @@ namespace HDF5CSharp.UnitTests
             Hdf5.CloseFile(fileId);
             File.Delete(filename);
         }
+
+        [TestMethod]
+        public void FileNotCloseAfterCreateGroupRecursivelyTest()
+        {
+            string fileName = $"{nameof(FileNotCloseAfterCreateGroupRecursivelyTest)}.h5";
+            var fid = Hdf5.CreateFile(fileName);
+            var lastGroup = Hdf5.CreateGroupRecursively(fid, "/1/2/3/4");
+            Hdf5.CloseGroup(lastGroup);
+            Hdf5.CloseFile(fid);
+            File.Delete(fileName);
+
+        }
+        [TestMethod]
+        public void FileNotCloseAfterCreateGroupRecursivelyCloseAllTest()
+        {
+            string fileName = $"{nameof(FileNotCloseAfterCreateGroupRecursivelyCloseAllTest)}.h5";
+            var fid = Hdf5.CreateFile(fileName);
+            var lastGroup = Hdf5.CreateGroupRecursively(fid, "/1/2/3/4",true,true);
+            Hdf5.CloseFile(fid);
+            File.Delete(fileName);
+
+        }
+
     }
-
-
 }
