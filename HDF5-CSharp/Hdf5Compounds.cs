@@ -15,6 +15,15 @@ namespace HDF5CSharp
         // information: https://www.hdfgroup.org/ftp/HDF5/examples/examples-by-api/hdf5-examples/1_8/C/H5T/h5ex_t_cmpd.c
         //or: https://www.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%3Frhtocid%3Dtoc6.5%23TOC_6_8_Complex_Combinationsbc-22
 
+        /// <summary>
+        /// The attributes are applied to the created dataset of the parameter name (not to the top level group long parameter) 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="groupId">the root group id to create the compound</param>
+        /// <param name="name">the name of the compound</param>
+        /// <param name="list">the values to write</param>
+        /// <param name="attributes">the attributes to create at the compound name (not at the group id)</param>
+        /// <returns></returns>
         public static (int success, long CreatedgroupId) WriteCompounds<T>(long groupId, string name, IEnumerable<T> list, Dictionary<string, List<string>> attributes) //where T : struct
         {
             Type type = typeof(T);
@@ -151,14 +160,15 @@ namespace HDF5CSharp
                     AppendCompound(cu, current, datasetId);
 
                 }
+                foreach (KeyValuePair<string, List<string>> keyValuePair in attributes)
+                {
+                    WriteStringAttributes(datasetId, keyValuePair.Key, keyValuePair.Value);
+                }
                 H5D.close(datasetId);
                 H5S.close(spaceId);
                 H5T.close(typeId);
                 H5P.close(dcpl);
-                foreach (KeyValuePair<string, List<string>> keyValuePair in attributes)
-                {
-                    WriteStringAttributes(groupId, keyValuePair.Key, keyValuePair.Value);
-                }
+              
                 return (statusId, datasetId);
             }
             else
