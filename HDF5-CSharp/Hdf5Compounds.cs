@@ -78,6 +78,15 @@ namespace HDF5CSharp
                 var statusId = H5D.write(datasetId, typeId, spaceId, H5S.ALL,
                     H5P.DEFAULT, hnd.AddrOfPinnedObject());
 
+
+                if (attributes != null)
+                {
+                    foreach (KeyValuePair<string, List<string>> kvp in attributes)
+                    {
+                        WriteStringAttributes(datasetId,kvp.Key, kvp.Value);
+                    }
+
+                }
                 hnd.Free();
                 /*
                  * Close and release resources.
@@ -86,15 +95,7 @@ namespace HDF5CSharp
                 H5S.close(spaceId);
                 H5T.close(typeId);
                 H5P.close(dcpl);
-                if (attributes != null)
-                {
-                    foreach (KeyValuePair<string, List<string>> kvp in attributes)
-                    {
-                        WriteStringAttributes(groupId, kvp.Key, kvp.Value);
-                    }
-                }
 
-                //Marshal.FreeHGlobal(p);
                 return (statusId, datasetId);
             }
             else
