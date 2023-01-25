@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using HDF5.NET;
+using PureHDF;
 
 namespace HDF5CSharp
 {
