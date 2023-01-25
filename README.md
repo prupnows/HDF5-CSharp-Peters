@@ -197,6 +197,6 @@ in order to log errors use this code snippet:
 
 ## Other resources:
 
--  [HDF5.NET](https://github.com/Apollo3zehn/HDF5.NET) : A pure .NET library that makes reading of HDF5 files (groups, datasets, attributes, links, ...) very easy.
+-  [PureHDF](https://github.com/Apollo3zehn/PureHDF) : A pure .NET library that makes reading of HDF5 files (groups, datasets, attributes, links, ...) very easy.
 
 
