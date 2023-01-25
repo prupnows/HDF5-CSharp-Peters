@@ -176,14 +176,17 @@ in order to log errors use this code snippet:
 
 ## History
 
-### V1.15.6.2 (18.11.2022):
+### V1.16.3. (25.01.2023):
+- Update Dependecy PureHDF (previously HDF5.NET)
+
+### V1.16.2 (18.11.2022):
 - File close problem #249
 - Hdf5.WriteCompounds is missing the write attributes fix (move write to created compound name and not group id) #248
 
-### V1.15.6.1 (12.11.2022):
+### V1.16.1 (12.11.2022):
 - Hdf5.WriteCompounds is missing the write attributes fix #248
 
-### V1.16.0.0 (11.09.2022):
+### V1.16.0 (11.09.2022):
 - Add net 7 target framework.
 
 ### V1.15.4.1 (03.08.2022):
