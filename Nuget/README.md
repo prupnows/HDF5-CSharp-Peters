@@ -176,7 +176,7 @@ in order to log errors use this code snippet:
 
 ## History
 
-### V1.16.3. (25.01.2023):
+### V1.16.3 (25.01.2023):
 - Update Dependecy PureHDF (previously HDF5.NET)
 
 ### V1.16.2 (18.11.2022):
