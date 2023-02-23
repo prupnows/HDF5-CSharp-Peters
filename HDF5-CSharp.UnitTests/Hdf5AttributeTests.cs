@@ -371,7 +371,18 @@ namespace HDF5CSharp.UnitTests
             int count2 = results2.Sum(e => e.Attributes.Count);
             Assert.IsTrue(count1 == count2);
         }
+        [TestMethod]
+        public void TestReadFullTreeUnity()
+        {
+            string filename = Path.Combine(folder, "files", "unity.H5");
+            var results1 = Hdf5.ReadTreeFileStructure(filename);
+            int count1 = CountAttributes(results1);
 
+            var results2 = Hdf5.ReadFlatFileStructure(filename);
+
+            int count2 = results2.Sum(e => e.Attributes.Count);
+            Assert.IsTrue(count1 == count2);
+        }
         private int CountAttributes(Hdf5Element element)
         {
             int count = element.Attributes.Count;
