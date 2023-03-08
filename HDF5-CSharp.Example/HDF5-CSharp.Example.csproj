@@ -10,7 +10,7 @@
     <PackageReference Include="MessagePack" Version="2.4.59" />
     <PackageReference Include="MessagePack.UnityShims" Version="2.4.59" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
