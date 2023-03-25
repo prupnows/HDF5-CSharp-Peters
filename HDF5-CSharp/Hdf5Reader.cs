@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using PureHDF;
+using PureHDF.VOL.Native;
 
 namespace HDF5CSharp
 {
@@ -482,30 +483,30 @@ namespace HDF5CSharp
             var flat = ReadFileStructure(fileName).flat;
             return flat;
         }
-        private static void AddAttributes(Hdf5Element element, H5File file, bool recursive)
+        private static void AddAttributes(Hdf5Element element, INativeFile file, bool recursive)
         {
             try
             {
-                IEnumerable<H5Attribute> attributes = Enumerable.Empty<H5Attribute>();
+                IEnumerable<IH5Attribute> attributes = Enumerable.Empty<IH5Attribute>();
                 switch (element.Type)
                 {
                     case Hdf5ElementType.Unknown:
                         break;
                     case Hdf5ElementType.Group:
-                        attributes = file.Group(element.GetPath()).Attributes;
+                        attributes = file.Group(element.GetPath()).Attributes();
                         break;
                     case Hdf5ElementType.CommitedDatatype:
-                        attributes = file.CommitedDatatype(element.GetPath()).Attributes;
+                        attributes = file.CommitedDatatype(element.GetPath()).Attributes();
                         break;
                     case Hdf5ElementType.Dataset:
-                        attributes = file.Dataset(element.Name).Attributes;
+                        attributes = file.Dataset(element.Name).Attributes();
                         break;
                     case Hdf5ElementType.Attribute:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                foreach (H5Attribute attr in attributes)
+                foreach (IH5Attribute attr in attributes)
                 {
                     var val = ReadAttributeData(attr);
                     element.AddAttribute(attr.Name, val, attr.Type.Class.ToString());
@@ -526,7 +527,7 @@ namespace HDF5CSharp
 
         }
 
-        private static object ReadAttributeData(H5Attribute attribute)
+        private static object ReadAttributeData(IH5Attribute attribute)
         {
             return (attribute.Type.Class, attribute.Type.Size) switch
             {

@@ -53,9 +53,34 @@ namespace HDF5CSharp.UnitTests
         }
     }
 
+    public class Data
+    {
+        public float surfaceCurrentSpeed;
+        public float surfaceCurrentDirection;
+    }
+
+    public class container
+    {
+        public Data[] values;
+    }
     [TestClass]
     public class CommunityTests : Hdf5BaseUnitTests
     {
+        //[TestMethod]
+        public void TestTable()
+        {
+            string folder = AppDomain.CurrentDomain.BaseDirectory;
+            string filename = Path.Combine(folder, "files", "table.H5");
+
+
+            var fileId = Hdf5.OpenFile(filename);
+            Assert.IsTrue(fileId > 0);
+            var cmpList = Hdf5.Read2DTable<Data>(fileId, "/SurfaceCurrent/SurfaceCurrent.01/Group_009/values");
+            Hdf5.CloseFile(fileId);
+            // CollectionAssert.AreEqual(wData2List, cmpList);
+
+        }
+
         [TestMethod]
         public void TestMemory()
         {
@@ -245,7 +270,7 @@ namespace HDF5CSharp.UnitTests
         {
             string fileName = $"{nameof(FileNotCloseAfterCreateGroupRecursivelyCloseAllTest)}.h5";
             var fid = Hdf5.CreateFile(fileName);
-            var lastGroup = Hdf5.CreateGroupRecursively(fid, "/1/2/3/4",true,true);
+            var lastGroup = Hdf5.CreateGroupRecursively(fid, "/1/2/3/4", true, true);
             Hdf5.CloseFile(fid);
             File.Delete(fileName);
 

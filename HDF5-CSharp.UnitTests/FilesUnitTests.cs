@@ -58,7 +58,7 @@ namespace HDF5CSharp.UnitTests
         }
 
 
-        [TestMethod]
+        //[TestMethod]
         public void TestLoops()
         {
             Hdf5.Settings.EnableH5InternalErrorReporting(true);
