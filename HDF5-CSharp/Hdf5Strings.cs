@@ -129,10 +129,7 @@ namespace HDF5CSharp
             // we write from C and must provide null-terminated strings
 
             byte[] wdata = new byte[strLength * 2];
-            //for (int i = 0; i < strLength; ++i)
-            //{
-            //    wdata[2 * i] = (byte)i;
-            //}
+            
             for (int i = 0; i < strLength; ++i)
             {
                 wdata[2 * i] = Convert.ToByte(str[i]);

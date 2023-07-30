@@ -26,6 +26,10 @@ namespace HDF5CSharp
         {
             return Hdf5.WriteStringAttributes(groupId, name, (string[])collection, datasetName);
         }
-
+        public (int success, long CreatedgroupId) WriteAsciiStringAttributes(long groupId, string name, IEnumerable<string> collection, string datasetName = null)
+        {
+            return Hdf5.WriteAsciiStringAttributes(groupId, name, (string[])collection, datasetName);
+        }
+        
     }
 }

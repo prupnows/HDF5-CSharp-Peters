@@ -203,6 +203,120 @@ namespace HDF5CSharp
         {
             return WriteStringAttributes(groupId, name, new[] { val }, groupOrDatasetName);
         }
+        public static (int success, long CreatedId) WriteIntegerAttributes<T>(long groupId, string name, IEnumerable<T> values, string groupOrDatasetName = null) where T : struct
+        {
+            long tmpId = groupId;
+            if (!string.IsNullOrWhiteSpace(groupOrDatasetName))
+            {
+                long datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(groupOrDatasetName));
+                if (datasetId > 0)
+                {
+                    groupId = datasetId;
+                }
+            }
+            // create UTF-8 encoded attributes
+            long datatype = GetDatatype(typeof(T));
+
+            int strSz = values.Count();
+            long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
+            string normalizedName = Hdf5Utils.NormalizedName(name);
+
+            var attributeId = Hdf5Utils.GetAttributeId(groupId, normalizedName, datatype, spaceId);
+            GCHandle[] hnds = new GCHandle[strSz];
+            IntPtr[] wdata = new IntPtr[strSz];
+
+            int cntr = 0;
+
+            foreach (T value in values)
+            {
+                hnds[cntr] = GCHandle.Alloc(Marshal.SizeOf(value.GetType()), GCHandleType.Pinned);
+                wdata[cntr] = hnds[cntr].AddrOfPinnedObject();
+                cntr++;
+            }
+
+            var hnd = GCHandle.Alloc(values.ToArray(), GCHandleType.Pinned);
+
+            var result = H5A.write(attributeId, datatype, hnd.AddrOfPinnedObject());
+            hnd.Free();
+
+            for (int i = 0; i < strSz; ++i)
+            {
+                hnds[i].Free();
+            }
+
+            H5A.close(attributeId);
+            H5S.close(spaceId);
+            if (tmpId != groupId)
+            {
+                H5D.close(groupId);
+            }
+            return (result, attributeId);
+        }
+
+        public static (int success, long CreatedId) WriteAsciiStringAttributes(long groupId, string name,
+            IEnumerable<string> values, string groupOrDatasetName = null)
+        {
+            var str = values.ToArray();
+            long tmpId = groupId;
+            if (!string.IsNullOrWhiteSpace(groupOrDatasetName))
+            {
+                long datasetId = H5D.open(groupId, Hdf5Utils.NormalizedName(groupOrDatasetName));
+                if (datasetId > 0)
+                {
+                    groupId = datasetId;
+                }
+            }
+            int strSz = str.Count();
+            long spaceId = H5S.create_simple(1, new[] { (ulong)strSz }, null);
+            string normalizedName = Hdf5Utils.NormalizedName(name);
+            long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
+
+            var attributeId = Hdf5Utils.GetAttributeId(groupId, normalizedName, datatype, spaceId);
+
+            var spaceNullId = H5S.create(H5S.class_t.NULL);
+            var spaceScalarId = H5S.create(H5S.class_t.SCALAR);
+
+            // create two datasets of the extended ASCII character set
+            // store as H5T.FORTRAN_S1 -> space padding
+
+            int strLength = str.Length;
+            ulong[] dims = { (ulong)strLength, 1 };
+
+            //byte[] wdata = new byte[strLength * 2];
+
+            //for (int i = 0; i < strLength; ++i)
+            //{
+            //    wdata[2 * i] = Convert.ToByte(str[i]);
+            //}
+            GCHandle[] hnds = new GCHandle[strSz];
+            IntPtr[] wdata = new IntPtr[strSz];
+
+            int cntr = 0;
+            foreach (string s in str)
+            {
+                hnds[cntr] = GCHandle.Alloc(
+                    Hdf5Utils.StringToByte(s),
+                    GCHandleType.Pinned);
+                wdata[cntr] = hnds[cntr].AddrOfPinnedObject();
+                cntr++;
+            }
+            var memId = H5T.copy(H5T.C_S1);
+            H5T.set_size(memId, new IntPtr(2));
+            GCHandle hnd = GCHandle.Alloc(wdata, GCHandleType.Pinned);
+            var result = H5A.write(attributeId, datatype, hnd.AddrOfPinnedObject());
+
+            hnd.Free();
+            H5T.close(memId);
+            H5A.close(attributeId);
+            H5S.close(spaceId);
+            H5T.close(datatype);
+            if (tmpId != groupId)
+            {
+                H5D.close(groupId);
+            }
+            return (result, attributeId);
+
+        }
 
         public static (int success, long CreatedId) WriteStringAttributes(long groupId, string name, IEnumerable<string> values, string groupOrDatasetName = null)
         {
@@ -215,11 +329,6 @@ namespace HDF5CSharp
                     groupId = datasetId;
                 }
             }
-            else
-            {
-
-            }
-
             // create UTF-8 encoded attributes
             long datatype = H5T.create(H5T.class_t.STRING, H5T.VARIABLE);
             H5T.set_cset(datatype, Hdf5Utils.GetCharacterSet(Settings.CharacterSetType));

@@ -255,6 +255,39 @@ namespace HDF5CSharp.UnitTests
         }
 
         [TestMethod]
+        public void TestAttributesAsciiStringCreation()
+        {
+            string filename = $"{nameof(TestAttributesAsciiStringCreation)}.h5";
+            long fileId = Hdf5.CreateFile(filename);
+
+            long groupFId = Hdf5.CreateOrOpenGroup(fileId, "Ascii");
+
+            var featureCodeDs = new Hdf5AttributeRW();
+            featureCodeDs.WriteAsciiStringAttributes(groupFId, "Ascii", new[] { "WaterLevel" });
+
+            Hdf5.CloseGroup(groupFId);
+            Hdf5.CloseFile(fileId);
+            File.Delete(filename);
+        }
+        [TestMethod]
+        public void TestAttributesIntCreation()
+        {
+            string filename = $"{nameof(TestAttributesIntCreation)}.h5";
+            long fileId = Hdf5.CreateFile(filename);
+
+            long groupFId = Hdf5.CreateOrOpenGroup(fileId, "GROUP_F");
+
+            var featureCodeDs = new Hdf5Dataset();
+            featureCodeDs.WriteNumericAttributes(groupFId, "Int32Attribute", new int[] { 1,2,3 });
+            featureCodeDs.WriteNumericAttributes(groupFId, "Int16Attribute", new short[] { 1, 2, 3 });
+            featureCodeDs.WriteNumericAttributes(groupFId, "DoubleAttribute", new Double[] { 1.1f, 2.2f, 3.3f });
+            featureCodeDs.WriteNumericAttributes(groupFId, "longAttribute", new long[] { 10, 20, 30 });
+
+            Hdf5.CloseGroup(groupFId);
+            Hdf5.CloseFile(fileId);
+            File.Delete(filename);
+        }
+        [TestMethod]
         public void FileNotCloseAfterCreateGroupRecursivelyTest()
         {
             string fileName = $"{nameof(FileNotCloseAfterCreateGroupRecursivelyTest)}.h5";
