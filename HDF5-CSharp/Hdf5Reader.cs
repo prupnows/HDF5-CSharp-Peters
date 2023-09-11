@@ -483,7 +483,7 @@ namespace HDF5CSharp
             var flat = ReadFileStructure(fileName).flat;
             return flat;
         }
-        private static void AddAttributes(Hdf5Element element, INativeFile file, bool recursive)
+        private static void AddAttributes(Hdf5Element element, NativeFile file, bool recursive)
         {
             try
             {
@@ -531,20 +531,22 @@ namespace HDF5CSharp
         {
             return (attribute.Type.Class, attribute.Type.Size) switch
             {
-                (H5DataTypeClass.FloatingPoint, 4) => attribute.Read<float>(),
-                (H5DataTypeClass.FloatingPoint, 8) => attribute.Read<double>(),
-                (H5DataTypeClass.FixedPoint, 1) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<byte>(),
-                (H5DataTypeClass.FixedPoint, 1) when attribute.Type.FixedPoint.IsSigned => attribute.Read<sbyte>(),
-                (H5DataTypeClass.FixedPoint, 2) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<ushort>(),
-                (H5DataTypeClass.FixedPoint, 2) when attribute.Type.FixedPoint.IsSigned => attribute.Read<short>(),
-                (H5DataTypeClass.FixedPoint, 4) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<uint>(),
-                (H5DataTypeClass.FixedPoint, 4) when attribute.Type.FixedPoint.IsSigned => attribute.Read<int>(),
-                (H5DataTypeClass.FixedPoint, 8) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<ulong>(),
-                (H5DataTypeClass.FixedPoint, 8) when attribute.Type.FixedPoint.IsSigned => attribute.Read<long>(),
-                (H5DataTypeClass.VariableLength, _) => attribute.ReadString(),
-                (H5DataTypeClass.String, _) => attribute.ReadString(),
+                (H5DataTypeClass.FloatingPoint, 4) => attribute.Read<float[]>(),
+                (H5DataTypeClass.FloatingPoint, 8) => attribute.Read<double[]>(),
+                (H5DataTypeClass.FixedPoint, 1) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<byte[]>(),
+                (H5DataTypeClass.FixedPoint, 1) when attribute.Type.FixedPoint.IsSigned => attribute.Read<sbyte[]>(),
+                (H5DataTypeClass.FixedPoint, 2) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<ushort[]>(),
+                (H5DataTypeClass.FixedPoint, 2) when attribute.Type.FixedPoint.IsSigned => attribute.Read<short[]>(),
+                (H5DataTypeClass.FixedPoint, 4) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<uint[]>(),
+                (H5DataTypeClass.FixedPoint, 4) when attribute.Type.FixedPoint.IsSigned => attribute.Read<int[]>(),
+                (H5DataTypeClass.FixedPoint, 8) when !attribute.Type.FixedPoint.IsSigned => attribute.Read<ulong[]>(),
+                (H5DataTypeClass.FixedPoint, 8) when attribute.Type.FixedPoint.IsSigned => attribute.Read<long[]>(),
+                (H5DataTypeClass.VariableLength, _) => attribute.Read<string[]>(),
+                (H5DataTypeClass.String, _) => attribute.Read<string[]>(),
+                (H5DataTypeClass.Compound, _) => attribute.Read<Dictionary<string, object>>(),
                 // Other types might currently be a bit difficult to read automatically.
-                // However, in future it will be possible to also read unknown structs.
+                // However, in future it will be possible to also read unknown data by simply
+                // calling attribute.Read(). This method will be part of the final release.
                 //
                 // If you need to support more exotic HDF types, you could use reflection
                 // to get the full data type information and not just what is currently
