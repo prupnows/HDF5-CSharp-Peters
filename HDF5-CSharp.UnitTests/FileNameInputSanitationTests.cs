@@ -36,9 +36,11 @@ namespace HDF5CSharp.UnitTests
                 s.Flush();
                 s.Close();
             }
+
+            long id = -1;
             try
             {
-                var id = Hdf5.OpenFile(path);
+                id = Hdf5.OpenFile(path);
                 Assert.AreNotEqual(-1, id);
             }
             catch (Exception ex)
@@ -50,6 +52,7 @@ namespace HDF5CSharp.UnitTests
             }
             finally
             {
+                Hdf5.CloseFile(id);
                 fileInfo.Delete();
             }
         }

@@ -74,7 +74,7 @@ namespace HDF5CSharp
             }
             else
             {
-                if (_illegalCharacterValidator.IsMatch(filename))
+                if (IllegalCharacterValidator.IsMatch(filename))
                 {
                     throw new ArgumentOutOfRangeException(nameof(filename), "Argument contains illegal characters. HDF5.PInvoke cannot handle file paths with non-ascii characters.");
                 }
@@ -85,15 +85,14 @@ namespace HDF5CSharp
         }
 
         /// <summary>
-        /// Regex that matches characters deemed invalid in filenames by HFD.PInvoke library.
+        /// Regex that matches characters deemed invalid in file names by HFD.PInvoke library.
         /// </summary>
-        private static readonly Regex _illegalCharacterValidator = new("[æøåöäïë€]+", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+        private static readonly Regex IllegalCharacterValidator = new("[æøåöäïë€]+", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
         /// <summary>
         /// Creates a Hdf-5 file
         /// </summary>
         /// <param name="filename">Filename</param>
-        /// <param name="attemptShortPath">Whether or not to attempt to correct path to windows 8.3 short path form (ASCII-safe)</param>
         /// <returns>File Id</returns>
         /// <exception cref="ArgumentNullException">When filename is null or whitespace</exception>
         /// <exception cref="ArgumentOutOfRangeException">When filename contains illegal characters.</exception>
@@ -104,7 +103,7 @@ namespace HDF5CSharp
             {
                 throw new ArgumentNullException(nameof(filename), "Argument cannot be null, empty or whitespace.");
             }
-            if (_illegalCharacterValidator.IsMatch(filename))
+            if (IllegalCharacterValidator.IsMatch(filename))
             {
                 throw new ArgumentOutOfRangeException(nameof(filename), "Argument contains illegal characters. HDF5.PInvoke cannot handle file paths with non-ascii characters.");
             }

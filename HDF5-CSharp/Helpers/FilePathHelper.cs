@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace HDF5CSharp.Helpers;
 
@@ -24,7 +21,7 @@ internal static class FilePathHelper
     {
         var file = new FileInfo(longPath);
         if (!file.Exists)
-            throw new FileNotFoundException("The path points to a non-existant file. The file must exist in order for the short path translation to work.");
+            throw new FileNotFoundException("The path points to a non-existent file. The file must exist in order for the short path translation to work.");
         if(Environment.OSVersion.Platform != PlatformID.Win32NT)
             throw new InvalidOperationException("The extension method ToShortPath(this string longPath) cannot be called in a non-windows operating system context.");
         StringBuilder sb = new(255);
@@ -33,5 +30,5 @@ internal static class FilePathHelper
     }
 
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, EntryPoint = "GetShortPAthNameW", SetLastError = true)]
-    internal extern static uint GetShortPathName([MarshalAs(UnmanagedType.LPTStr)] string longpath, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder shortPath, int bufferSize);
+    private static extern uint GetShortPathName([MarshalAs(UnmanagedType.LPTStr)] string longpath, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder shortPath, int bufferSize);
 }
