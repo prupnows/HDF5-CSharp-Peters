@@ -9,7 +9,6 @@ namespace HDF5CSharp
     public class ChunkedDataset<T> : IDisposable where T : struct
     {
         ulong[] _currentDims, _oldDims;
-        readonly ulong[] _maxDims = { H5S.UNLIMITED, H5S.UNLIMITED };
         private ulong[] _chunkDims;
         long _status, _spaceId, _datasetId, _propId;
         readonly long _typeId, _datatype;
@@ -45,6 +44,14 @@ namespace HDF5CSharp
             _chunkDims = chunkSize;
         }
 
+        private ulong[] ToMaxDims(ulong[] chunkSize)
+        {
+            ulong[] maxDims = new ulong[chunkSize.Length];
+            chunkSize.CopyTo(maxDims, 0);
+            maxDims[0] = H5S.UNLIMITED;
+            return maxDims;
+        }
+
         /// <summary>
         /// Constructor to create a chuncked dataset object with an initial dataset. 
         /// </summary>
@@ -72,14 +79,14 @@ namespace HDF5CSharp
             _currentDims = GetDims(dataset);
 
             /* Create the data space with unlimited dimensions. */
-            _spaceId = H5S.create_simple(Rank, _currentDims, _maxDims);
+            _spaceId = H5S.create_simple(Rank, _currentDims, ToMaxDims(_currentDims));
 
             /* Modify dataset creation properties, i.e. enable chunking  */
             _propId = H5P.create(H5P.DATASET_CREATE);
             _status = H5P.set_chunk(_propId, Rank, _chunkDims);
 
             /* Create a new dataset within the file using chunk creation properties.  */
-            _datasetId = Hdf5Utils.GetDatasetId(GroupId, Hdf5Utils.NormalizedName(Datasetname), _datatype, _spaceId,_propId);
+            _datasetId = H5D.create(GroupId, Hdf5Utils.NormalizedName(Datasetname), _datatype, _spaceId, H5P.DEFAULT, _propId);
 
             /* Write data to dataset */
             GCHandle hnd = GCHandle.Alloc(dataset, GCHandleType.Pinned);
@@ -116,14 +123,15 @@ namespace HDF5CSharp
                         return;
                     }
                 }
-                _chunkDims = new[]
-                    {Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1))};
+                //_chunkDims = new[]
+                 //   {Convert.ToUInt64(dataset.GetLongLength(0)), Convert.ToUInt64(dataset.GetLongLength(1))};
 
                 Rank = dataset.Rank;
                 _currentDims = GetDims(dataset);
+                _chunkDims = _currentDims;
 
                 /* Create the data space with unlimited dimensions. */
-                _spaceId = H5S.create_simple(Rank, _currentDims, _maxDims);
+                _spaceId = H5S.create_simple(Rank, _currentDims, ToMaxDims(_currentDims));
 
                 /* Modify dataset creation properties, i.e. enable chunking  */
                 _propId = H5P.create(H5P.DATASET_CREATE);
@@ -131,6 +139,7 @@ namespace HDF5CSharp
 
                 /* Create a new dataset within the file using chunk creation properties.  */
                 _datasetId = Hdf5Utils.GetDatasetId(GroupId, Hdf5Utils.NormalizedName(Datasetname), _datatype, _spaceId,_propId);
+                //_datasetId = H5D.create(GroupId, Hdf5Utils.NormalizedName(Datasetname), _datatype, _spaceId, H5P.DEFAULT, _propId);
 
                 /* Write data to dataset */
                 GCHandle hnd = GCHandle.Alloc(dataset, GCHandleType.Pinned);
